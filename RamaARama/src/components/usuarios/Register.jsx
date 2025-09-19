@@ -39,6 +39,13 @@ function Register() {
     async function manejoSubmit(e) {
         e.preventDefault()
 
+        // Validar longitud mínima de contraseña
+        if (contrasena.length < 8) {
+            setMensajeAlerta("La contraseña debe tener al menos 8 caracteres")
+            setMostrarAlerta(true)
+            return
+        }
+
         if (contrasena !== confirmarContrasena) {
             setMensajeAlerta("Las contraseñas no coinciden")
             setMostrarAlerta(true)
@@ -61,7 +68,14 @@ function Register() {
             return
         }
 
-        const nuevoUsuario = { nombre, correo, contrasena }
+        // Ahora el objeto incluye tipoCuenta: "turista"
+        const nuevoUsuario = {
+            nombre,
+            correo,
+            contrasena,
+            tipoCuenta: "turista"
+        }
+
         const usuarioCreado = await crearElemento("usuarios", nuevoUsuario)
 
         if (!usuarioCreado) {
@@ -73,7 +87,6 @@ function Register() {
         // Guardar token con el id del usuario recién creado
         localStorage.setItem("token", usuarioCreado.id)
 
-        // Redirigir a /Main
         navigate("/Main")
     }
 

@@ -5,19 +5,23 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "react-scripts start",
+    "server": "node server.js"
   },
   "dependencies": {
     "chalk": "^5.6.2",
     "geojson": "^0.5.0",
-    "json-server": "^1.0.0-beta.3",
     "leaflet": "^1.9.4",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.9.1"
+    "react-router-dom": "^7.9.1",
+    "react-scripts": "^0.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.3",
-    "vite": "^5.4.20"
+    "json-server": "^1.0.0-beta.3",
+    "vite": "^7.1.6"
   }
 }

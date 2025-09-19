@@ -1,17 +1,55 @@
 {
   "usuarios": [
     {
-      "id": "fe43",
-      "nombre": "Ismael",
+      "id": "d2cb",
+      "nombre": "Ismael Marín",
       "correo": "correo@ejemplo.com",
-      "contrasena": "1234"
+      "contrasena": "12345678",
+      "tipoCuenta": "turista admin gestor"
     },
     {
-      "id": "db1d",
-      "nombre": "Pepe Viyuela",
+      "id": "fe30",
+      "nombre": "pepe viyuela",
       "correo": "pepe@viyuela.com",
-      "contrasena": "123"
+      "contrasena": "12345678",
+      "tipoCuenta": "turista"
     }
   ],
-  "": []
+  "requestGestores": [
+    {
+      "id": "d2cb",
+      "nombre": "Ismael Eduardo Marín Marín",
+      "provinciaResidencia": "1",
+      "identificacion": "118680276",
+      "correoSecundario": "ejemplo@correo.com",
+      "telefono": "87766554",
+      "redes": [
+        {
+          "tipo": "Facebook",
+          "link": "jsldf.com"
+        },
+        {
+          "tipo": "Sitio Web",
+          "link": "loadsfkj.com"
+        }
+      ]
+    },
+    {
+      "id": "fe30",
+      "nombre": "pepe viyuela",
+      "provinciaResidencia": "1",
+      "identificacion": "123234545",
+      "correoSecundario": "viyeula@pepe.com",
+      "telefono": "28829889",
+      "redes": [
+        {
+          "tipo": "Instagram",
+          "link": "sdaklfm.com"
+        }
+      ]
+    }
+  ],
+  "requestAdmins": [
+    
+  ]
 }

@@ -32,7 +32,7 @@ function PrivateRoute({ children }) {
     }
 
     if (!autenticado) {
-        return <Navigate to="/login" replace />
+        return <Navigate to="/" replace />
     }
 
     return children
