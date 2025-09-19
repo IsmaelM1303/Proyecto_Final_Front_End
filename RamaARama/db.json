@@ -1,0 +1,17 @@
+{
+  "usuarios": [
+    {
+      "id": "fe43",
+      "nombre": "Ismael",
+      "correo": "correo@ejemplo.com",
+      "contrasena": "1234"
+    },
+    {
+      "id": "db1d",
+      "nombre": "Pepe Viyuela",
+      "correo": "pepe@viyuela.com",
+      "contrasena": "123"
+    }
+  ],
+  "": []
+}
