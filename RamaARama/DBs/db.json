@@ -1,0 +1,64 @@
+{
+  "usuarios": [
+    {
+      "id": "d2cb",
+      "nombre": "Ismael Eduardo Marín Marín",
+      "correo": "correo@ejemplo.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista gestor admin",
+      "provinciaResidencia": "1",
+      "identificacion": "118680276",
+      "telefono": "87766554",
+      "redes": [
+        {
+          "tipo": "Facebook",
+          "link": "jsldf.com"
+        },
+        {
+          "tipo": "Sitio Web",
+          "link": "loadsfkj.com"
+        }
+      ]
+    },
+    {
+      "id": "fe30",
+      "nombre": "pepe viyuela",
+      "correo": "pepe@viyuela.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista"
+    },
+    {
+      "id": "dd6b",
+      "nombre": "Eduardo Marín",
+      "correo": "ismael.emarinm@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista gestor",
+      "provinciaResidencia": "1",
+      "identificacion": "118680276",
+      "correoSecundario": "imarin.marin@gmail.com",
+      "telefono": "87654321",
+      "redes": [
+        {
+          "tipo": "Instagram",
+          "link": "uojdfsmnakj.com"
+        },
+        {
+          "tipo": "Facebook",
+          "link": "jksdafnn.com"
+        }
+      ]
+    }
+  ],
+  "requestGestores": [],
+  "requestAdmins": [
+    {
+      "id": "fe30",
+      "nombre": "Pepe Viyuela",
+      "provinciaResidencia": "1",
+      "identificacion": "123547698",
+      "correoSecundario": "viyuela@pepe.com",
+      "telefono": "78675645",
+      "curriculum": "tbey5pox1758407729396"
+    }
+  ]
+}

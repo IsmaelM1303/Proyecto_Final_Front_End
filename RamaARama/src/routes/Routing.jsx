@@ -5,6 +5,7 @@ import PrivateRoute from "./PrivateRoute"
 import Main from "../pages/Main"
 import AplicaGestor from "../pages/AplicaGestor"
 import AplicaAdmin from "../pages/AplicaAdmin"
+import Requests from "../pages/Requests"
 
 function Routing() {
     return (
@@ -15,6 +16,8 @@ function Routing() {
                 <Route path="/Main" element={<PrivateRoute><Main/></PrivateRoute>}/>
                 <Route path="/SolicitudGestor" element={<PrivateRoute><AplicaGestor/></PrivateRoute>}/>
                 <Route path="/SolicitudAdmin" element={<PrivateRoute><AplicaAdmin/></PrivateRoute>}/>
+                <Route path="/Request" element={<PrivateRoute><Requests/></PrivateRoute>}/>
+
 
 
 

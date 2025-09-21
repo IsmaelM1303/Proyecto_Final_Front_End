@@ -26,6 +26,14 @@ function Header() {
         navigate("/")
     }
 
+    function handleBotonClick(rol) {
+        if (rol === "admin") {
+            navigate("/Request")
+        } else {
+            alert(`Acción alternativa para ${rol}`)
+        }
+    }
+
     function renderBotones() {
         if (!usuario) return null
 
@@ -59,7 +67,7 @@ function Header() {
                     >
                         ¿Quieres unirte como Administrador? Haz click aquí
                     </span>
-                    <button onClick={() => navigate("/SolicitudGestor")}>
+                    <button onClick={() => handleBotonClick("gestor")}>
                         Perfil
                     </button>
                 </>
@@ -75,19 +83,20 @@ function Header() {
                     >
                         ¿Quieres unirte como Gestor turístico? Haz click aquí
                     </span>
-                    <button onClick={() => navigate("/Admin")}>Admin</button>
+                    <button onClick={() => handleBotonClick("admin")}>
+                        Admin
+                    </button>
                 </>
             )
         }
 
-        if (
-            tipo === "turista gestor admin" ||
-            tipo === "turista admin gestor"
-        ) {
+        if (tipo === "turista gestor admin" || tipo === "turista admin gestor") {
             return (
                 <>
-                    <button onClick={() => navigate("/Admin")}>Admin</button>
-                    <button onClick={() => navigate("/SolicitudGestor")}>
+                    <button onClick={() => handleBotonClick("admin")}>
+                        Admin
+                    </button>
+                    <button onClick={() => handleBotonClick("gestor")}>
                         Perfil
                     </button>
                 </>
@@ -99,15 +108,10 @@ function Header() {
 
     return (
         <header>
-            {/* Logo */}
             <div>
                 <img src={logo} alt="Logo" width="100" height="100" />
             </div>
-
-            {/* Título */}
             <h1>Rama a Rama</h1>
-
-            {/* Botones */}
             <div>
                 {token && renderBotones()}
                 {token && (

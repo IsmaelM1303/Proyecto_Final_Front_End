@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { crearElemento, obtenerElementos } from '../../../api/Crud'
 
 function AplicarGestor() {
@@ -30,20 +30,18 @@ function AplicarGestor() {
     const [redes, setRedes] = useState([])
     const [aceptaTerminos, setAceptaTerminos] = useState(false)
 
-    // 🔹 Al montar, revisar si el usuario es admin y precargar datos
     useEffect(() => {
         async function cargarDatosUsuario() {
             const token = localStorage.getItem('token')
             if (!token) return
 
-            const usuarios = await obtenerElementos('usuarios')
+            const usuarios = await obtenerElementos('usuarios', 1)
             if (!usuarios) return
 
             const usuario = usuarios.find(u => String(u.id) === String(token))
             if (!usuario) return
 
-            // Si tipoCuenta contiene "admin"
-            if (usuario.tipoCuenta?.toLowerCase().includes('admin')) {
+            if (usuario.tipoCuenta && usuario.tipoCuenta.toLowerCase().includes('admin')) {
                 setNombre(usuario.nombre || '')
                 setProvinciaResidencia(usuario.provinciaResidencia || '')
                 setIdentificacion(usuario.identificacion || '')
@@ -68,16 +66,25 @@ function AplicarGestor() {
         setRedes(redes.filter((_, i) => i !== index))
     }
 
-    const manejarEnvio = (e) => {
+    const manejarEnvio = async (e) => {
         e.preventDefault()
+
         if (!aceptaTerminos) {
             alert('Debe aceptar los términos y condiciones')
             return
         }
 
+        const idUsuario = localStorage.getItem('token')
+
+        const solicitudes = await obtenerElementos('requestGestores', 1)
+        if (solicitudes && solicitudes.some(req => String(req.id) === String(idUsuario))) {
+            alert('Ya existe una solicitud para este usuario en requestGestores')
+            return
+        }
+
         if (window.confirm('¿Desea enviar la solicitud?')) {
             const datos = {
-                id: localStorage.getItem('token'),
+                id: idUsuario,
                 nombre,
                 provinciaResidencia,
                 identificacion,
@@ -86,11 +93,10 @@ function AplicarGestor() {
                 redes
             }
 
-            crearElemento('requestGestores', datos)
+            await crearElemento('requestGestores', datos, 1)
 
             console.log('Datos enviados:', datos)
 
-            // Limpiar formulario
             setNombre('')
             setProvinciaResidencia('')
             setIdentificacion('')
@@ -121,7 +127,7 @@ function AplicarGestor() {
                     onChange={(e) => setProvinciaResidencia(e.target.value)}
                 >
                     <option value="" disabled>Eliga su provincia</option>
-                    {provincias.map((prov) => (
+                    {provincias.map(prov => (
                         <option key={prov.id} value={prov.id}>{prov.nombre}</option>
                     ))}
                 </select>
@@ -161,7 +167,7 @@ function AplicarGestor() {
                     onChange={(e) => setRedSocialSeleccionada(e.target.value)}
                 >
                     <option value="">Seleccione red social</option>
-                    {opcionesRedes.map((red) => (
+                    {opcionesRedes.map(red => (
                         <option key={red.id} value={red.nombre}>{red.nombre}</option>
                     ))}
                 </select>
