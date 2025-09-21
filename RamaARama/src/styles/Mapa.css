@@ -1,0 +1,10 @@
+.mapa-container {
+    height: 500px;
+    width: 100%;
+}
+
+.filtros-mapa {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
