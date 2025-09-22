@@ -8,6 +8,7 @@ import AplicaAdmin from "../pages/AplicaAdmin"
 import Requests from "../pages/Requests"
 import VerPerfil from "../pages/VerPerfil"
 import VerPerfiles from "../pages/VerPerfiles"
+import VisorPOIs from "../pages/VisorPOIs"
 
 function Routing() {
     return (
@@ -21,6 +22,8 @@ function Routing() {
                 <Route path="/Request" element={<PrivateRoute><Requests/></PrivateRoute>}/>
                 <Route path="/Perfil" element={<PrivateRoute><VerPerfil/></PrivateRoute>}/>
                 <Route path="/AdministrarPerfiles" element={<PrivateRoute><VerPerfiles/></PrivateRoute>}/>
+                <Route path="/VerPOIs" element={<PrivateRoute><VisorPOIs/></PrivateRoute>}/>
+
 
 
 

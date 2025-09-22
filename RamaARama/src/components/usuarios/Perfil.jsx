@@ -109,7 +109,7 @@ function Perfil() {
             {/* Botones condicionales */}
             <div style={{ marginTop: "20px" }}>
                 {tipoCuenta.includes("gestor") && (
-                    <button onClick={() => navigate("/MisPuntosInteres")}>
+                    <button onClick={() => navigate("/VerPOIs")}>
                         Mis puntos de interés
                     </button>
                 )}

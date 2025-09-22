@@ -92,6 +92,23 @@
       "correo": "amachado071421@gmail.com",
       "contrasena": "12345678",
       "tipoCuenta": "turista"
+    },
+    {
+      "id": "e917",
+      "nombre": "Kevin Quesada",
+      "correo": "kquesada988@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista gestor",
+      "provinciaResidencia": "1",
+      "identificacion": "1234567890",
+      "correoSecundario": "dsajf@fajok.com",
+      "telefono": "12345678",
+      "redes": [
+        {
+          "tipo": "Instagram",
+          "link": "odijfsediok.com"
+        }
+      ]
     }
   ],
   "requestGestores": [],
