@@ -1,8 +1,10 @@
 // Normaliza la URL para que siempre termine con "/"
 function normalizarUrl(url, servidor) {
     let base = ""
+    //Para esto, asegurarse de que el servidor db.json sea el servidor 1, dbCurricula.json el servidor 2 y POis.json el 3
     if (servidor === 1) base = "http://localhost:3001/"
     if (servidor === 2) base = "http://localhost:3000/"
+    if (servidor === 3) base = "http://localhost:3002/"
     if (url.endsWith("/")) return url
     return base + url + "/"
 }

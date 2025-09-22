@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
 })
 
 // Componente auxiliar para ajustar el mapa a Costa Rica al inicio
-function FitCostaRicaBounds() {
+function FitCostaRicaBounds({ onCentered }) {
     const map = useMap()
     useEffect(() => {
         const bounds = [
@@ -26,7 +26,11 @@ function FitCostaRicaBounds() {
             [11.219, -82.555] // Noreste
         ]
         map.fitBounds(bounds, { padding: [20, 20] })
-    }, [map])
+        // Avisar que ya centramos
+        if (onCentered) {
+            onCentered()
+        }
+    }, [map, onCentered])
     return null
 }
 
@@ -66,6 +70,7 @@ function Mapa() {
     const [division, setDivision] = useState("") // provincia o canton
     const [geoData, setGeoData] = useState(null)
     const [mapRef, setMapRef] = useState(null)
+    const [mostrarMarcador, setMostrarMarcador] = useState(true)
 
     useEffect(() => {
         async function cargarGeoJSON() {
@@ -77,7 +82,9 @@ function Mapa() {
             } else if (division === "canton") {
                 const cantones = [
                     "101", "102", "103", "104", "105", "106", "107", "108", "109", "110",
+                    "111", "112", "113", "114", "115", "116", "117", "118", "119", "120", 
                     "201", "202", "203", "204", "205", "206", "207", "208", "209", "210",
+                    "211", "212", "213", "214", "215", 
                     "301", "302", "303", "304", "305", "306", "307", "308",
                     "401", "402", "403", "404", "405", "406", "407", "408", "409", "410",
                     "501", "502", "503", "504", "505", "506", "507", "508", "509", "510", "511",
@@ -130,13 +137,17 @@ function Mapa() {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {!division && <FitCostaRicaBounds />}
+                {!division && (
+                    <FitCostaRicaBounds onCentered={() => setMostrarMarcador(false)} />
+                )}
 
-                <Marker position={[9.9281, -84.0907]}>
-                    <Popup>
-                        San José, Costa Rica <br /> ¡Aquí está el marcador!
-                    </Popup>
-                </Marker>
+                {mostrarMarcador && (
+                    <Marker position={[9.9281, -84.0907]}>
+                        <Popup>
+                            San José, Costa Rica <br /> ¡Aquí está el marcador!
+                        </Popup>
+                    </Marker>
+                )}
 
                 {geoData && <GeoJSON data={geoData} style={estiloDivision} />}
             </MapContainer>
