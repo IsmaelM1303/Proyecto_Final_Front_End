@@ -6,6 +6,8 @@ import Main from "../pages/Main"
 import AplicaGestor from "../pages/AplicaGestor"
 import AplicaAdmin from "../pages/AplicaAdmin"
 import Requests from "../pages/Requests"
+import VerPerfil from "../pages/VerPerfil"
+import VerPerfiles from "../pages/VerPerfiles"
 
 function Routing() {
     return (
@@ -17,6 +19,8 @@ function Routing() {
                 <Route path="/SolicitudGestor" element={<PrivateRoute><AplicaGestor/></PrivateRoute>}/>
                 <Route path="/SolicitudAdmin" element={<PrivateRoute><AplicaAdmin/></PrivateRoute>}/>
                 <Route path="/Request" element={<PrivateRoute><Requests/></PrivateRoute>}/>
+                <Route path="/Perfil" element={<PrivateRoute><VerPerfil/></PrivateRoute>}/>
+                <Route path="/AdministrarPerfiles" element={<PrivateRoute><VerPerfiles/></PrivateRoute>}/>
 
 
 

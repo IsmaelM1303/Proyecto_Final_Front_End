@@ -47,6 +47,51 @@
           "link": "jksdafnn.com"
         }
       ]
+    },
+    {
+      "id": "e475",
+      "nombre": "Adrián Campos Cisneros",
+      "correo": "adriancamposcisnero@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista gestor",
+      "provinciaResidencia": "1",
+      "identificacion": "123456789",
+      "correoSecundario": "adsjfn@fdjo.com",
+      "telefono": "87766654",
+      "redes": [
+        {
+          "tipo": "TikTok",
+          "link": "hjdsa.com"
+        }
+      ]
+    },
+    {
+      "id": "fb03",
+      "nombre": "Hillary Calderón",
+      "correo": "hillarycalu965@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista gestor",
+      "provinciaResidencia": "1",
+      "identificacion": "123456789",
+      "correoSecundario": "kdfsja@gmail.com",
+      "telefono": "87658765",
+      "redes": [
+        {
+          "tipo": "Instagram",
+          "link": "asdkjfn.com"
+        },
+        {
+          "tipo": "Facebook",
+          "link": "askjdlf.com"
+        }
+      ]
+    },
+    {
+      "id": "4a71",
+      "nombre": "Alejando",
+      "correo": "amachado071421@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista"
     }
   ],
   "requestGestores": [],

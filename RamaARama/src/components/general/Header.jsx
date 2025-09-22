@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import logo from "../../assets/Imgs/Logo.png"
 import { obtenerElementos } from "../../api/Crud"
 
 function Header() {
     const navigate = useNavigate()
+    const location = useLocation()
     const token = localStorage.getItem("token")
     const [usuario, setUsuario] = useState(null)
 
@@ -29,6 +30,8 @@ function Header() {
     function handleBotonClick(rol) {
         if (rol === "admin") {
             navigate("/Request")
+        } else if (rol === "gestor") {
+            navigate("/Perfil")
         } else {
             alert(`Acción alternativa para ${rol}`)
         }
@@ -39,71 +42,53 @@ function Header() {
 
         const tipo = usuario.tipoCuenta?.toLowerCase().trim()
 
-        if (tipo === "turista") {
-            return (
-                <>
-                    <span
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate("/SolicitudAdmin")}
+        return (
+            <>
+                {/* Si es admin, mostrar botón Admin */}
+                {tipo.includes("admin") && (
+                    <button
+                        onClick={() => !location.pathname.includes("/Request") && handleBotonClick("admin")}
+                        disabled={location.pathname.includes("/Request")}
                     >
-                        ¿Quieres unirte como Administrador? Haz click aquí
-                    </span>
+                        Admin
+                    </button>
+                )}
+
+                {/* Texto para aplicar como gestor solo si NO es gestor */}
+                {!tipo.includes("gestor") && (
                     <span
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate("/SolicitudGestor")}
+                        style={{
+                            cursor: location.pathname.includes("/SolicitudGestor") ? "not-allowed" : "pointer",
+                            opacity: location.pathname.includes("/SolicitudGestor") ? 0.5 : 1
+                        }}
+                        onClick={() => {
+                            if (!location.pathname.includes("/SolicitudGestor")) {
+                                navigate("/SolicitudGestor")
+                            }
+                        }}
                     >
                         ¿Quieres unirte como Gestor turístico? Haz click aquí
                     </span>
-                </>
-            )
-        }
+                )}
 
-        if (tipo === "turista gestor") {
-            return (
-                <>
+                {/* Texto para aplicar como admin solo si NO es admin */}
+                {!tipo.includes("admin") && (
                     <span
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate("/SolicitudAdmin")}
+                        style={{
+                            cursor: location.pathname.includes("/SolicitudAdmin") ? "not-allowed" : "pointer",
+                            opacity: location.pathname.includes("/SolicitudAdmin") ? 0.5 : 1
+                        }}
+                        onClick={() => {
+                            if (!location.pathname.includes("/SolicitudAdmin")) {
+                                navigate("/SolicitudAdmin")
+                            }
+                        }}
                     >
                         ¿Quieres unirte como Administrador? Haz click aquí
                     </span>
-                    <button onClick={() => handleBotonClick("gestor")}>
-                        Perfil
-                    </button>
-                </>
-            )
-        }
-
-        if (tipo === "turista admin") {
-            return (
-                <>
-                    <span
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate("/SolicitudGestor")}
-                    >
-                        ¿Quieres unirte como Gestor turístico? Haz click aquí
-                    </span>
-                    <button onClick={() => handleBotonClick("admin")}>
-                        Admin
-                    </button>
-                </>
-            )
-        }
-
-        if (tipo === "turista gestor admin" || tipo === "turista admin gestor") {
-            return (
-                <>
-                    <button onClick={() => handleBotonClick("admin")}>
-                        Admin
-                    </button>
-                    <button onClick={() => handleBotonClick("gestor")}>
-                        Perfil
-                    </button>
-                </>
-            )
-        }
-
-        return null
+                )}
+            </>
+        )
     }
 
     return (
@@ -115,9 +100,28 @@ function Header() {
             <div>
                 {token && renderBotones()}
                 {token && (
-                    <button onClick={handleLogout}>Cerrar sesión</button>
+                    <button
+                        onClick={handleLogout}
+                        disabled={location.pathname === "/"}
+                    >
+                        Cerrar sesión
+                    </button>
                 )}
-                <button onClick={() => navigate("/Nosotros")}>Nosotros</button>
+                {token && (
+                    <button
+                        onClick={() => !location.pathname.includes("/Perfil") && handleBotonClick("gestor")}
+                        disabled={location.pathname.includes("/Perfil")}
+                    >
+                        Perfil
+                    </button>
+                )}
+
+                <button
+                    onClick={() => !location.pathname.includes("/Nosotros") && navigate("/Nosotros")}
+                    disabled={location.pathname.includes("/Nosotros")}
+                >
+                    Nosotros
+                </button>
             </div>
         </header>
     )

@@ -4,12 +4,11 @@ import 'leaflet/dist/leaflet.css'
 import { useEffect, useState } from 'react'
 import "../../styles/Mapa.css"
 
-// Importar imágenes de marcador
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 
-// Fix para íconos de marcador en React
+// Fix para íconos de marcador
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
     iconRetinaUrl,
@@ -17,123 +16,143 @@ L.Icon.Default.mergeOptions({
     shadowUrl
 })
 
-// Componente auxiliar para ajustar el mapa a Costa Rica al inicio
 function FitCostaRicaBounds({ onCentered }) {
     const map = useMap()
     useEffect(() => {
         const bounds = [
-            [8.032, -85.950], // Suroeste
-            [11.219, -82.555] // Noreste
+            [8.032, -85.950],
+            [11.219, -82.555]
         ]
         map.fitBounds(bounds, { padding: [20, 20] })
-        // Avisar que ya centramos
-        if (onCentered) {
-            onCentered()
-        }
+        if (onCentered) onCentered()
     }, [map, onCentered])
     return null
 }
 
-// Función para cargar y unir varios GeoJSON
-async function cargarMultiplesGeoJSON(codigos) {
-    const baseUrl = "https://raw.githubusercontent.com/schweini/CR_distritos_geojson/master/geojson/"
-    const features = []
-
-    for (const codigo of codigos) {
-        try {
-            const res = await fetch(`${baseUrl}${codigo}.geojson`)
-            if (res.ok) {
-                const data = await res.json()
-
-                if (data.type === "FeatureCollection" && Array.isArray(data.features)) {
-                    features.push(...data.features)
-                } else if (data.type === "Feature") {
-                    features.push(data)
-                } else {
-                    console.warn(`Formato desconocido en ${codigo}.geojson`, data)
-                }
-            } else {
-                console.warn(`No se pudo cargar ${codigo}.geojson: HTTP ${res.status}`)
-            }
-        } catch (error) {
-            console.error(`Error cargando ${codigo}.geojson`, error)
+// Trae un archivo GeoJSON y devuelve sus features
+async function fetchFeaturesPorCodigo(codigo) {
+    const url = `https://raw.githubusercontent.com/schweini/CR_distritos_geojson/master/geojson/${codigo}.geojson`
+    try {
+        const res = await fetch(url)
+        if (!res.ok) {
+            console.warn(`No se pudo cargar ${codigo}`)
+            return []
         }
-    }
-
-    return {
-        type: "FeatureCollection",
-        features
+        const data = await res.json()
+        if (data?.type === 'FeatureCollection' && Array.isArray(data.features)) return data.features
+        if (data?.type === 'Feature') return [data]
+        return []
+    } catch (err) {
+        console.error(`Error cargando ${codigo}:`, err)
+        return []
     }
 }
 
-function Mapa() {
-    const [division, setDivision] = useState("") // provincia o canton
-    const [geoData, setGeoData] = useState(null)
-    const [mapRef, setMapRef] = useState(null)
+export default function Mapa() {
+    const [division, setDivision] = useState("")
+    const [provinciaSeleccionada, setProvinciaSeleccionada] = useState("")
     const [mostrarMarcador, setMostrarMarcador] = useState(true)
 
+    const [datosByCodigo, setDatosByCodigo] = useState({})
+    const [geoData, setGeoData] = useState(null)
+    const [geoKey, setGeoKey] = useState(0) // clave para forzar re-render
+    const [cargando, setCargando] = useState(true)
+    const [mostrarSelectCantones, setMostrarSelectCantones] = useState(false)
+
+    const provincias = [
+        { codigo: "1", nombre: "San José", cantones: ["101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"] },
+        { codigo: "2", nombre: "Alajuela", cantones: ["201", "202", "203", "204", "205", "206", "207", "208", "209", "210", "211", "212", "213", "214", "215"] },
+        { codigo: "3", nombre: "Cartago", cantones: ["301", "302", "303", "304", "305", "306", "307", "308"] },
+        { codigo: "4", nombre: "Heredia", cantones: ["401", "402", "403", "404", "405", "406", "407", "408", "409", "410"] },
+        { codigo: "5", nombre: "Guanacaste", cantones: ["501", "502", "503", "504", "505", "506", "507", "508", "509", "510", "511"] },
+        { codigo: "6", nombre: "Puntarenas", cantones: ["601", "602", "603", "604", "605", "606", "607", "608", "609", "610", "611"] },
+        { codigo: "7", nombre: "Limón", cantones: ["701", "702", "703", "704", "705", "706"] }
+    ]
+
+    const estiloDivision = { color: "#4e770dff", weight: 2, opacity: 0.65 }
+
+    // Precarga de todos los datos
     useEffect(() => {
-        async function cargarGeoJSON() {
-            if (division === "provincia") {
-                const provincias = ["1", "2", "3", "4", "5", "6", "7"]
-                const data = await cargarMultiplesGeoJSON(provincias)
-                setGeoData(data)
-                ajustarVista(data)
-            } else if (division === "canton") {
-                const cantones = [
-                    "101", "102", "103", "104", "105", "106", "107", "108", "109", "110",
-                    "111", "112", "113", "114", "115", "116", "117", "118", "119", "120", 
-                    "201", "202", "203", "204", "205", "206", "207", "208", "209", "210",
-                    "211", "212", "213", "214", "215", 
-                    "301", "302", "303", "304", "305", "306", "307", "308",
-                    "401", "402", "403", "404", "405", "406", "407", "408", "409", "410",
-                    "501", "502", "503", "504", "505", "506", "507", "508", "509", "510", "511",
-                    "601", "602", "603", "604", "605", "606", "607", "608", "609", "610", "611",
-                    "701", "702", "703", "704", "705", "706"
-                ]
-                const data = await cargarMultiplesGeoJSON(cantones)
-                setGeoData(data)
-                ajustarVista(data)
-            } else {
-                setGeoData(null)
+        async function precargar() {
+            const tabla = {}
+            for (const p of provincias) {
+                tabla[p.codigo] = await fetchFeaturesPorCodigo(p.codigo)
+                for (const c of p.cantones) {
+                    tabla[c] = await fetchFeaturesPorCodigo(c)
+                }
             }
+            setDatosByCodigo(tabla)
+            setCargando(false)
         }
+        precargar()
+    }, [])
 
-        function ajustarVista(data) {
-            if (mapRef && data && data.features.length > 0) {
-                const layer = L.geoJSON(data)
-                mapRef.fitBounds(layer.getBounds(), { padding: [20, 20] })
-            }
-        }
+    const mostrarProvincias = () => {
+        setDivision("provincia")
+        setMostrarSelectCantones(false)
+        setProvinciaSeleccionada("")
+        setGeoData(null) // limpia capa actual
+        const features = provincias.flatMap(p => datosByCodigo[p.codigo] || [])
+        setGeoKey(prev => prev + 1) // fuerza re-render
+        setGeoData({ type: "FeatureCollection", features })
+    }
 
-        cargarGeoJSON()
-    }, [division, mapRef])
+    const activarCantones = () => {
+        setDivision("canton")
+        setMostrarSelectCantones(true)
+        setProvinciaSeleccionada("")
+        setGeoData(null)
+    }
 
-    const estiloDivision = {
-        color: "#ff7800",
-        weight: 2,
-        opacity: 0.65
+    const mostrarCantonesProvincia = (codigoProvincia) => {
+        setProvinciaSeleccionada(codigoProvincia)
+        setGeoData(null)
+        const prov = provincias.find(p => p.codigo === codigoProvincia)
+        if (!prov) return
+        const features = prov.cantones.flatMap(c => datosByCodigo[c] || [])
+        setGeoKey(prev => prev + 1)
+        setGeoData({ type: "FeatureCollection", features })
+    }
+
+    const limpiar = () => {
+        setDivision("")
+        setProvinciaSeleccionada("")
+        setMostrarSelectCantones(false)
+        setGeoData(null)
     }
 
     return (
         <div>
-            {/* Contenedor de filtros */}
             <div className="filtros-mapa">
-                <button onClick={() => setDivision("provincia")}>Mostrar Provincias</button>
-                <button onClick={() => setDivision("canton")}>Mostrar Cantones</button>
-                <button onClick={() => setDivision("")}>Limpiar</button>
+                <button onClick={mostrarProvincias} disabled={cargando}>Mostrar Provincias</button>
+
+                {!mostrarSelectCantones ? (
+                    <button onClick={activarCantones} disabled={cargando}>Mostrar Cantones</button>
+                ) : (
+                    <select
+                        value={provinciaSeleccionada}
+                        onChange={(e) => mostrarCantonesProvincia(e.target.value)}
+                        disabled={cargando}
+                    >
+                        <option value="">-- Selecciona una provincia --</option>
+                        {provincias.map(p => (
+                            <option key={p.codigo} value={p.codigo}>{p.nombre}</option>
+                        ))}
+                    </select>
+                )}
+
+                <button onClick={limpiar} disabled={cargando}>Limpiar</button>
+                {cargando && <span style={{ marginLeft: 12 }}>Cargando datos…</span>}
             </div>
 
-            {/* Mapa */}
             <MapContainer
                 center={[9.9, -84.1]}
                 zoom={8}
                 scrollWheelZoom={true}
                 className="mapa-container"
-                whenCreated={setMapRef}
             >
                 <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution='&copy; OpenStreetMap contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
@@ -149,10 +168,14 @@ function Mapa() {
                     </Marker>
                 )}
 
-                {geoData && <GeoJSON data={geoData} style={estiloDivision} />}
+                {geoData && (
+                    <GeoJSON
+                        key={geoKey} // fuerza desmontar/montar
+                        data={geoData}
+                        style={estiloDivision}
+                    />
+                )}
             </MapContainer>
         </div>
     )
 }
-
-export default Mapa

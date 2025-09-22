@@ -22,20 +22,12 @@ function GestorRequests() {
         }
 
         let endpoint = ''
-        if (filtro === 'admin') {
-            endpoint = 'requestAdmins'
-        }
-        if (filtro === 'gestor') {
-            endpoint = 'requestGestores'
-        }
+        if (filtro === 'admin') endpoint = 'requestAdmins'
+        if (filtro === 'gestor') endpoint = 'requestGestores'
 
-        if (endpoint !== '') {
+        if (endpoint) {
             const resultado = await obtenerElementos(endpoint, 1)
-            if (resultado) {
-                setDatos(resultado)
-            } else {
-                setDatos([])
-            }
+            setDatos(resultado || [])
         }
     }
 
@@ -43,18 +35,26 @@ function GestorRequests() {
         const usuarios = await obtenerElementos('usuarios', 1)
         if (!usuarios) return null
         const usuario = usuarios.find(u => String(u.id) === String(idUsuario))
-        if (!usuario) return null
-        return usuario.correo || null // siempre el correo principal
+        return (usuario && usuario.correo) || null
+    }
+
+    async function obtenerNombreUsuarioActual() {
+        const token = localStorage.getItem("token")
+        if (!token) return null
+        const usuarios = await obtenerElementos('usuarios', 1)
+        if (!usuarios) return null
+        const usuarioActual = usuarios.find(u => String(u.id) === String(token))
+        return (usuarioActual && usuarioActual.nombre) || null
     }
 
     async function enviarCorreo({ name, toEmail, requestType, status, message }) {
         const params = {
-            name: name,
-            to_email: toEmail, // debe coincidir con {{to_email}} en la plantilla
+            name,
+            to_email: toEmail,
             request_type: requestType,
-            status: status,
+            status,
             time: new Date().toLocaleString(),
-            message: message
+            message
         }
 
         try {
@@ -67,46 +67,32 @@ function GestorRequests() {
 
     async function aceptarSolicitud(item) {
         const nuevosDatos = { ...item }
-        if (filtro === 'admin') {
-            nuevosDatos.tipoCuenta = 'turista admin'
-        }
-        if (filtro === 'gestor') {
-            nuevosDatos.tipoCuenta = 'turista gestor'
-        }
+        if (filtro === 'admin') nuevosDatos.tipoCuenta = 'turista admin'
+        if (filtro === 'gestor') nuevosDatos.tipoCuenta = 'turista gestor'
 
         const actualizado = await actualizarElemento('usuarios', item.id, nuevosDatos, 1)
         if (actualizado) {
             const correoUsuario = await obtenerCorreoUsuario(item.id)
+            const nombreAccion = await obtenerNombreUsuarioActual()
+
             if (correoUsuario) {
-                let tipoSolicitud = ''
-                if (filtro === 'admin') {
-                    tipoSolicitud = 'Administrador'
-                }
-                if (filtro === 'gestor') {
-                    tipoSolicitud = 'Gestor'
-                }
+                let tipoSolicitud = 'Gestor'
+                if (filtro === 'admin') tipoSolicitud = 'Administrador'
 
                 await enviarCorreo({
                     name: item.nombre || 'Usuario',
                     toEmail: correoUsuario,
                     requestType: tipoSolicitud,
                     status: 'aprobada',
-                    message: 'Tu solicitud ha sido aprobada. Bienvenido/a al equipo.'
+                    message: `Tu solicitud ha sido aprobada por ${nombreAccion || 'un miembro del equipo'}. Bienvenido/a al equipo.`
                 })
             }
 
-            let endpoint = ''
-            if (filtro === 'admin') {
-                endpoint = 'requestAdmins'
-            }
-            if (filtro === 'gestor') {
-                endpoint = 'requestGestores'
-            }
+            let endpoint = 'requestGestores'
+            if (filtro === 'admin') endpoint = 'requestAdmins'
 
-            if (endpoint !== '') {
-                await eliminarElemento(endpoint, item.id, 1)
-                setDatos(prev => prev.filter(req => req.id !== item.id))
-            }
+            await eliminarElemento(endpoint, item.id, 1)
+            setDatos(prev => prev.filter(req => req.id !== item.id))
 
             alert('Solicitud aceptada para usuario ' + item.id)
         } else {
@@ -116,36 +102,26 @@ function GestorRequests() {
 
     async function negarSolicitud(item) {
         const correoUsuario = await obtenerCorreoUsuario(item.id)
+        const nombreAccion = await obtenerNombreUsuarioActual()
+
         if (correoUsuario) {
-            let tipoSolicitud = ''
-            if (filtro === 'admin') {
-                tipoSolicitud = 'Administrador'
-            }
-            if (filtro === 'gestor') {
-                tipoSolicitud = 'Gestor'
-            }
+            let tipoSolicitud = 'Gestor'
+            if (filtro === 'admin') tipoSolicitud = 'Administrador'
 
             await enviarCorreo({
                 name: item.nombre || 'Usuario',
                 toEmail: correoUsuario,
                 requestType: tipoSolicitud,
                 status: 'rechazada',
-                message: 'Tu solicitud ha sido rechazada. Gracias por tu interés.'
+                message: `Tu solicitud ha sido rechazada por ${nombreAccion || 'un miembro del equipo'}. Gracias por tu interés.`
             })
         }
 
-        let endpoint = ''
-        if (filtro === 'admin') {
-            endpoint = 'requestAdmins'
-        }
-        if (filtro === 'gestor') {
-            endpoint = 'requestGestores'
-        }
+        let endpoint = 'requestGestores'
+        if (filtro === 'admin') endpoint = 'requestAdmins'
 
-        if (endpoint !== '') {
-            await eliminarElemento(endpoint, item.id, 1)
-            setDatos(prev => prev.filter(req => req.id !== item.id))
-        }
+        await eliminarElemento(endpoint, item.id, 1)
+        setDatos(prev => prev.filter(req => req.id !== item.id))
 
         alert('Solicitud negada para usuario ' + item.id)
     }
@@ -153,10 +129,9 @@ function GestorRequests() {
     let mensaje = ''
     if (!filtro) {
         mensaje = 'Selecciona un filtro para ver solicitudes'
-    } else {
-        if (datos.length === 0) {
-            mensaje = 'No hay solicitudes para este filtro'
-        }
+    }
+    if (filtro && datos.length === 0) {
+        mensaje = 'No hay solicitudes para este filtro'
     }
 
     return (
