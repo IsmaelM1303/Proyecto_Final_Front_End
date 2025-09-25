@@ -103,6 +103,13 @@ function Login() {
                 ¿No tienes cuenta? Regístrate aquí
             </p>
 
+            <p
+                style={{ color: "blue", cursor: "pointer", marginTop: "6px" }}
+                onClick={() => navigate("/RecuperarContrasena")}
+            >
+                Olvidé mi contraseña
+            </p>
+
             <Alerta
                 mostrar={mostrarAlerta}
                 onOcultar={() => setMostrarAlerta(false)}

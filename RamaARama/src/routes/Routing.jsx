@@ -10,6 +10,7 @@ import VerPerfil from "../pages/VerPerfil"
 import VerPerfiles from "../pages/VerPerfiles"
 import VisorPOIs from "../pages/VisorPOIs"
 import CrearPOI from "../pages/CrearPOI"
+import RecContrasena from "../pages/RecContrasena"
 
 function Routing() {
     return (
@@ -25,6 +26,7 @@ function Routing() {
                 <Route path="/AdministrarPerfiles" element={<PrivateRoute><VerPerfiles/></PrivateRoute>}/>
                 <Route path="/VerPOIs" element={<PrivateRoute><VisorPOIs/></PrivateRoute>}/>
                 <Route path="/NuevoPOI" element={<PrivateRoute><CrearPOI/></PrivateRoute>}/>
+                <Route path="/RecuperarContrasena" element= {<RecContrasena/>}/>
 
 
 
