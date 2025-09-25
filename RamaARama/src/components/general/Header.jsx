@@ -47,7 +47,11 @@ function Header() {
                 {/* Si es admin, mostrar botón Admin */}
                 {tipo.includes("admin") && (
                     <button
-                        onClick={() => !location.pathname.includes("/Request") && handleBotonClick("admin")}
+                        onClick={() => {
+                            if (!location.pathname.includes("/Request")) {
+                                handleBotonClick("admin")
+                            }
+                        }}
                         disabled={location.pathname.includes("/Request")}
                     >
                         Admin
@@ -109,15 +113,35 @@ function Header() {
                 )}
                 {token && (
                     <button
-                        onClick={() => !location.pathname.includes("/Perfil") && handleBotonClick("gestor")}
+                        onClick={() => {
+                            if (!location.pathname.includes("/Perfil")) {
+                                handleBotonClick("gestor")
+                            }
+                        }}
                         disabled={location.pathname.includes("/Perfil")}
                     >
                         Perfil
                     </button>
                 )}
+                {token && (
+                    <button
+                        onClick={() => {
+                            if (!location.pathname.includes("/Main")) {
+                                navigate("/Main")
+                            }
+                        }}
+                        disabled={location.pathname.includes("/Main")}
+                    >
+                        Inicio
+                    </button>
+                )}
 
                 <button
-                    onClick={() => !location.pathname.includes("/Nosotros") && navigate("/Nosotros")}
+                    onClick={() => {
+                        if (!location.pathname.includes("/Nosotros")) {
+                            navigate("/Nosotros")
+                        }
+                    }}
                     disabled={location.pathname.includes("/Nosotros")}
                 >
                     Nosotros

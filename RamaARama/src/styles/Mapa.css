@@ -4,7 +4,23 @@
 }
 
 .filtros-mapa {
-    display: flex;
     gap: 10px;
     margin-bottom: 10px;
+}
+
+.panel-filtros {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+
+.panel-filtros.abierto {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.panel-filtros-wrapper {
+    display: flex;
+    flex-direction: row;
 }

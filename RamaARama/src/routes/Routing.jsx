@@ -9,6 +9,7 @@ import Requests from "../pages/Requests"
 import VerPerfil from "../pages/VerPerfil"
 import VerPerfiles from "../pages/VerPerfiles"
 import VisorPOIs from "../pages/VisorPOIs"
+import CrearPOI from "../pages/CrearPOI"
 
 function Routing() {
     return (
@@ -23,6 +24,8 @@ function Routing() {
                 <Route path="/Perfil" element={<PrivateRoute><VerPerfil/></PrivateRoute>}/>
                 <Route path="/AdministrarPerfiles" element={<PrivateRoute><VerPerfiles/></PrivateRoute>}/>
                 <Route path="/VerPOIs" element={<PrivateRoute><VisorPOIs/></PrivateRoute>}/>
+                <Route path="/NuevoPOI" element={<PrivateRoute><CrearPOI/></PrivateRoute>}/>
+
 
 
 

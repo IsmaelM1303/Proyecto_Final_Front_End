@@ -1,5 +1,142 @@
 {
-    "POIs": [
-        
-    ]
+  "categoriasTuristicas": [
+    {
+      "grupo": "Naturaleza y paisajes",
+      "items": [
+        "Playa",
+        "Montaña",
+        "Parque Nacional",
+        "Reserva Natural",
+        "Cascada",
+        "Volcán",
+        "Río y laguna",
+        "Humedal",
+        "Bosque nuboso",
+        "Manglar",
+        "Mirador",
+        "Sendero",
+        "Jardín Botánico"
+      ]
+    },
+    {
+      "grupo": "Cultura e historia",
+      "items": [
+        "Museo",
+        "Sitio Histórico",
+        "Centro Cultural",
+        "Artesanía",
+        "Fiesta Tradicional",
+        "Sitio Religioso",
+        "Arquitectura emblemática",
+        "Pueblo típico",
+        "Mercado Local"
+      ]
+    },
+    {
+      "grupo": "Aventura y deporte",
+      "items": [
+        "Aventura (canopy, rafting, rappel)",
+        "Observación de aves",
+        "Observación de fauna marina",
+        "Surf",
+        "Buceo",
+        "Snorkel",
+        "Pesca Deportiva",
+        "Ciclismo de montaña",
+        "Senderismo",
+        "Escalada",
+        "Deportes acuáticos",
+        "Cabalgata",
+        "Camping",
+        "Recreación y deporte"
+      ]
+    },
+    {
+      "grupo": "Bienestar y relajación",
+      "items": [
+        "Termales",
+        "Spa y wellness",
+        "Turismo de salud",
+        "Retiro espiritual"
+      ]
+    },
+    {
+      "grupo": "Gastronomía y vida urbana",
+      "items": [
+        "Gastronomía",
+        "Ruta del café",
+        "Ruta del cacao",
+        "Ruta de la cerveza artesanal",
+        "Vida nocturna",
+        "Eventos y festivales",
+        "Centro Urbano",
+        "Compras y centros comerciales"
+      ]
+    },
+    {
+      "grupo": "Turismo especializado",
+      "items": [
+        "Ecoturismo",
+        "Agroturismo",
+        "Turismo rural comunitario",
+        "Turismo científico",
+        "Turismo educativo",
+        "Turismo accesible",
+        "Turismo sostenible"
+      ]
+    }
+  ],
+  "POIs": [
+    {
+      "id": "9e10",
+      "nombre": "Centro Cívico por la Paz",
+      "descripcion": "ijdfsknsdlkfn",
+      "ubicacion": {
+        "lat": 9.873406292912465,
+        "lng": -84.066553906076
+      },
+      "categorias": [
+        "Recreación y deporte",
+        "Centro Cultural"
+      ],
+      "redes": [
+        {
+          "tipo": "Sitio Web",
+          "link": "kladsnfkldsanf.com"
+        }
+      ],
+      "token": "d2cb"
+    },
+    {
+      "id": "9dd5",
+      "nombre": "Iglesia Católica de Villa Nueva",
+      "descripcion": "adkjsfnkjasdn",
+      "ubicacion": {
+        "lat": 9.89090549660663,
+        "lng": -84.0603929758072
+      },
+      "categorias": [
+        "Sitio Religioso"
+      ],
+      "redes": [],
+      "token": "d2cb"
+    }
+  ],
+  "solicitudPOIs": [
+    {
+      "id": "221a",
+      "token": "d2cb",
+      "nombre": "Parque Joaquín García Monge",
+      "descripcion": "jadslfailskdfjm",
+      "ubicacion": {
+        "lat": 9.8980503124356,
+        "lng": -84.06507074832918
+      },
+      "categorias": [
+        "Centro Cultural",
+        "Centro Urbano"
+      ],
+      "redes": []
+    }
+  ]
 }

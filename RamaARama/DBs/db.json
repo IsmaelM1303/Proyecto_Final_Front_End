@@ -109,6 +109,23 @@
           "link": "odijfsediok.com"
         }
       ]
+    },
+    {
+      "id": "3208",
+      "nombre": "Barry Vega",
+      "correo": "barryveg12@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista gestor",
+      "provinciaResidencia": "2",
+      "identificacion": "123456789",
+      "correoSecundario": "ajwfldhjl@saj.com",
+      "telefono": "87986543",
+      "redes": [
+        {
+          "tipo": "Facebook",
+          "link": "lkadsjf.com"
+        }
+      ]
     }
   ],
   "requestGestores": [],

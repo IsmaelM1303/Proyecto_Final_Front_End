@@ -1,0 +1,132 @@
+.nuevo-poi-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+}
+
+.nuevo-poi-form h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.4rem;
+}
+
+.form-row {
+    margin-bottom: 16px;
+}
+
+.form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.form-row input[type="text"],
+.form-row input[type="url"],
+.form-row textarea,
+.form-row select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #cfcfcf;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+    border-color: #4e770d;
+    box-shadow: 0 0 0 2px rgba(78, 119, 13, 0.15);
+}
+
+.error {
+    color: crimson;
+    margin: 4px 0 0 0;
+}
+
+.coords {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 6px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.mapa-poi {
+    height: 360px;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e6e6e6;
+    margin-bottom: 16px;
+}
+
+/* Utilidades de layout */
+.inline {
+    display: flex;
+    align-items: center;
+}
+
+.inline.gap {
+    gap: 10px;
+}
+
+/* Botones */
+button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #4e770d;
+    background: #4e770d;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button.secondary {
+    background: #fff;
+    color: #4e770d;
+    border-color: #4e770d;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Lista tipo "pill" para categorías y redes */
+.pill-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f2f7ea;
+    color: #30490a;
+    border: 1px solid #d8e7c0;
+    border-radius: 999px;
+    padding: 6px 10px;
+}
+
+.pill-remove {
+    background: transparent;
+    color: #30490a;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    line-height: 1;
+}
