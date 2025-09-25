@@ -130,3 +130,8 @@ button:disabled {
     font-weight: 700;
     line-height: 1;
 }
+
+/* Icono verde de Leaflet */
+.leaflet-icono-verde {
+    filter: hue-rotate(250deg) saturate(100%);
+}

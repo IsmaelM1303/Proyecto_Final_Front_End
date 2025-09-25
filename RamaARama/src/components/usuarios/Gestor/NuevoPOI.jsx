@@ -18,6 +18,17 @@ if (L?.Icon?.Default) {
     })
 }
 
+const iconoVerde = new L.Icon({
+    iconRetinaUrl: iconRetinaUrl,
+    iconUrl: iconUrl,
+    shadowUrl: shadowUrl,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+    className: 'leaflet-icono-verde'
+})
+
 function NuevoPOI() {
     // Campos principales
     const [nombre, setNombre] = useState('')
@@ -267,6 +278,7 @@ function NuevoPOI() {
                     <Marker
                         position={[ubicacion.lat, ubicacion.lng]}
                         draggable={true}
+                        icon={iconoVerde}
                         eventHandlers={{
                             dragend: (e) => {
                                 const marker = e.target

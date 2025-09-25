@@ -122,21 +122,5 @@
       "token": "d2cb"
     }
   ],
-  "solicitudPOIs": [
-    {
-      "id": "221a",
-      "token": "d2cb",
-      "nombre": "Parque Joaquín García Monge",
-      "descripcion": "jadslfailskdfjm",
-      "ubicacion": {
-        "lat": 9.8980503124356,
-        "lng": -84.06507074832918
-      },
-      "categorias": [
-        "Centro Cultural",
-        "Centro Urbano"
-      ],
-      "redes": []
-    }
-  ]
+  "solicitudPOIs": []
 }
