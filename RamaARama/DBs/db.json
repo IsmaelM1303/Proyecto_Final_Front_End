@@ -22,10 +22,15 @@
     },
     {
       "id": "fe30",
-      "nombre": "pepe viyuela",
+      "nombre": "Pepe Viyuela",
       "correo": "pepe@viyuela.com",
       "contrasena": "12345678",
-      "tipoCuenta": "turista"
+      "tipoCuenta": "turista admin",
+      "provinciaResidencia": "1",
+      "identificacion": "123547698",
+      "correoSecundario": "viyuela@pepe.com",
+      "telefono": "78675645",
+      "curriculum": "tbey5pox1758407729396"
     },
     {
       "id": "dd6b",
@@ -129,15 +134,5 @@
     }
   ],
   "requestGestores": [],
-  "requestAdmins": [
-    {
-      "id": "fe30",
-      "nombre": "Pepe Viyuela",
-      "provinciaResidencia": "1",
-      "identificacion": "123547698",
-      "correoSecundario": "viyuela@pepe.com",
-      "telefono": "78675645",
-      "curriculum": "tbey5pox1758407729396"
-    }
-  ]
+  "requestAdmins": []
 }
