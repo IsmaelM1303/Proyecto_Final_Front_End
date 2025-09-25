@@ -384,8 +384,7 @@ function Mapa() {
                     chunkedLoading
                     iconCreateFunction={(cluster) => {
                         return L.divIcon({
-                            html: `<img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png" 
-                  style="width:25px;height:41px;" />`,
+                            html: `<img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png" style="width:25px;height:41px;" />`,
                             className: "custom-cluster-icon",
                             iconSize: [25, 41],
                             iconAnchor: [12, 41]

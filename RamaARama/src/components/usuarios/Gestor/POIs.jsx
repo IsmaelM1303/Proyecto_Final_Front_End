@@ -4,96 +4,112 @@ import { obtenerElementos } from "../../../api/Crud"
 import "../../../styles/NuevoPOI.css"
 
 function POIs() {
-    const navigate = useNavigate()
+    const navegar = useNavigate()
 
-    const [pois, setPois] = useState([])
-    const [solicitudes, setSolicitudes] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState("")
+    const [listaPOIs, setListaPOIs] = useState([])
+    const [listaSolicitudes, setListaSolicitudes] = useState([])
+    const [cargando, setCargando] = useState(true)
+    const [mensajeError, setMensajeError] = useState("")
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
 
-    useEffect(() => {
+    useEffect(function() {
         async function cargarDatos() {
-            setLoading(true)
-            setError("")
+            setCargando(true)
+            setMensajeError("")
             try {
-                // Obtener POIs aceptados
-                const dataPOIs = await obtenerElementos("POIs", 3)
-                if (Array.isArray(dataPOIs)) {
-                    setPois(dataPOIs)
+                const datosPOIs = await obtenerElementos("POIs", 3)
+                if (Array.isArray(datosPOIs)) {
+                    setListaPOIs(datosPOIs)
                 }
 
-                // Obtener solicitudes de POIs
-                const dataSolicitudes = await obtenerElementos("solicitudPOIs", 3)
-                if (Array.isArray(dataSolicitudes)) {
-                    // Si hay token, filtrar solo las del usuario
+                const datosSolicitudes = await obtenerElementos("solicitudPOIs", 3)
+                if (Array.isArray(datosSolicitudes)) {
                     if (token) {
-                        const propias = dataSolicitudes.filter(s => String(s.token) === String(token))
-                        setSolicitudes(propias)
+                        const propias = datosSolicitudes.filter(function(solicitud) {
+                            return String(solicitud.token) === String(token)
+                        })
+                        setListaSolicitudes(propias)
                     } else {
-                        setSolicitudes(dataSolicitudes)
+                        setListaSolicitudes(datosSolicitudes)
                     }
                 }
-            } catch (err) {
-                console.error("Error cargando POIs:", err)
-                setError("No se pudieron cargar los puntos turísticos.")
+            } catch (error) {
+                console.error("Error cargando POIs:", error)
+                setMensajeError("No se pudieron cargar los puntos turísticos.")
             } finally {
-                setLoading(false)
+                setCargando(false)
             }
         }
         cargarDatos()
     }, [token])
 
+    function manejarEditar(poi) {
+        try {
+            localStorage.setItem("poiEditar", JSON.stringify(poi))
+            navegar("/EditarPOI")
+        } catch (error) {
+            console.error("Error guardando referencia del POI:", error)
+        }
+    }
+
     return (
         <div>
             <h2>Mis puntos turísticos</h2>
 
-            {loading && <p>Cargando datos...</p>}
-            {error && <p className="error">{error}</p>}
+            {cargando && <p>Cargando datos...</p>}
+            {mensajeError && <p className="error">{mensajeError}</p>}
 
             <div className="contenedor">
-                {/* POIs aceptados */}
-                {pois.length > 0 ? (
+                {listaPOIs.length > 0 && (
                     <div>
                         <h3>POIs aceptados</h3>
                         <ul className="poi-list">
-                            {pois.map((poi) => (
-                                <li key={poi.id} className="poi-item">
-                                    <strong>{poi.nombre}</strong>
-                                    <p>{poi.descripcion}</p>
-                                    {poi.ubicacion && (
-                                        <small>
-                                            {poi.ubicacion.lat}, {poi.ubicacion.lng}
-                                        </small>
-                                    )}
-                                </li>
-                            ))}
+                            {listaPOIs.map(function(poi) {
+                                return (
+                                    <li key={poi.id} className="poi-item">
+                                        <strong>{poi.nombre}</strong>
+                                        <p>{poi.descripcion}</p>
+                                        {poi.ubicacion && (
+                                            <small>
+                                                {poi.ubicacion.lat}, {poi.ubicacion.lng}
+                                            </small>
+                                        )}
+                                        <div>
+                                            <button onClick={function() { manejarEditar(poi) }}>
+                                                Editar
+                                            </button>
+                                        </div>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
-                ) : (
-                    !loading && <p>No tienes POIs aceptados todavía.</p>
                 )}
 
-                {/* Solicitudes pendientes */}
-                {solicitudes.length > 0 && (
+                {listaPOIs.length === 0 && !cargando && (
+                    <p>No tienes POIs aceptados todavía.</p>
+                )}
+
+                {listaSolicitudes.length > 0 && (
                     <div>
                         <h3>Solicitudes en revisión</h3>
                         <ul className="poi-list">
-                            {solicitudes.map((sol) => (
-                                <li key={sol.id} className="poi-item pending">
-                                    <strong>{sol.nombre}</strong>
-                                    <p>{sol.descripcion}</p>
-                                    <small>Estado: En revisión</small>
-                                </li>
-                            ))}
+                            {listaSolicitudes.map(function(solicitud) {
+                                return (
+                                    <li key={solicitud.id} className="poi-item pending">
+                                        <strong>{solicitud.nombre}</strong>
+                                        <p>{solicitud.descripcion}</p>
+                                        <small>Estado: En revisión</small>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                 )}
             </div>
 
-            {/* Botón para nueva solicitud */}
-            <button onClick={() => navigate("/NuevoPOI")}>
+            <button onClick={function() { navegar("/NuevoPOI") }}>
                 Solicitar nuevo punto turístico
             </button>
         </div>

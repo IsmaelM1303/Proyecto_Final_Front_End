@@ -122,5 +122,26 @@
       "token": "d2cb"
     }
   ],
-  "solicitudPOIs": []
+  "solicitudPOIs": [
+    {
+      "id": "9e10",
+      "nombre": "Centro Cívico por la Paz La capri",
+      "descripcion": "ijdfsknsdlkfn",
+      "ubicacion": {
+        "lat": 9.873406292912465,
+        "lng": -84.066553906076
+      },
+      "categorias": [
+        "Recreación y deporte",
+        "Centro Cultural"
+      ],
+      "redes": [
+        {
+          "tipo": "Sitio Web",
+          "link": "kladsnfkldsanf.com"
+        }
+      ],
+      "token": "d2cb"
+    }
+  ]
 }
