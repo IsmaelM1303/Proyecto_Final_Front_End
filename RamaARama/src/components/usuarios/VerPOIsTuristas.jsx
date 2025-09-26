@@ -5,6 +5,7 @@ import { actualizarElemento, obtenerElementos } from "../../api/Crud"
 function VerPOIsTurista() {
     const [poi, setPoi] = useState(null)
     const [mensaje, setMensaje] = useState("")
+    const [esFavorito, setEsFavorito] = useState(false)
 
     // Cargar el POI desde localStorage al montar el componente
     useEffect(() => {
@@ -14,11 +15,33 @@ function VerPOIsTurista() {
         }
     }, [])
 
+    // Verificar si el POI ya está en favoritos
+    useEffect(() => {
+        async function verificarFavorito() {
+            if (!poi) return
+
+            const tokenUsuario = localStorage.getItem("token")
+            if (!tokenUsuario) return
+
+            const usuarios = await obtenerElementos("usuarios", 1)
+            const usuario = usuarios.find(u => String(u.id) === String(tokenUsuario))
+            if (!usuario) return
+
+            if (Array.isArray(usuario.favoritos) && usuario.favoritos.includes(poi.id)) {
+                setEsFavorito(true)
+            } else {
+                setEsFavorito(false)
+            }
+        }
+
+        verificarFavorito()
+    }, [poi])
+
     if (!poi) {
         return <p>No hay POI seleccionado</p>
     }
 
-    const handleAddFavorito = async () => {
+    const handleToggleFavorito = async () => {
         try {
             const tokenUsuario = localStorage.getItem("token")
             if (!tokenUsuario) {
@@ -26,39 +49,36 @@ function VerPOIsTurista() {
                 return
             }
 
-            // 1. Obtener todos los usuarios
             const usuarios = await obtenerElementos("usuarios", 1)
-
-            // 2. Buscar el usuario cuyo id coincide con el token
             const usuario = usuarios.find(u => String(u.id) === String(tokenUsuario))
             if (!usuario) {
                 setMensaje("Usuario no encontrado")
                 return
             }
 
-            // 3. Preparar la nueva lista de favoritos
             let favoritosActualizados = []
             if (Array.isArray(usuario.favoritos)) {
                 favoritosActualizados = [...usuario.favoritos]
             }
 
-            // Evitar duplicados
-            if (!favoritosActualizados.includes(poi.id)) {
-                favoritosActualizados.push(poi.id)
+            if (esFavorito) {
+                // Remover
+                favoritosActualizados = favoritosActualizados.filter(id => id !== poi.id)
+                await actualizarElemento("usuarios", usuario.id, { favoritos: favoritosActualizados }, 1)
+                setEsFavorito(false)
+                setMensaje("Removido de favoritos ✅")
+            } else {
+                // Añadir
+                if (!favoritosActualizados.includes(poi.id)) {
+                    favoritosActualizados.push(poi.id)
+                }
+                await actualizarElemento("usuarios", usuario.id, { favoritos: favoritosActualizados }, 1)
+                setEsFavorito(true)
+                setMensaje("Añadido a favoritos ✅")
             }
-
-            // 4. Actualizar el usuario
-            await actualizarElemento(
-                "usuarios",
-                usuario.id,
-                { favoritos: favoritosActualizados },
-                1
-            )
-
-            setMensaje("Añadido a favoritos ✅")
         } catch (error) {
-            console.error("Error al añadir a favoritos:", error)
-            setMensaje("Error al añadir a favoritos ❌")
+            console.error("Error al actualizar favoritos:", error)
+            setMensaje("Error al actualizar favoritos ❌")
         }
     }
 
@@ -109,8 +129,8 @@ function VerPOIsTurista() {
                 </div>
             )}
 
-            <button onClick={handleAddFavorito} style={{ marginTop: 12 }}>
-                Añadir a favoritos
+            <button onClick={handleToggleFavorito} style={{ marginTop: 12 }}>
+                {esFavorito ? "Remover de favoritos" : "Añadir a favoritos"}
             </button>
 
             {mensaje && <p>{mensaje}</p>}
