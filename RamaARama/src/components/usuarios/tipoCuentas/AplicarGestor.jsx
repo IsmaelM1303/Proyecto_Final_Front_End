@@ -29,30 +29,67 @@ function AplicarGestor() {
     const [linkRed, setLinkRed] = useState('')
     const [redes, setRedes] = useState([])
     const [aceptaTerminos, setAceptaTerminos] = useState(false)
+    const [cedulaValida, setCedulaValida] = useState(false)
 
     useEffect(() => {
         async function cargarDatosUsuario() {
             const token = localStorage.getItem('token')
-            if (!token) return
+            if (!token) {
+                return
+            }
 
             const usuarios = await obtenerElementos('usuarios', 1)
-            if (!usuarios) return
+            if (!usuarios) {
+                return
+            }
 
             const usuario = usuarios.find(u => String(u.id) === String(token))
-            if (!usuario) return
+            if (!usuario) {
+                return
+            }
 
             if (usuario.tipoCuenta && usuario.tipoCuenta.toLowerCase().includes('admin')) {
-                setNombre(usuario.nombre || '')
-                setProvinciaResidencia(usuario.provinciaResidencia || '')
-                setIdentificacion(usuario.identificacion || '')
-                setCorreoSecundario(usuario.correoSecundario || '')
-                setTelefono(usuario.telefono || '')
-                setRedes(usuario.redes || [])
+                if (usuario.nombre) setNombre(usuario.nombre)
+                if (usuario.provinciaResidencia) setProvinciaResidencia(usuario.provinciaResidencia)
+                if (usuario.identificacion) setIdentificacion(usuario.identificacion)
+                if (usuario.correoSecundario) setCorreoSecundario(usuario.correoSecundario)
+                if (usuario.telefono) setTelefono(usuario.telefono)
+                if (usuario.redes) setRedes(usuario.redes)
             }
         }
 
         cargarDatosUsuario()
     }, [])
+
+    const verificarCedula = async (cedula) => {
+        const cedulaNormalizada = cedula.replace(/\s+/g, '')
+        if (cedulaNormalizada.length === 0) {
+            setCedulaValida(false)
+            return
+        }
+
+        try {
+            const respuesta = await fetch(`https://api.hacienda.go.cr/fe/ae?identificacion=${cedulaNormalizada}`)
+            const datos = await respuesta.json()
+
+            if (datos && datos.nombre) {
+                setCedulaValida(true)
+                if (!nombre || nombre.trim().length === 0) {
+                    setNombre(datos.nombre)
+                }
+            } else {
+                setCedulaValida(false)
+            }
+        } catch (error) {
+            setCedulaValida(false)
+        }
+    }
+
+    const manejarCambioIdentificacion = (evento) => {
+        const valor = evento.target.value
+        setIdentificacion(valor)
+        verificarCedula(valor)
+    }
 
     const agregarRed = () => {
         if (redSocialSeleccionada && linkRed) {
@@ -66,8 +103,13 @@ function AplicarGestor() {
         setRedes(redes.filter((_, i) => i !== index))
     }
 
-    const manejarEnvio = async (e) => {
-        e.preventDefault()
+    const manejarEnvio = async (evento) => {
+        evento.preventDefault()
+
+        if (!cedulaValida) {
+            alert('Debe ingresar una cédula válida antes de continuar')
+            return
+        }
 
         if (!aceptaTerminos) {
             alert('Debe aceptar los términos y condiciones')
@@ -82,7 +124,8 @@ function AplicarGestor() {
             return
         }
 
-        if (window.confirm('¿Desea enviar la solicitud?')) {
+        const confirmarEnvio = window.confirm('¿Desea enviar la solicitud?')
+        if (confirmarEnvio) {
             const datos = {
                 id: idUsuario,
                 nombre,
@@ -104,6 +147,7 @@ function AplicarGestor() {
             setTelefono('')
             setRedes([])
             setAceptaTerminos(false)
+            setCedulaValida(false)
         }
     }
 
@@ -127,9 +171,9 @@ function AplicarGestor() {
                     onChange={(e) => setProvinciaResidencia(e.target.value)}
                 >
                     <option value="" disabled>Eliga su provincia</option>
-                    {provincias.map(prov => (
-                        <option key={prov.id} value={prov.id}>{prov.nombre}</option>
-                    ))}
+                    {provincias.map(provincia => {
+                        return <option key={provincia.id} value={provincia.id}>{provincia.nombre}</option>
+                    })}
                 </select>
             </div>
 
@@ -138,7 +182,7 @@ function AplicarGestor() {
                 <input
                     type="text"
                     value={identificacion}
-                    onChange={(e) => setIdentificacion(e.target.value)}
+                    onChange={manejarCambioIdentificacion}
                 />
             </div>
 
@@ -167,9 +211,9 @@ function AplicarGestor() {
                     onChange={(e) => setRedSocialSeleccionada(e.target.value)}
                 >
                     <option value="">Seleccione red social</option>
-                    {opcionesRedes.map(red => (
-                        <option key={red.id} value={red.nombre}>{red.nombre}</option>
-                    ))}
+                    {opcionesRedes.map(red => {
+                        return <option key={red.id} value={red.nombre}>{red.nombre}</option>
+                    })}
                 </select>
                 <input
                     type="url"
@@ -198,7 +242,7 @@ function AplicarGestor() {
                 />
             </div>
 
-            <button type="submit">Aplicar</button>
+            <button type="submit" disabled={!cedulaValida}>Aplicar</button>
         </form>
     )
 }

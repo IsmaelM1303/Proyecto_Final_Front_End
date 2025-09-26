@@ -1,7 +1,10 @@
 // src/components/MapaPOIs.jsx
 import { Marker, Popup } from 'react-leaflet'
+import { useNavigate } from 'react-router-dom'
 
 function MapaPOIs({ pois, iconoVerde }) {
+    const navigate = useNavigate()
+
     const hayPOIs = Array.isArray(pois) && pois.length > 0
     if (!hayPOIs) {
         return null
@@ -27,65 +30,57 @@ function MapaPOIs({ pois, iconoVerde }) {
             continue
         }
 
-        let llaveMarcador = "poi-" + i
-        const tieneId = poi && poi.id
-        if (tieneId) {
-            llaveMarcador = "poi-" + poi.id
-        }
+        let llaveMarcador = "poi-" + (poi.id || i)
 
         const categorias = Array.isArray(poi.categorias) ? poi.categorias : []
         const redes = Array.isArray(poi.redes) ? poi.redes : []
 
-        let nombrePOI = "POI"
-        const tieneNombre = poi && poi.nombre
-        if (tieneNombre) {
-            nombrePOI = poi.nombre
-        }
+        const nombrePOI = poi?.nombre || "POI"
+        const descripcionPOI = poi?.descripcion || ""
 
-        let descripcionPOI = ""
-        const tieneDescripcion = poi && poi.descripcion
-        if (tieneDescripcion) {
-            descripcionPOI = poi.descripcion
-        }
+        const listaCategorias = categorias.map((categoria, j) => (
+            <li key={`cat-${i}-${j}`}>{categoria}</li>
+        ))
 
-        const listaCategorias = []
-        for (let j = 0; j < categorias.length; j++) {
-            const categoria = categorias[j]
-            listaCategorias.push(<li key={"cat-" + i + "-" + j}>{categoria}</li>)
-        }
+        const listaRedes = redes.map((red, r) => {
+            const tipoRed = red?.tipo || "Link"
+            const linkRed = red?.link || ""
+            return (
+                <li key={`red-${i}-${r}`}>
+                    {tipoRed}:{" "}
+                    {linkRed ? (
+                        <a
+                            href={linkRed}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()} // 🔑 evita navegar al /EstePOI
+                        >
+                            {linkRed}
+                        </a>
+                    ) : (
+                        "—"
+                    )}
+                </li>
+            )
+        })
 
-        const listaRedes = []
-        for (let r = 0; r < redes.length; r++) {
-            const red = redes[r]
-            let tipoRed = "Link"
-            if (red && red.tipo) {
-                tipoRed = red.tipo
+        // 🔑 Handler para click en el popup
+        const handlePopupClick = (e) => {
+            // Si el click fue en un <a>, no navegamos al detalle
+            if (e.target.tagName.toLowerCase() === "a") {
+                return
             }
-            let linkRed = ""
-            if (red && red.link) {
-                linkRed = red.link
-            }
-
-            const hayLink = Boolean(linkRed)
-            if (hayLink) {
-                listaRedes.push(
-                    <li key={"red-" + i + "-" + r}>
-                        {tipoRed}: <a href={linkRed} target="_blank" rel="noreferrer">{linkRed}</a>
-                    </li>
-                )
-            } else {
-                listaRedes.push(
-                    <li key={"red-" + i + "-" + r}>
-                        {tipoRed}: —
-                    </li>
-                )
-            }
+            localStorage.setItem("selectedPOI", JSON.stringify(poi))
+            navigate("/EstePOI")
         }
 
         marcadores.push(
             <Marker key={llaveMarcador} position={[latitud, longitud]} icon={iconoVerde}>
                 <Popup>
-                    <div style={{ maxWidth: 260 }}>
+                    <div
+                        style={{ maxWidth: 260, cursor: "pointer" }}
+                        onClick={handlePopupClick}
+                    >
                         <strong>{nombrePOI}</strong>
 
                         {descripcionPOI && (

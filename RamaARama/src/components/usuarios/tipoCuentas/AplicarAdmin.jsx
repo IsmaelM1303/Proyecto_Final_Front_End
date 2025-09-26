@@ -19,43 +19,50 @@ function AplicarAdmin() {
     const [telefono, setTelefono] = useState('')
     const [aceptaTerminos, setAceptaTerminos] = useState(false)
     const [curriculum, setCurriculum] = useState({})
+    const [cedulaValida, setCedulaValida] = useState(false)
 
     useEffect(() => {
         async function cargarDatosUsuario() {
             const token = localStorage.getItem('token')
-            if (!token) return
+            if (!token) {
+                return
+            }
 
             const usuarios = await obtenerElementos('usuarios', 1)
-            if (!usuarios) return
+            if (!usuarios) {
+                return
+            }
 
             const usuario = usuarios.find(u => String(u.id) === String(token))
-            if (!usuario) return
+            if (!usuario) {
+                return
+            }
 
             if (usuario.tipoCuenta && usuario.tipoCuenta.toLowerCase().includes('admin')) {
-                setNombre(usuario.nombre || '')
-                setProvinciaResidencia(usuario.provinciaResidencia || '')
-                setIdentificacion(usuario.identificacion || '')
-                setCorreoSecundario(usuario.correoSecundario || '')
-                setTelefono(usuario.telefono || '')
+                if (usuario.nombre) setNombre(usuario.nombre)
+                if (usuario.provinciaResidencia) setProvinciaResidencia(usuario.provinciaResidencia)
+                if (usuario.identificacion) setIdentificacion(usuario.identificacion)
+                if (usuario.correoSecundario) setCorreoSecundario(usuario.correoSecundario)
+                if (usuario.telefono) setTelefono(usuario.telefono)
             }
         }
 
         cargarDatosUsuario()
     }, [])
 
-    const manejarArchivo = (e) => {
-        const file = e.target.files[0]
-        if (file && file.type === "application/pdf") {
-            const reader = new FileReader()
-            reader.onloadend = () => {
+    const manejarArchivo = (evento) => {
+        const archivo = evento.target.files[0]
+        if (archivo && archivo.type === "application/pdf") {
+            const lector = new FileReader()
+            lector.onloadend = () => {
                 setCurriculum({
-                    nombre: file.name,
-                    tipo: file.type,
-                    tamano: file.size,
-                    contenido: reader.result.split(',')[1]
+                    nombre: archivo.name,
+                    tipo: archivo.type,
+                    tamano: archivo.size,
+                    contenido: lector.result.split(',')[1]
                 })
             }
-            reader.readAsDataURL(file)
+            lector.readAsDataURL(archivo)
         } else {
             alert("Por favor seleccione un archivo PDF válido")
         }
@@ -65,8 +72,43 @@ function AplicarAdmin() {
         return Math.random().toString(36).substring(2, 10) + Date.now()
     }
 
-    const manejarEnvio = async (e) => {
-        e.preventDefault()
+    const verificarCedula = async (cedula) => {
+        const cedulaNormalizada = cedula.replace(/\s+/g, '')
+        if (cedulaNormalizada.length === 0) {
+            setCedulaValida(false)
+            return
+        }
+
+        try {
+            const respuesta = await fetch(`https://api.hacienda.go.cr/fe/ae?identificacion=${cedulaNormalizada}`)
+            const datos = await respuesta.json()
+
+            if (datos && datos.nombre) {
+                setCedulaValida(true)
+                if (!nombre || nombre.trim().length === 0) {
+                    setNombre(datos.nombre)
+                }
+            } else {
+                setCedulaValida(false)
+            }
+        } catch (error) {
+            setCedulaValida(false)
+        }
+    }
+
+    const manejarCambioIdentificacion = (evento) => {
+        const valor = evento.target.value
+        setIdentificacion(valor)
+        verificarCedula(valor)
+    }
+
+    const manejarEnvio = async (evento) => {
+        evento.preventDefault()
+
+        if (!cedulaValida) {
+            alert('Debe ingresar una cédula válida antes de continuar')
+            return
+        }
 
         if (!aceptaTerminos) {
             alert('Debe aceptar los términos y condiciones')
@@ -89,7 +131,8 @@ function AplicarAdmin() {
             }
         }
 
-        if (window.confirm('¿Desea enviar la solicitud?')) {
+        const confirmarEnvio = window.confirm('¿Desea enviar la solicitud?')
+        if (confirmarEnvio) {
             const idCurriculum = generarIdAleatorio()
 
             const datosCurriculum = {
@@ -133,6 +176,7 @@ function AplicarAdmin() {
             setTelefono('')
             setCurriculum({})
             setAceptaTerminos(false)
+            setCedulaValida(false)
         }
     }
 
@@ -155,9 +199,9 @@ function AplicarAdmin() {
                         onChange={(e) => setProvinciaResidencia(e.target.value)}
                     >
                         <option value="" disabled>Eliga su provincia</option>
-                        {provincias.map(prov => (
-                            <option key={prov.id} value={prov.id}>{prov.nombre}</option>
-                        ))}
+                        {provincias.map(provincia => {
+                            return <option key={provincia.id} value={provincia.id}>{provincia.nombre}</option>
+                        })}
                     </select>
                 </div>
 
@@ -166,7 +210,7 @@ function AplicarAdmin() {
                     <input
                         type="text"
                         value={identificacion}
-                        onChange={(e) => setIdentificacion(e.target.value)}
+                        onChange={manejarCambioIdentificacion}
                     />
                 </div>
 
@@ -206,7 +250,7 @@ function AplicarAdmin() {
                     />
                 </div>
 
-                <button type="submit">Aplicar</button>
+                <button type="submit" disabled={!cedulaValida}>Aplicar</button>
             </form>
         </div>
     )
