@@ -13,6 +13,7 @@ import CrearPOI from "../pages/CrearPOI"
 import RecContrasena from "../pages/RecContrasena"
 import EditarPOI from "../pages/EditarPOI"
 import VerPOI from "../pages/VerPOI"
+import PageMisFavs from "../pages/PageMisFavs"
 
 function Routing() {
     return (
@@ -31,12 +32,7 @@ function Routing() {
                 <Route path="/RecuperarContrasena" element= {<RecContrasena/>}/>
                 <Route path="/EditarPOI" element={<PrivateRoute><EditarPOI/></PrivateRoute>}/>
                 <Route path="/EstePOI" element={<PrivateRoute><VerPOI/></PrivateRoute>}/>
-
-
-
-
-
-
+                <Route path="/MisFavoritos" element={<PrivateRoute><PageMisFavs/></PrivateRoute>}/>
 
             </Routes>
         </Router>

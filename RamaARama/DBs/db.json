@@ -134,6 +134,16 @@
           "link": "lkadsjf.com"
         }
       ]
+    },
+    {
+      "id": "294c",
+      "nombre": "Felipe",
+      "correo": "felipjr79@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista",
+      "favoritos": [
+        "9e10"
+      ]
     }
   ],
   "requestGestores": [],
