@@ -1,17 +1,35 @@
 // src/components/VerPOIsTurista.jsx
 import { useState, useEffect } from "react"
+import { Rating } from "react-simple-star-rating"
 import { actualizarElemento, obtenerElementos } from "../../api/Crud"
 
 function VerPOIsTurista() {
     const [poi, setPoi] = useState(null)
     const [mensaje, setMensaje] = useState("")
     const [esFavorito, setEsFavorito] = useState(false)
+    const [valoracionPromedio, setValoracionPromedio] = useState(0)
+    const [valorUsuario, setValorUsuario] = useState(0)
 
     // Cargar el POI desde localStorage al montar el componente
     useEffect(() => {
         const stored = localStorage.getItem("selectedPOI")
         if (stored) {
-            setPoi(JSON.parse(stored))
+            const poiGuardado = JSON.parse(stored)
+            setPoi(poiGuardado)
+
+            if (typeof poiGuardado.valoracionPonderada === "number") {
+                setValoracionPromedio(poiGuardado.valoracionPonderada)
+            }
+
+            if (Array.isArray(poiGuardado.valoracion)) {
+                const token = localStorage.getItem("token") || "usuario-sin-token"
+                const existente = poiGuardado.valoracion.find(v => v.usuarioId === token)
+                if (existente) {
+                    setValorUsuario(existente.valor)
+                }
+            } else if (typeof poiGuardado.rating === "number") {
+                setValorUsuario(poiGuardado.rating)
+            }
         }
     }, [])
 
@@ -41,6 +59,52 @@ function VerPOIsTurista() {
         return <p>No hay POI seleccionado</p>
     }
 
+    const normalizarAEstrellas = (valor) => {
+        if (valor > 5) {
+            return valor / 20
+        }
+        return valor
+    }
+
+    const manejarCambioCalificacion = async (valorCrudo) => {
+        const token = localStorage.getItem("token") || "usuario-sin-token"
+        const idPOI = poi.id
+        const valorNormalizado = normalizarAEstrellas(valorCrudo)
+
+        const todosPOIs = await obtenerElementos("POIs", 3)
+        const poiActual = todosPOIs.find(p => p.id === idPOI)
+        if (!poiActual) {
+            return
+        }
+
+        if (!Array.isArray(poiActual.valoracion)) {
+            poiActual.valoracion = []
+        }
+
+        const indiceExistente = poiActual.valoracion.findIndex(v => v.usuarioId === token)
+        if (indiceExistente >= 0) {
+            poiActual.valoracion[indiceExistente].valor = valorNormalizado
+        } else {
+            poiActual.valoracion.push({ usuarioId: token, valor: valorNormalizado })
+        }
+
+        let suma = 0
+        for (let k = 0; k < poiActual.valoracion.length; k++) {
+            suma += poiActual.valoracion[k].valor
+        }
+        const promedio = suma / poiActual.valoracion.length
+
+        const datosActualizados = {
+            valoracion: poiActual.valoracion,
+            valoracionPonderada: promedio
+        }
+
+        await actualizarElemento("POIs", idPOI, datosActualizados, 3)
+
+        setValorUsuario(valorNormalizado)
+        setValoracionPromedio(promedio)
+    }
+
     const handleToggleFavorito = async () => {
         try {
             const tokenUsuario = localStorage.getItem("token")
@@ -62,13 +126,11 @@ function VerPOIsTurista() {
             }
 
             if (esFavorito) {
-                // Remover
                 favoritosActualizados = favoritosActualizados.filter(id => id !== poi.id)
                 await actualizarElemento("usuarios", usuario.id, { favoritos: favoritosActualizados }, 1)
                 setEsFavorito(false)
                 setMensaje("Removido de favoritos ✅")
             } else {
-                // Añadir
                 if (!favoritosActualizados.includes(poi.id)) {
                     favoritosActualizados.push(poi.id)
                 }
@@ -86,6 +148,21 @@ function VerPOIsTurista() {
         <div style={{ maxWidth: 500 }}>
             <h2>{poi.nombre}</h2>
             <p>{poi.descripcion}</p>
+
+            <div style={{ margin: "6px 0" }}>
+                <Rating
+                    initialValue={valorUsuario}
+                    size={24}
+                    allowHalfIcon={true}
+                    onClick={manejarCambioCalificacion}
+                    fillColor="#33a810ff"
+                    emptyColor="#ccc"
+                />
+            </div>
+
+            <p style={{ margin: "6px 0" }}>
+                Valoración promedio: <strong>{valoracionPromedio.toFixed(2)}</strong> 
+            </p>
 
             {Array.isArray(poi.categorias) && poi.categorias.length > 0 && (
                 <div>

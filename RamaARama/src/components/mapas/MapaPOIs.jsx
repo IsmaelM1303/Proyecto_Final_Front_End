@@ -122,13 +122,13 @@ function MarcadorPOI({ poi, indice, iconoVerde }) {
                             size={20}
                             allowHalfIcon={true}
                             onClick={manejarCambioCalificacion}
-                            fillColor="#ffd700"
+                            fillColor="#33a810ff"
                             emptyColor="#ccc"
                         />
                     </div>
 
                     <p style={{ margin: "6px 0" }}>
-                        Valoración promedio: <strong>{valoracionPromedio.toFixed(2)}</strong> ⭐
+                        Valoración promedio: <strong>{valoracionPromedio.toFixed(2)}</strong> 
                     </p>
 
                     {listaCategorias.length > 0 && (

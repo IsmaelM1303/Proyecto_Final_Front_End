@@ -105,7 +105,14 @@
           "link": "kladsnfkldsanf.com"
         }
       ],
-      "token": "d2cb"
+      "token": "d2cb",
+      "valoracion": [
+        {
+          "usuarioId": "d2cb",
+          "valor": 4
+        }
+      ],
+      "valoracionPonderada": 4
     },
     {
       "id": "9dd5",
@@ -127,10 +134,10 @@
         },
         {
           "usuarioId": "d2cb",
-          "valor": 4
+          "valor": 3
         }
       ],
-      "valoracionPonderada": 4.5
+      "valoracionPonderada": 4
     },
     {
       "id": "787e",
