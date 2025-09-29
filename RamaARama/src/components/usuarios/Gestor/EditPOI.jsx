@@ -10,6 +10,8 @@ import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png"
 import iconUrl from "leaflet/dist/images/marker-icon.png"
 import shadowUrl from "leaflet/dist/images/marker-shadow.png"
 
+import EditorLineaTiempo from "./TimelineEditor"
+
 if (L && L.Icon && L.Icon.Default) {
     L.Icon.Default.mergeOptions({
         iconRetinaUrl: iconRetinaUrl,
@@ -39,7 +41,7 @@ function EditPOI() {
 
     const [categorias, setCategorias] = useState([])
     const [categoriasData, setCategoriasData] = useState([])
-    const [categoriasLoading, setCategoriasLoading] = useState(true)
+    const [categoriasCargando, setCategoriasCargando] = useState(true)
     const [categoriasError, setCategoriasError] = useState("")
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
     const [mostrarSelectCategoria, setMostrarSelectCategoria] = useState(false)
@@ -51,6 +53,8 @@ function EditPOI() {
     const [mensajeError, setMensajeError] = useState("")
     const [mensajeAviso, setMensajeAviso] = useState("")
 
+    const [lineaTiempo, setLineaTiempo] = useState([])
+
     const opcionesRedes = [
         { id: "facebook", nombre: "Facebook" },
         { id: "tiktok", nombre: "TikTok" },
@@ -61,50 +65,63 @@ function EditPOI() {
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
 
-    useEffect(function() {
+    useEffect(() => {
         async function inicializar() {
             try {
                 const referencia = localStorage.getItem("poiEditar")
                 if (referencia) {
                     const objetoPOI = JSON.parse(referencia)
+
                     if (objetoPOI && objetoPOI.id) {
                         setIdPOI(objetoPOI.id)
                     } else {
                         setIdPOI("")
                     }
+
                     if (objetoPOI && objetoPOI.nombre) {
                         setNombre(objetoPOI.nombre)
                     } else {
                         setNombre("")
                     }
+
                     if (objetoPOI && objetoPOI.descripcion) {
                         setDescripcion(objetoPOI.descripcion)
                     } else {
                         setDescripcion("")
                     }
+
                     if (objetoPOI && objetoPOI.ubicacion && typeof objetoPOI.ubicacion.lat === "number" && typeof objetoPOI.ubicacion.lng === "number") {
                         setUbicacion({ lat: objetoPOI.ubicacion.lat, lng: objetoPOI.ubicacion.lng })
                     } else {
                         setUbicacion({ lat: null, lng: null })
                     }
+
                     if (objetoPOI && Array.isArray(objetoPOI.categorias)) {
                         setCategorias(objetoPOI.categorias)
                     } else {
                         setCategorias([])
                     }
+
                     if (objetoPOI && Array.isArray(objetoPOI.redes)) {
                         setRedes(objetoPOI.redes)
                     } else {
                         setRedes([])
                     }
 
+                    if (objetoPOI && Array.isArray(objetoPOI.lineaTiempo)) {
+                        setLineaTiempo(objetoPOI.lineaTiempo)
+                    } else {
+                        setLineaTiempo([])
+                    }
+
                     const solicitudes = await obtenerElementos("solicitudPOIs", 3)
                     if (Array.isArray(solicitudes)) {
-                        const existePorToken = solicitudes.some(function(s) {
+                        const existePorToken = solicitudes.some(function (s) {
                             return String(s.token) === String(token)
                         })
                         if (existePorToken) {
                             setMensajeAviso("Ya se está editando un elemento con tu cuenta, por favor espera aprobación")
+                            return
                         }
                     }
                 } else {
@@ -118,9 +135,9 @@ function EditPOI() {
         inicializar()
     }, [token])
 
-    useEffect(function() {
+    useEffect(() => {
         async function cargarCategorias() {
-            setCategoriasLoading(true)
+            setCategoriasCargando(true)
             setCategoriasError("")
             try {
                 const data = await obtenerElementos("categoriasTuristicas", 3)
@@ -137,36 +154,36 @@ function EditPOI() {
                 console.error("Error cargando categorías:", err)
                 setCategoriasError("No se pudieron cargar las categorías.")
             } finally {
-                setCategoriasLoading(false)
+                setCategoriasCargando(false)
             }
         }
         cargarCategorias()
     }, [])
 
     function agregarCategoria() {
-        const cat = (categoriaSeleccionada || "").trim()
-        if (!cat) {
+        const categoria = (categoriaSeleccionada || "").trim()
+        if (categoria === "") {
             return
         }
-        if (categorias.indexOf(cat) !== -1) {
+        if (categorias.indexOf(categoria) !== -1) {
             return
         }
         const copia = categorias.slice()
-        copia.push(cat)
+        copia.push(categoria)
         setCategorias(copia)
         setCategoriaSeleccionada("")
         setMostrarSelectCategoria(false)
     }
 
     function eliminarCategoria(indice) {
-        const copia = categorias.filter(function(_, i) { return i !== indice })
+        const copia = categorias.filter(function (_, i) { return i !== indice })
         setCategorias(copia)
     }
 
     function agregarRed() {
         const tipo = (redSocialSeleccionada || "").trim()
         const link = (linkRed || "").trim()
-        if (!tipo || !link) {
+        if (tipo === "" || link === "") {
             return
         }
         const copia = redes.slice()
@@ -177,7 +194,7 @@ function EditPOI() {
     }
 
     function eliminarRed(indice) {
-        const copia = redes.filter(function(_, i) { return i !== indice })
+        const copia = redes.filter(function (_, i) { return i !== indice })
         setRedes(copia)
     }
 
@@ -196,7 +213,7 @@ function EditPOI() {
         try {
             const solicitudes = await obtenerElementos("solicitudPOIs", 3)
             if (Array.isArray(solicitudes)) {
-                const existePorToken = solicitudes.some(function(s) {
+                const existePorToken = solicitudes.some(function (s) {
                     return String(s.token) === String(token)
                 })
                 if (existePorToken) {
@@ -212,12 +229,13 @@ function EditPOI() {
                 ubicacion: { lat: ubicacion.lat, lng: ubicacion.lng },
                 categorias: categorias,
                 redes: redes,
+                lineaTiempo: lineaTiempo,
                 token: token
             }
 
             await crearElemento("solicitudPOIs", datosEditados, 3)
             alert("Solicitud de edición enviada correctamente")
-            navegar("/POIs")
+            navegar("/Perfil")
         } catch (error) {
             console.error("Error guardando cambios:", error)
             setMensajeError("No se pudieron guardar los cambios.")
@@ -251,7 +269,7 @@ function EditPOI() {
                 <input
                     type="text"
                     value={nombre}
-                    onChange={function(e) { setNombre(e.target.value) }}
+                    onChange={function (e) { setNombre(e.target.value) }}
                     placeholder="Ej. Centro Cívico por la Paz"
                 />
             </div>
@@ -260,7 +278,7 @@ function EditPOI() {
                 <label>Descripción</label>
                 <textarea
                     value={descripcion}
-                    onChange={function(e) { setDescripcion(e.target.value) }}
+                    onChange={function (e) { setDescripcion(e.target.value) }}
                     placeholder="Describe brevemente el lugar..."
                     rows={4}
                 />
@@ -289,7 +307,7 @@ function EditPOI() {
                         draggable={true}
                         icon={iconoVerde}
                         eventHandlers={{
-                            dragend: function(e) {
+                            dragend: function (e) {
                                 const marker = e.target
                                 const pos = marker.getLatLng()
                                 setUbicacion({ lat: pos.lat, lng: pos.lng })
@@ -304,13 +322,13 @@ function EditPOI() {
             <div className="form-row">
                 <label>Categorías turísticas</label>
 
-                {categoriasLoading && <p>Cargando categorías…</p>}
-                {!categoriasLoading && categoriasError && <p className="error">{categoriasError}</p>}
+                {categoriasCargando && <p>Cargando categorías…</p>}
+                {!categoriasCargando && categoriasError && <p className="error">{categoriasError}</p>}
 
-                {!categoriasLoading && !categoriasError && (
+                {!categoriasCargando && !categoriasError && (
                     <div>
                         <div className="inline">
-                            <button type="button" onClick={function() { setMostrarSelectCategoria(true) }}>
+                            <button type="button" onClick={function () { setMostrarSelectCategoria(true) }}>
                                 Agregar categoría
                             </button>
                         </div>
@@ -319,13 +337,13 @@ function EditPOI() {
                             <div className="inline gap">
                                 <select
                                     value={categoriaSeleccionada}
-                                    onChange={function(e) { setCategoriaSeleccionada(e.target.value) }}
+                                    onChange={function (e) { setCategoriaSeleccionada(e.target.value) }}
                                 >
                                     <option value="">Seleccione categoría</option>
-                                    {categoriasData.map(function(grupo) {
+                                    {categoriasData.map(function (grupo) {
                                         return (
                                             <optgroup key={grupo.grupo} label={grupo.grupo}>
-                                                {grupo.items.map(function(item) {
+                                                {grupo.items.map(function (item) {
                                                     return (
                                                         <option key={grupo.grupo + "-" + item} value={item}>{item}</option>
                                                     )
@@ -338,7 +356,7 @@ function EditPOI() {
                                 <button
                                     type="button"
                                     className="secondary"
-                                    onClick={function() {
+                                    onClick={function () {
                                         setCategoriaSeleccionada("")
                                         setMostrarSelectCategoria(false)
                                     }}
@@ -350,14 +368,14 @@ function EditPOI() {
 
                         {categorias.length > 0 && (
                             <ul className="pill-list">
-                                {categorias.map(function(c, index) {
+                                {categorias.map(function (c, index) {
                                     return (
                                         <li key={c + "-" + index} className="pill">
                                             {c}
                                             <button
                                                 type="button"
                                                 className="pill-remove"
-                                                onClick={function() { eliminarCategoria(index) }}
+                                                onClick={function () { eliminarCategoria(index) }}
                                             >
                                                 ×
                                             </button>
@@ -375,10 +393,10 @@ function EditPOI() {
                 <div className="inline gap">
                     <select
                         value={redSocialSeleccionada}
-                        onChange={function(e) { setRedSocialSeleccionada(e.target.value) }}
+                        onChange={function (e) { setRedSocialSeleccionada(e.target.value) }}
                     >
                         <option value="">Seleccione red social</option>
-                        {opcionesRedes.map(function(red) {
+                        {opcionesRedes.map(function (red) {
                             return (
                                 <option key={red.id} value={red.nombre}>{red.nombre}</option>
                             )
@@ -388,21 +406,21 @@ function EditPOI() {
                         type="url"
                         placeholder="Link de la red social"
                         value={linkRed}
-                        onChange={function(e) { setLinkRed(e.target.value) }}
+                        onChange={function (e) { setLinkRed(e.target.value) }}
                     />
                     <button type="button" onClick={agregarRed}>Agregar</button>
                 </div>
 
                 {redes.length > 0 && (
                     <ul className="pill-list">
-                        {redes.map(function(r, index) {
+                        {redes.map(function (r, index) {
                             return (
                                 <li key={r.tipo + "-" + index} className="pill">
                                     {r.tipo}: {r.link}
                                     <button
                                         type="button"
                                         className="pill-remove"
-                                        onClick={function() { eliminarRed(index) }}
+                                        onClick={function () { eliminarRed(index) }}
                                     >
                                         ×
                                     </button>
@@ -411,6 +429,11 @@ function EditPOI() {
                         })}
                     </ul>
                 )}
+            </div>
+
+            <div className="form-row">
+                <label>Línea de tiempo</label>
+                <EditorLineaTiempo lineaTiempo={lineaTiempo} setLineaTiempo={setLineaTiempo} />
             </div>
 
             <div className="actions">

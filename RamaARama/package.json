@@ -22,7 +22,8 @@
     "react-leaflet-cluster": "^3.1.1",
     "react-router-dom": "^7.9.1",
     "react-scripts": "^0.0.0",
-    "react-simple-star-rating": "^5.1.7"
+    "react-simple-star-rating": "^5.1.7",
+    "timelinejs": "^2.35.6"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.3",

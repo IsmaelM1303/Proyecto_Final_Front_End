@@ -112,7 +112,44 @@
           "valor": 4
         }
       ],
-      "valoracionPonderada": 4
+      "valoracionPonderada": 4,
+      "lineaTiempo": [
+        {
+          "start_date": {
+            "data": {
+              "data": {
+                "data": {
+                  "year": "2017",
+                  "month": "02",
+                  "day": "17",
+                  "date_obj": "2017-02-17T06:00:00.000Z",
+                  "format": "full",
+                  "format_short": "full_short"
+                },
+                "date_obj": "0000-01-01T05:36:13.000Z",
+                "format": "",
+                "format_short": ""
+              },
+              "date_obj": "0000-01-01T05:36:13.000Z",
+              "format": "",
+              "format_short": ""
+            }
+          },
+          "text": {
+            "headline": "Aprobación",
+            "text": "Se aprueban el centro cívico"
+          },
+          "media": {
+            "url": "https://www.mjp.go.cr/IMG/CCP/CCP_Desampa%201.jpg",
+            "mediatype": {
+              "type": "image",
+              "name": "Image",
+              "match_str": {}
+            }
+          },
+          "unique_id": "aprobacion"
+        }
+      ]
     },
     {
       "id": "9dd5",

@@ -1,49 +1,45 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import {
     obtenerElementos,
     actualizarElemento,
     eliminarElemento,
     crearElemento
-} from '../../../api/Crud'
-import emailjs from '@emailjs/browser'
+} from "../../../api/Crud"
+import emailjs from "@emailjs/browser"
+import VistaPreviaLineaTiempo from "../Gestor/TimelinePreview"
 
 function GestorRequests() {
-    const [filtro, setFiltro] = useState('') // 'admin' | 'gestor' | 'poi'
+    const [filtro, setFiltro] = useState("")
     const [datos, setDatos] = useState([])
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
+    const [error, setError] = useState("")
 
-    // EmailJS
-    const serviceId = 'RamaARama'
-    const templateId = 'template_9ymo2cf'
-    const publicKey = 'Mlos1g8OYYwn0hzqv'
+    const serviceId = "RamaARama"
+    const templateId = "template_9ymo2cf"
+    const publicKey = "Mlos1g8OYYwn0hzqv"
 
-    useEffect(() => {
+    useEffect(function () {
         cargarDatos()
     }, [filtro])
 
     async function cargarDatos() {
-        setError('')
+        setError("")
         setDatos([])
         if (!filtro) {
             return
         }
-
         setLoading(true)
-
         try {
-            let endpoint = ''
+            let endpoint = ""
             let server = 1
-
-            if (filtro === 'admin') {
-                endpoint = 'requestAdmins'
-            } else if (filtro === 'gestor') {
-                endpoint = 'requestGestores'
-            } else if (filtro === 'poi') {
-                endpoint = 'solicitudPOIs'
+            if (filtro === "admin") {
+                endpoint = "requestAdmins"
+            } else if (filtro === "gestor") {
+                endpoint = "requestGestores"
+            } else if (filtro === "poi") {
+                endpoint = "solicitudPOIs"
                 server = 3
             }
-
             if (endpoint) {
                 const resultado = await obtenerElementos(endpoint, server)
                 if (Array.isArray(resultado)) {
@@ -53,17 +49,16 @@ function GestorRequests() {
                 }
             }
         } catch (err) {
-            console.error('Error cargando datos:', err)
-            setError('No se pudieron cargar las solicitudes.')
+            console.error("Error cargando datos:", err)
+            setError("No se pudieron cargar las solicitudes.")
         } finally {
             setLoading(false)
         }
     }
 
-    // Helpers usuarios (server 1)
     async function obtenerUsuarios() {
         try {
-            const usuarios = await obtenerElementos('usuarios', 1)
+            const usuarios = await obtenerElementos("usuarios", 1)
             if (Array.isArray(usuarios)) {
                 return usuarios
             }
@@ -93,7 +88,7 @@ function GestorRequests() {
     }
 
     async function obtenerNombreUsuarioActual() {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem("token")
         if (!token) {
             return null
         }
@@ -104,50 +99,41 @@ function GestorRequests() {
         return null
     }
 
-    // Email personalizado por tipo
     async function enviarCorreoSolicitud({ toEmail, nombreDestinatario, tipo, estado, item }) {
         if (!toEmail) {
             return
         }
-
         const nombreAccion = await obtenerNombreUsuarioActual()
-        let actor = 'un miembro del equipo'
+        let actor = "un miembro del equipo"
         if (nombreAccion) {
             actor = nombreAccion
         }
-
-        let asuntoTipo = ''
-        let mensaje = ''
-
-        if (tipo === 'Administrador') {
-            asuntoTipo = 'Solicitud de Administrador'
-            if (estado === 'aprobada') {
-                mensaje = 'Tu solicitud para convertirte en Administrador ha sido aprobada por ' + actor + '. ¡Bienvenido/a al equipo!'
+        let asuntoTipo = ""
+        let mensaje = ""
+        if (tipo === "Administrador") {
+            asuntoTipo = "Solicitud de Administrador"
+            if (estado === "aprobada") {
+                mensaje = "Tu solicitud para convertirte en Administrador ha sido aprobada por " + actor
             } else {
-                mensaje = 'Tu solicitud para convertirte en Administrador ha sido rechazada por ' + actor + '. Gracias por tu interés.'
+                mensaje = "Tu solicitud para convertirte en Administrador ha sido rechazada por " + actor
             }
-        } else if (tipo === 'Gestor') {
-            asuntoTipo = 'Solicitud de Gestor'
-            if (estado === 'aprobada') {
-                mensaje = 'Tu solicitud para convertirte en Gestor ha sido aprobada por ' + actor + '. ¡Bienvenido/a al equipo!'
+        } else if (tipo === "Gestor") {
+            asuntoTipo = "Solicitud de Gestor"
+            if (estado === "aprobada") {
+                mensaje = "Tu solicitud para convertirte en Gestor ha sido aprobada por " + actor
             } else {
-                mensaje = 'Tu solicitud para convertirte en Gestor ha sido rechazada por ' + actor + '. Gracias por tu interés.'
+                mensaje = "Tu solicitud para convertirte en Gestor ha sido rechazada por " + actor
             }
-        } else if (tipo === 'Punto de Interés') {
-            let nombrePOI = 'POI'
-            if (item && item.nombre) {
-                nombrePOI = item.nombre
-            }
-            asuntoTipo = 'Solicitud de Punto de Interés: ' + nombrePOI
-            if (estado === 'aprobada') {
-                mensaje = 'Tu solicitud para publicar el Punto de Interés "' + nombrePOI + '" ha sido aprobada por ' + actor + '. Ya está disponible en la plataforma.'
+        } else if (tipo === "Punto de Interés") {
+            let nombrePOI = item && item.nombre ? item.nombre : "POI"
+            asuntoTipo = "Solicitud de Punto de Interés: " + nombrePOI
+            if (estado === "aprobada") {
+                mensaje = 'Tu solicitud para publicar el Punto de Interés "' + nombrePOI + '" ha sido aprobada por ' + actor
             } else {
-                mensaje = 'Tu solicitud para el Punto de Interés "' + nombrePOI + '" ha sido rechazada por ' + actor + '. Gracias por tu aporte.'
+                mensaje = 'Tu solicitud para el Punto de Interés "' + nombrePOI + '" ha sido rechazada por ' + actor
             }
         }
-
-        const nombrePara = nombreDestinatario && nombreDestinatario.length > 0 ? nombreDestinatario : 'Usuario'
-
+        const nombrePara = nombreDestinatario && nombreDestinatario.length > 0 ? nombreDestinatario : "Usuario"
         const params = {
             name: nombrePara,
             to_email: toEmail,
@@ -156,83 +142,57 @@ function GestorRequests() {
             time: new Date().toLocaleString(),
             message: mensaje
         }
-
         try {
             await emailjs.send(serviceId, templateId, params, publicKey)
-            console.log('Correo enviado a ' + toEmail)
         } catch (error) {
-            console.error('Error al enviar correo:', error)
+            console.error("Error al enviar correo:", error)
         }
     }
 
-    // Aceptar solicitudes de cuenta
     async function aceptarSolicitudCuenta(item) {
-        const nuevosDatos = { ...item }
-        if (filtro === 'admin') {
-            nuevosDatos.tipoCuenta = 'turista admin'
+        const nuevosDatos = Object.assign({}, item)
+        if (filtro === "admin") {
+            nuevosDatos.tipoCuenta = "turista admin"
         } else {
-            nuevosDatos.tipoCuenta = 'turista gestor'
+            nuevosDatos.tipoCuenta = "turista gestor"
         }
-
-        const actualizado = await actualizarElemento('usuarios', item.id, nuevosDatos, 1)
+        const actualizado = await actualizarElemento("usuarios", item.id, nuevosDatos, 1)
         if (!actualizado) {
-            alert('Error al aceptar la solicitud')
+            alert("Error al aceptar la solicitud")
             return
         }
-
         const correoUsuario = await obtenerCorreoUsuario(item.id)
-        let tipoSolicitud = ''
-        if (filtro === 'admin') {
-            tipoSolicitud = 'Administrador'
-        } else {
-            tipoSolicitud = 'Gestor'
-        }
-
+        let tipoSolicitud = filtro === "admin" ? "Administrador" : "Gestor"
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
             nombreDestinatario: item.nombre,
             tipo: tipoSolicitud,
-            estado: 'aprobada',
+            estado: "aprobada",
             item
         })
-
-        let endpoint = 'requestGestores'
-        if (filtro === 'admin') {
-            endpoint = 'requestAdmins'
-        }
-
+        let endpoint = filtro === "admin" ? "requestAdmins" : "requestGestores"
         await eliminarElemento(endpoint, item.id, 1)
-        setDatos((prev) => prev.filter((req) => req.id !== item.id))
-        alert('Solicitud de ' + tipoSolicitud + ' aceptada para usuario ' + item.id)
+        setDatos(function (prev) { return prev.filter(function (req) { return req.id !== item.id }) })
+        alert("Solicitud de " + tipoSolicitud + " aceptada para usuario " + item.id)
     }
 
     async function negarSolicitudCuenta(item) {
         const correoUsuario = await obtenerCorreoUsuario(item.id)
-
-        let tipoSolicitud = 'Gestor'
-        if (filtro === 'admin') {
-            tipoSolicitud = 'Administrador'
-        }
-
+        let tipoSolicitud = filtro === "admin" ? "Administrador" : "Gestor"
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
             nombreDestinatario: item.nombre,
             tipo: tipoSolicitud,
-            estado: 'rechazada',
+            estado: "rechazada",
             item
         })
-
-        let endpoint = 'requestGestores'
-        if (filtro === 'admin') {
-            endpoint = 'requestAdmins'
-        }
-
+        let endpoint = filtro === "admin" ? "requestAdmins" : "requestGestores"
         await eliminarElemento(endpoint, item.id, 1)
-        setDatos((prev) => prev.filter((req) => req.id !== item.id))
-        alert('Solicitud de ' + tipoSolicitud + ' negada para usuario ' + item.id)
+        setDatos(function (prev) { return prev.filter(function (req) { return req.id !== item.id }) })
+        alert("Solicitud de " + tipoSolicitud + " negada para usuario " + item.id)
     }
 
-    // Aceptar/rechazar solicitudes de POI (server 3)
+    // ACTUALIZAR POI en lugar de crear
     async function aceptarSolicitudPOI(item) {
         try {
             const nuevoPOI = {
@@ -241,10 +201,23 @@ function GestorRequests() {
                 ubicacion: item.ubicacion,
                 categorias: Array.isArray(item.categorias) ? item.categorias : [],
                 redes: Array.isArray(item.redes) ? item.redes : [],
+                lineaTiempo: Array.isArray(item.lineaTiempo) ? item.lineaTiempo : [],
                 token: item.token ? item.token : null
             }
 
-            await crearElemento('POIs', nuevoPOI, 3)
+            // Resolver ID del POI objetivo:
+            // - Si la solicitud trae el id del POI original como item.idPOI, úsalo.
+            // - Si no, usa item.id (asumiendo que en la solicitud guardaste id = idPOI).
+            const idPOIObjetivo = item.idPOI ? item.idPOI : item.id
+
+            const actualizado = await actualizarElemento("POIs", idPOIObjetivo, nuevoPOI, 3)
+            if (!actualizado) {
+                alert("No se pudo actualizar el POI. Revisa el id objetivo.")
+                return
+            }
+
+            // Resolver ID de la solicitud para eliminarla
+            const idSolicitud = item.idSolicitud ? item.idSolicitud : item.id
 
             let correoUsuario = null
             if (item && item.token) {
@@ -257,17 +230,17 @@ function GestorRequests() {
             await enviarCorreoSolicitud({
                 toEmail: correoUsuario,
                 nombreDestinatario: item.nombre,
-                tipo: 'Punto de Interés',
-                estado: 'aprobada',
+                tipo: "Punto de Interés",
+                estado: "aprobada",
                 item
             })
 
-            await eliminarElemento('solicitudPOIs', item.id, 3)
-            setDatos((prev) => prev.filter((req) => req.id !== item.id))
-            alert('Solicitud de POI aceptada: ' + (item.nombre || 'POI'))
+            await eliminarElemento("solicitudPOIs", idSolicitud, 3)
+            setDatos(function (prev) { return prev.filter(function (req) { return req.id !== idSolicitud }) })
+            alert("Solicitud de POI aprobada y POI actualizado: " + (item.nombre || "POI"))
         } catch (err) {
-            console.error('Error aceptando solicitud de POI:', err)
-            alert('Error al aceptar la solicitud de POI')
+            console.error("Error aceptando solicitud de POI:", err)
+            alert("Error al aceptar la solicitud de POI")
         }
     }
 
@@ -279,94 +252,93 @@ function GestorRequests() {
                 correoUsuario = usuario.correo
             }
         }
-
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
             nombreDestinatario: item.nombre,
-            tipo: 'Punto de Interés',
-            estado: 'rechazada',
+            tipo: "Punto de Interés",
+            estado: "rechazada",
             item
         })
 
-        await eliminarElemento('solicitudPOIs', item.id, 3)
-        setDatos((prev) => prev.filter((req) => req.id !== item.id))
-        alert('Solicitud de POI negada: ' + (item.nombre || 'POI'))
+        const idSolicitud = item.idSolicitud ? item.idSolicitud : item.id
+        await eliminarElemento("solicitudPOIs", idSolicitud, 3)
+        setDatos(function (prev) { return prev.filter(function (req) { return req.id !== idSolicitud }) })
+        alert("Solicitud de POI negada: " + (item.nombre || "POI"))
     }
 
-    // Dispatcher
     async function aceptarSolicitud(item) {
-        if (filtro === 'admin') {
+        if (filtro === "admin" || filtro === "gestor") {
             await aceptarSolicitudCuenta(item)
             return
         }
-        if (filtro === 'gestor') {
-            await aceptarSolicitudCuenta(item)
-            return
-        }
-        if (filtro === 'poi') {
+        if (filtro === "poi") {
             await aceptarSolicitudPOI(item)
             return
         }
     }
 
     async function negarSolicitud(item) {
-        if (filtro === 'admin') {
+        if (filtro === "admin" || filtro === "gestor") {
             await negarSolicitudCuenta(item)
             return
         }
-        if (filtro === 'gestor') {
-            await negarSolicitudCuenta(item)
-            return
-        }
-        if (filtro === 'poi') {
+        if (filtro === "poi") {
             await negarSolicitudPOI(item)
             return
         }
     }
 
-    // Mensajes
-    let mensaje = ''
+    let mensaje = ""
     if (!filtro) {
-        mensaje = 'Selecciona un filtro para ver solicitudes'
+        mensaje = "Selecciona un filtro para ver solicitudes"
     } else {
         if (!loading && datos.length === 0) {
-            mensaje = 'No hay solicitudes para este filtro'
+            mensaje = "No hay solicitudes para este filtro"
         }
     }
 
-    // Render bloques sin ternarios
     let listadoSolicitudes = null
     if (datos.length > 0) {
-        const itemsRenderizados = datos.map((item, index) => {
+        const itemsRenderizados = datos.map(function (item, index) {
             let contenido = null
 
-            if (filtro === 'poi') {
-                const categoriasRender =
-                    item.categorias && Array.isArray(item.categorias) && item.categorias.length > 0
-                        ? (
-                            <div>
-                                <strong>Categorías:</strong>
-                                <ul>
-                                    {item.categorias.map((c, i) => <li key={i}>{c}</li>)}
-                                </ul>
-                            </div>
-                        )
-                        : null
+            if (filtro === "poi") {
+                let categoriasRender = null
+                if (item.categorias && Array.isArray(item.categorias) && item.categorias.length > 0) {
+                    categoriasRender = (
+                        <div>
+                            <strong>Categorías:</strong>
+                            <ul>
+                                {item.categorias.map(function (c, i) { return <li key={i}>{c}</li> })}
+                            </ul>
+                        </div>
+                    )
+                }
 
-                const redesRender =
-                    item.redes && Array.isArray(item.redes) && item.redes.length > 0
-                        ? (
-                            <div>
-                                <strong>Redes:</strong>
-                                <ul>
-                                    {item.redes.map((r, i) => <li key={i}>{r.tipo}: {r.link}</li>)}
-                                </ul>
-                            </div>
-                        )
-                        : null
+                let redesRender = null
+                if (item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
+                    redesRender = (
+                        <div>
+                            <strong>Redes:</strong>
+                            <ul>
+                                {item.redes.map(function (r, i) { return <li key={i}>{r.tipo}: {r.link}</li> })}
+                            </ul>
+                        </div>
+                    )
+                }
+
+                let timelineRender = null
+                if (item.lineaTiempo && Array.isArray(item.lineaTiempo) && item.lineaTiempo.length > 0) {
+                    timelineRender = (
+                        <div style={{ marginTop: 12 }}>
+                            <strong>Línea de tiempo:</strong>
+                            <VistaPreviaLineaTiempo eventos={item.lineaTiempo} />
+                        </div>
+                    )
+                }
 
                 contenido = (
-                    <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
                         <p><strong>ID Solicitud:</strong> {item.id}</p>
                         <p><strong>Nombre POI:</strong> {item.nombre}</p>
                         <p><strong>Descripción:</strong> {item.descripcion}</p>
@@ -375,29 +347,30 @@ function GestorRequests() {
                         )}
                         {categoriasRender}
                         {redesRender}
+                        {timelineRender}
                         {item.token && <p><strong>ID Usuario (token):</strong> {item.token}</p>}
 
-                        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                            <button onClick={() => aceptarSolicitud(item)}>Aceptar</button>
-                            <button onClick={() => negarSolicitud(item)}>Negar</button>
+                        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                            <button onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
+                            <button onClick={function () { negarSolicitud(item) }}>Negar</button>
                         </div>
                     </div>
                 )
             } else {
-                const redesRenderCuenta =
-                    item.redes && Array.isArray(item.redes) && item.redes.length > 0
-                        ? (
-                            <div>
-                                <strong>Redes:</strong>
-                                <ul>
-                                    {item.redes.map((r, i) => <li key={i}>{r.tipo}: {r.link}</li>)}
-                                </ul>
-                            </div>
-                        )
-                        : null
+                let redesRenderCuenta = null
+                if (item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
+                    redesRenderCuenta = (
+                        <div>
+                            <strong>Redes:</strong>
+                            <ul>
+                                {item.redes.map(function (r, i) { return <li key={i}>{r.tipo}: {r.link}</li> })}
+                            </ul>
+                        </div>
+                    )
+                }
 
                 contenido = (
-                    <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
                         <p><strong>ID Usuario:</strong> {item.id}</p>
                         <p><strong>Nombre:</strong> {item.nombre}</p>
                         <p><strong>Provincia:</strong> {item.provinciaResidencia}</p>
@@ -406,9 +379,9 @@ function GestorRequests() {
                         {item.telefono && <p><strong>Teléfono:</strong> {item.telefono}</p>}
                         {redesRenderCuenta}
 
-                        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                            <button onClick={() => aceptarSolicitud(item)}>Aceptar</button>
-                            <button onClick={() => negarSolicitud(item)}>Negar</button>
+                        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                            <button onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
+                            <button onClick={function () { negarSolicitud(item) }}>Negar</button>
                         </div>
                     </div>
                 )
@@ -424,14 +397,14 @@ function GestorRequests() {
         <div>
             <h2>Solicitudes</h2>
 
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-                <button onClick={() => setFiltro('admin')}>Ver solicitudes de Administrador</button>
-                <button onClick={() => setFiltro('gestor')}>Ver solicitudes de Gestor</button>
-                <button onClick={() => setFiltro('poi')}>Ver solicitudes de POIs</button>
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                <button onClick={function () { setFiltro("admin") }}>Ver solicitudes de Administrador</button>
+                <button onClick={function () { setFiltro("gestor") }}>Ver solicitudes de Gestor</button>
+                <button onClick={function () { setFiltro("poi") }}>Ver solicitudes de POIs</button>
             </div>
 
             {loading && <p>Cargando solicitudes…</p>}
-            {error && <p style={{ color: 'crimson' }}>{error}</p>}
+            {error && <p style={{ color: "crimson" }}>{error}</p>}
             {!loading && mensaje && <p>{mensaje}</p>}
 
             {listadoSolicitudes}
