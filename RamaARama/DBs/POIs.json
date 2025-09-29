@@ -119,7 +119,18 @@
         "Sitio Religioso"
       ],
       "redes": [],
-      "token": "d2cb"
+      "token": "d2cb",
+      "valoracion": [
+        {
+          "usuarioId": "dd6b",
+          "valor": 5
+        },
+        {
+          "usuarioId": "d2cb",
+          "valor": 4
+        }
+      ],
+      "valoracionPonderada": 4.5
     },
     {
       "id": "787e",
