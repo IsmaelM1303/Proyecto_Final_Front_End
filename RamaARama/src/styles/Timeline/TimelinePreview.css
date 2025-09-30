@@ -1,0 +1,49 @@
+/* TimelinePreview.css */
+:root {
+    --verde: #4e770d;
+    --oliva: #827e50;
+    --fondo-suave: #d9dbf1;
+    --texto-oscuro: #252a11;
+}
+
+.contenedor-linea-tiempo {
+    background: var(--fondo-suave);
+    border: 2px solid var(--verde);
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 16px;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.caja-linea-tiempo {
+    width: 100%;
+    height: 500px;
+    background: var(--oliva);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Ocultar título visualmente sin colapsar layout */
+.caja-linea-tiempo .tl-headline,
+.caja-linea-tiempo .tl-slide-title,
+.caja-linea-tiempo .tl-headline-title {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Mostrar fecha */
+.caja-linea-tiempo .tl-headline-date {
+    opacity: 1 !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: var(--texto-oscuro) !important;
+    margin-bottom: 6px !important;
+}
+
+/* Mostrar descripción */
+.caja-linea-tiempo .tl-text {
+    font-size: 0.95rem !important;
+    line-height: 1.4 !important;
+    color: var(--texto-oscuro) !important;
+}

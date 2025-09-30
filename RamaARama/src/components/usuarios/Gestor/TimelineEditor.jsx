@@ -1,7 +1,7 @@
 import { useState } from "react"
-import VistaPreviaLineaTiempo from "./TimelinePreview"
+import TimelinePreview from "./TimelinePreview"
 
-function EditorLineaTiempo({ lineaTiempo, setLineaTiempo }) {
+function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
     const [nuevoEvento, setNuevoEvento] = useState({
         anio: "",
         mes: "",
@@ -153,10 +153,10 @@ function EditorLineaTiempo({ lineaTiempo, setLineaTiempo }) {
             </div>
 
             <div style={{ flex: 1 }}>
-                <VistaPreviaLineaTiempo eventos={lineaTiempo} />
+                <TimelinePreview eventos={lineaTiempo} />
             </div>
         </div>
     )
 }
 
-export default EditorLineaTiempo
+export default TimelineEditor

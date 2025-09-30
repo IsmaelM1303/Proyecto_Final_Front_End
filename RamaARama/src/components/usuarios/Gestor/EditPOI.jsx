@@ -10,7 +10,7 @@ import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png"
 import iconUrl from "leaflet/dist/images/marker-icon.png"
 import shadowUrl from "leaflet/dist/images/marker-shadow.png"
 
-import EditorLineaTiempo from "./TimelineEditor"
+import TimeLineEditor from "./TimelineEditor"
 
 if (L && L.Icon && L.Icon.Default) {
     L.Icon.Default.mergeOptions({
@@ -433,7 +433,7 @@ function EditPOI() {
 
             <div className="form-row">
                 <label>Línea de tiempo</label>
-                <EditorLineaTiempo lineaTiempo={lineaTiempo} setLineaTiempo={setLineaTiempo} />
+                <TimeLineEditor lineaTiempo={lineaTiempo} setLineaTiempo={setLineaTiempo} />
             </div>
 
             <div className="actions">

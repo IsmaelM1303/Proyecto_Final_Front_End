@@ -2,11 +2,10 @@ import { useState, useEffect } from "react"
 import {
     obtenerElementos,
     actualizarElemento,
-    eliminarElemento,
-    crearElemento
+    eliminarElemento
 } from "../../../api/Crud"
 import emailjs from "@emailjs/browser"
-import VistaPreviaLineaTiempo from "../Gestor/TimelinePreview"
+import TimelinePreview from "../Gestor/TimelinePreview"
 
 function GestorRequests() {
     const [filtro, setFiltro] = useState("")
@@ -28,10 +27,12 @@ function GestorRequests() {
         if (!filtro) {
             return
         }
+
         setLoading(true)
         try {
             let endpoint = ""
             let server = 1
+
             if (filtro === "admin") {
                 endpoint = "requestAdmins"
             } else if (filtro === "gestor") {
@@ -40,6 +41,7 @@ function GestorRequests() {
                 endpoint = "solicitudPOIs"
                 server = 3
             }
+
             if (endpoint) {
                 const resultado = await obtenerElementos(endpoint, server)
                 if (Array.isArray(resultado)) {
@@ -103,13 +105,16 @@ function GestorRequests() {
         if (!toEmail) {
             return
         }
+
         const nombreAccion = await obtenerNombreUsuarioActual()
         let actor = "un miembro del equipo"
         if (nombreAccion) {
             actor = nombreAccion
         }
+
         let asuntoTipo = ""
         let mensaje = ""
+
         if (tipo === "Administrador") {
             asuntoTipo = "Solicitud de Administrador"
             if (estado === "aprobada") {
@@ -125,7 +130,10 @@ function GestorRequests() {
                 mensaje = "Tu solicitud para convertirte en Gestor ha sido rechazada por " + actor
             }
         } else if (tipo === "Punto de Interés") {
-            let nombrePOI = item && item.nombre ? item.nombre : "POI"
+            let nombrePOI = "POI"
+            if (item && item.nombre) {
+                nombrePOI = item.nombre
+            }
             asuntoTipo = "Solicitud de Punto de Interés: " + nombrePOI
             if (estado === "aprobada") {
                 mensaje = 'Tu solicitud para publicar el Punto de Interés "' + nombrePOI + '" ha sido aprobada por ' + actor
@@ -133,7 +141,9 @@ function GestorRequests() {
                 mensaje = 'Tu solicitud para el Punto de Interés "' + nombrePOI + '" ha sido rechazada por ' + actor
             }
         }
+
         const nombrePara = nombreDestinatario && nombreDestinatario.length > 0 ? nombreDestinatario : "Usuario"
+
         const params = {
             name: nombrePara,
             to_email: toEmail,
@@ -142,6 +152,7 @@ function GestorRequests() {
             time: new Date().toLocaleString(),
             message: mensaje
         }
+
         try {
             await emailjs.send(serviceId, templateId, params, publicKey)
         } catch (error) {
@@ -156,13 +167,22 @@ function GestorRequests() {
         } else {
             nuevosDatos.tipoCuenta = "turista gestor"
         }
+
         const actualizado = await actualizarElemento("usuarios", item.id, nuevosDatos, 1)
         if (!actualizado) {
             alert("Error al aceptar la solicitud")
             return
         }
+
         const correoUsuario = await obtenerCorreoUsuario(item.id)
-        let tipoSolicitud = filtro === "admin" ? "Administrador" : "Gestor"
+
+        let tipoSolicitud = ""
+        if (filtro === "admin") {
+            tipoSolicitud = "Administrador"
+        } else {
+            tipoSolicitud = "Gestor"
+        }
+
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
             nombreDestinatario: item.nombre,
@@ -170,7 +190,12 @@ function GestorRequests() {
             estado: "aprobada",
             item
         })
-        let endpoint = filtro === "admin" ? "requestAdmins" : "requestGestores"
+
+        let endpoint = "requestGestores"
+        if (filtro === "admin") {
+            endpoint = "requestAdmins"
+        }
+
         await eliminarElemento(endpoint, item.id, 1)
         setDatos(function (prev) { return prev.filter(function (req) { return req.id !== item.id }) })
         alert("Solicitud de " + tipoSolicitud + " aceptada para usuario " + item.id)
@@ -178,7 +203,12 @@ function GestorRequests() {
 
     async function negarSolicitudCuenta(item) {
         const correoUsuario = await obtenerCorreoUsuario(item.id)
-        let tipoSolicitud = filtro === "admin" ? "Administrador" : "Gestor"
+
+        let tipoSolicitud = "Gestor"
+        if (filtro === "admin") {
+            tipoSolicitud = "Administrador"
+        }
+
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
             nombreDestinatario: item.nombre,
@@ -186,38 +216,127 @@ function GestorRequests() {
             estado: "rechazada",
             item
         })
-        let endpoint = filtro === "admin" ? "requestAdmins" : "requestGestores"
+
+        let endpoint = "requestGestores"
+        if (filtro === "admin") {
+            endpoint = "requestAdmins"
+        }
+
         await eliminarElemento(endpoint, item.id, 1)
         setDatos(function (prev) { return prev.filter(function (req) { return req.id !== item.id }) })
         alert("Solicitud de " + tipoSolicitud + " negada para usuario " + item.id)
     }
 
-    // ACTUALIZAR POI en lugar de crear
-    async function aceptarSolicitudPOI(item) {
-        try {
-            const nuevoPOI = {
-                nombre: item.nombre,
-                descripcion: item.descripcion,
-                ubicacion: item.ubicacion,
-                categorias: Array.isArray(item.categorias) ? item.categorias : [],
-                redes: Array.isArray(item.redes) ? item.redes : [],
-                lineaTiempo: Array.isArray(item.lineaTiempo) ? item.lineaTiempo : [],
-                token: item.token ? item.token : null
+    // Normalización mínima para TimelineJS (sin optional chaining)
+    function normalizarLineaTiempo(linea) {
+        if (!Array.isArray(linea)) {
+            return []
+        }
+        const salida = []
+        for (let i = 0; i < linea.length; i++) {
+            const ev = linea[i]
+
+            let year = null
+            let month = "01"
+            let day = "01"
+
+            if (ev && ev.start_date) {
+                if (ev.start_date.year) {
+                    year = ev.start_date.year
+                }
+                if (ev.start_date.month) {
+                    month = ev.start_date.month
+                }
+                if (ev.start_date.day) {
+                    day = ev.start_date.day
+                }
+            } else {
+                if (ev && ev.year) {
+                    year = ev.year
+                }
+                if (ev && ev.month) {
+                    month = ev.month
+                }
+                if (ev && ev.day) {
+                    day = ev.day
+                }
             }
 
-            // Resolver ID del POI objetivo:
-            // - Si la solicitud trae el id del POI original como item.idPOI, úsalo.
-            // - Si no, usa item.id (asumiendo que en la solicitud guardaste id = idPOI).
-            const idPOIObjetivo = item.idPOI ? item.idPOI : item.id
+            if (!year) {
+                continue
+            }
 
-            const actualizado = await actualizarElemento("POIs", idPOIObjetivo, nuevoPOI, 3)
-            if (!actualizado) {
-                alert("No se pudo actualizar el POI. Revisa el id objetivo.")
+            const fecha = {
+                year: String(year),
+                month: String(month).padStart(2, "0"),
+                day: String(day).padStart(2, "0")
+            }
+
+            let headline = "•"
+            let body = ""
+
+            if (ev && ev.text && typeof ev.text.headline === "string") {
+                const h = ev.text.headline.trim()
+                if (h.length > 0) {
+                    headline = h
+                }
+            }
+
+            if (ev && ev.text && typeof ev.text.text === "string") {
+                const b = ev.text.text.trim()
+                if (b.length > 0) {
+                    body = b
+                }
+            } else {
+                if (ev && typeof ev.descripcion === "string") {
+                    const b2 = ev.descripcion.trim()
+                    if (b2.length > 0) {
+                        body = b2
+                    }
+                }
+            }
+
+            let media = undefined
+            if (ev && ev.media && typeof ev.media.url === "string") {
+                if (ev.media.url.length > 0) {
+                    const caption = typeof ev.media.caption === "string" ? ev.media.caption : ""
+                    const credit = typeof ev.media.credit === "string" ? ev.media.credit : ""
+                    media = { url: ev.media.url, caption: caption, credit: credit }
+                }
+            }
+
+            salida.push({ start_date: fecha, text: { headline: headline, text: body }, media: media })
+        }
+        return salida
+    }
+
+    // Aceptar POI: PATCH parcial y explícito al POI usando el id de la solicitud, luego eliminar la solicitud
+    async function aceptarSolicitudPOI(item) {
+        try {
+            const lineaTiempoNormalizada = normalizarLineaTiempo(item && Array.isArray(item.lineaTiempo) ? item.lineaTiempo : [])
+
+            const idSolicitud = item && item.id ? item.id : null
+            if (!idSolicitud) {
+                alert("No se encontró id de la solicitud de POI.")
                 return
             }
 
-            // Resolver ID de la solicitud para eliminarla
-            const idSolicitud = item.idSolicitud ? item.idSolicitud : item.id
+            // Datos que se actualizan en el POI (patch), tomando como base la solicitud
+            const patchPOI = {
+                nombre: item && typeof item.nombre === "string" ? item.nombre : "",
+                descripcion: item && typeof item.descripcion === "string" ? item.descripcion : "",
+                ubicacion: item && item.ubicacion ? item.ubicacion : null,
+                categorias: item && Array.isArray(item.categorias) ? item.categorias : [],
+                redes: item && Array.isArray(item.redes) ? item.redes : [],
+                lineaTiempo: lineaTiempoNormalizada,
+                token: item && item.token ? item.token : null
+            }
+
+            const actualizado = await actualizarElemento("POIs", idSolicitud, patchPOI, 3)
+            if (!actualizado) {
+                alert("No se pudo actualizar el POI con el id de la solicitud.")
+                return
+            }
 
             let correoUsuario = null
             if (item && item.token) {
@@ -229,15 +348,15 @@ function GestorRequests() {
 
             await enviarCorreoSolicitud({
                 toEmail: correoUsuario,
-                nombreDestinatario: item.nombre,
+                nombreDestinatario: item && item.nombre ? item.nombre : "",
                 tipo: "Punto de Interés",
                 estado: "aprobada",
-                item
+                item: item
             })
 
             await eliminarElemento("solicitudPOIs", idSolicitud, 3)
             setDatos(function (prev) { return prev.filter(function (req) { return req.id !== idSolicitud }) })
-            alert("Solicitud de POI aprobada y POI actualizado: " + (item.nombre || "POI"))
+            alert("Solicitud de POI aprobada y POI actualizado: " + (item && item.nombre ? item.nombre : "POI"))
         } catch (err) {
             console.error("Error aceptando solicitud de POI:", err)
             alert("Error al aceptar la solicitud de POI")
@@ -252,18 +371,24 @@ function GestorRequests() {
                 correoUsuario = usuario.correo
             }
         }
+
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
-            nombreDestinatario: item.nombre,
+            nombreDestinatario: item && item.nombre ? item.nombre : "",
             tipo: "Punto de Interés",
             estado: "rechazada",
-            item
+            item: item
         })
 
-        const idSolicitud = item.idSolicitud ? item.idSolicitud : item.id
+        const idSolicitud = item && item.id ? item.id : null
+        if (!idSolicitud) {
+            alert("No se encontró id de la solicitud de POI para eliminar.")
+            return
+        }
+
         await eliminarElemento("solicitudPOIs", idSolicitud, 3)
         setDatos(function (prev) { return prev.filter(function (req) { return req.id !== idSolicitud }) })
-        alert("Solicitud de POI negada: " + (item.nombre || "POI"))
+        alert("Solicitud de POI negada: " + (item && item.nombre ? item.nombre : "POI"))
     }
 
     async function aceptarSolicitud(item) {
@@ -304,7 +429,7 @@ function GestorRequests() {
 
             if (filtro === "poi") {
                 let categoriasRender = null
-                if (item.categorias && Array.isArray(item.categorias) && item.categorias.length > 0) {
+                if (item && item.categorias && Array.isArray(item.categorias) && item.categorias.length > 0) {
                     categoriasRender = (
                         <div>
                             <strong>Categorías:</strong>
@@ -316,7 +441,7 @@ function GestorRequests() {
                 }
 
                 let redesRender = null
-                if (item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
+                if (item && item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
                     redesRender = (
                         <div>
                             <strong>Redes:</strong>
@@ -328,27 +453,27 @@ function GestorRequests() {
                 }
 
                 let timelineRender = null
-                if (item.lineaTiempo && Array.isArray(item.lineaTiempo) && item.lineaTiempo.length > 0) {
+                if (item && item.lineaTiempo && Array.isArray(item.lineaTiempo) && item.lineaTiempo.length > 0) {
                     timelineRender = (
                         <div style={{ marginTop: 12 }}>
                             <strong>Línea de tiempo:</strong>
-                            <VistaPreviaLineaTiempo eventos={item.lineaTiempo} />
+                            <TimelinePreview eventos={item.lineaTiempo} />
                         </div>
                     )
                 }
 
                 contenido = (
                     <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                        <p><strong>ID Solicitud:</strong> {item.id}</p>
-                        <p><strong>Nombre POI:</strong> {item.nombre}</p>
-                        <p><strong>Descripción:</strong> {item.descripcion}</p>
-                        {item.ubicacion && item.ubicacion.lat && item.ubicacion.lng && (
+                        <p><strong>ID Solicitud:</strong> {item && item.id ? item.id : ""}</p>
+                        <p><strong>Nombre POI:</strong> {item && item.nombre ? item.nombre : ""}</p>
+                        <p><strong>Descripción:</strong> {item && item.descripcion ? item.descripcion : ""}</p>
+                        {item && item.ubicacion && item.ubicacion.lat && item.ubicacion.lng && (
                             <p><strong>Ubicación:</strong> {item.ubicacion.lat}, {item.ubicacion.lng}</p>
                         )}
                         {categoriasRender}
                         {redesRender}
                         {timelineRender}
-                        {item.token && <p><strong>ID Usuario (token):</strong> {item.token}</p>}
+                        {item && item.token && <p><strong>ID Usuario (token):</strong> {item.token}</p>}
 
                         <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                             <button onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
@@ -358,7 +483,7 @@ function GestorRequests() {
                 )
             } else {
                 let redesRenderCuenta = null
-                if (item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
+                if (item && item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
                     redesRenderCuenta = (
                         <div>
                             <strong>Redes:</strong>
@@ -371,12 +496,12 @@ function GestorRequests() {
 
                 contenido = (
                     <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                        <p><strong>ID Usuario:</strong> {item.id}</p>
-                        <p><strong>Nombre:</strong> {item.nombre}</p>
-                        <p><strong>Provincia:</strong> {item.provinciaResidencia}</p>
-                        {item.identificacion && <p><strong>Identificación:</strong> {item.identificacion}</p>}
-                        {item.correoSecundario && <p><strong>Correo alterno:</strong> {item.correoSecundario}</p>}
-                        {item.telefono && <p><strong>Teléfono:</strong> {item.telefono}</p>}
+                        <p><strong>ID Usuario:</strong> {item && item.id ? item.id : ""}</p>
+                        <p><strong>Nombre:</strong> {item && item.nombre ? item.nombre : ""}</p>
+                        <p><strong>Provincia:</strong> {item && item.provinciaResidencia ? item.provinciaResidencia : ""}</p>
+                        {item && item.identificacion && <p><strong>Identificación:</strong> {item.identificacion}</p>}
+                        {item && item.correoSecundario && <p><strong>Correo alterno:</strong> {item.correoSecundario}</p>}
+                        {item && item.telefono && <p><strong>Teléfono:</strong> {item.telefono}</p>}
                         {redesRenderCuenta}
 
                         <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
