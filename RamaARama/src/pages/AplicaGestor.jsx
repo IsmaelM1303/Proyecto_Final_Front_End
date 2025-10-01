@@ -1,7 +1,8 @@
 import BtnVolver from "../components/general/BtnVolver"
 import Header from "../components/general/Header"
 import AplicarGestor from "../components/usuarios/tipoCuentas/AplicarGestor"
-import "../styles/EspacioHeader.css"
+import "../styles/General/EspacioHeader.css"
+
 
 
 function AplicaGestor() {

@@ -1,7 +1,6 @@
 import Header from "../components/general/Header"
 import Login from "../components/usuarios/LogIn"
-import "../styles/EspacioHeader.css"
-
+import "../styles/General/EspacioHeader.css"
 
 function InicioSesion() {
     return (

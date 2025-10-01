@@ -1,8 +1,7 @@
 import BtnVolver from "../components/general/BtnVolver"
 import Header from "../components/general/Header"
 import GestorRequests from "../components/usuarios/Admin/GestorRequests"
-import "../styles/EspacioHeader.css"
-
+import "../styles/General/EspacioHeader.css"
 
 function Requests() {
     return (

@@ -2,8 +2,7 @@ import React from 'react'
 import Header from '../components/general/Header'
 import BtnVolver from '../components/general/BtnVolver'
 import Perfil from '../components/usuarios/Perfil'
-import "../styles/EspacioHeader.css"
-
+import "../styles/General/EspacioHeader.css"
 
 function VerPerfil() {
     return (

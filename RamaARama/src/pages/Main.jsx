@@ -2,8 +2,7 @@ import React from 'react'
 import Header from '../components/general/Header'
 import Mapa from '../components/mapas/Mapa'
 import BtnFavoritos from '../components/general/BtnFavoritos'
-import "../styles/EspacioHeader.css"
-
+import "../styles/General/EspacioHeader.css"
 
 function Main() {
     return (

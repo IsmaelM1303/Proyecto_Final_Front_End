@@ -2,8 +2,7 @@ import React from 'react'
 import Header from '../components/general/Header'
 import Recover from '../components/usuarios/Recover'
 import BtnVolver from '../components/general/BtnVolver'
-import "../styles/EspacioHeader.css"
-
+import "../styles/General/EspacioHeader.css"
 
 function RecContrasena() {
     return (

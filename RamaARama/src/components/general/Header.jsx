@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import logo from "../../assets/Imgs/LogoBlanco.png"
 import { obtenerElementos } from "../../api/Crud"
-import "../../styles/Header.css"
+import "../../styles/General/Header.css"
 
 function Header() {
     const navigate = useNavigate()
