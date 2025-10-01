@@ -87,7 +87,7 @@ function Login() {
                             className="login-toggle-password"
                             onClick={() => setVerContrasena(!verContrasena)}
                         >
-                            {verContrasena ? "Ocultar" : "Ver"}
+                            {verContrasena ? "O" : "-"}
                         </button>
                     </div>
 

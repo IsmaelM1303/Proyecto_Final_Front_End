@@ -1,0 +1,9 @@
+.RecContrasena {
+    background-image: url("../../assets/Imgs/Backgrounds/RecContrasena.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

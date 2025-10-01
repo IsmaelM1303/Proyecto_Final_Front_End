@@ -188,7 +188,14 @@
           "link": "https://www.youtube.com/"
         }
       ],
-      "token": "d2cb"
+      "token": "d2cb",
+      "valoracion": [
+        {
+          "usuarioId": "d2cb",
+          "valor": 4
+        }
+      ],
+      "valoracionPonderada": 4
     }
   ],
   "solicitudPOIs": []

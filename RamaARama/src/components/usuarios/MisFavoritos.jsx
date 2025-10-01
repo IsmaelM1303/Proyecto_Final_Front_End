@@ -1,7 +1,8 @@
-// src/components/usuarios/MisFavoritos.jsx
 import { useState, useEffect } from "react"
 import { Rating } from "react-simple-star-rating"
 import { obtenerElementos, actualizarElemento } from "../../api/Crud"
+import TimelineSwitcher from "./Gestor/TimelineSwitcher"
+import "../../styles/MisFavoritos.css"
 
 function MisFavoritos() {
     const [favoritos, setFavoritos] = useState([])
@@ -17,34 +18,19 @@ function MisFavoritos() {
                 }
 
                 const usuarios = await obtenerElementos("usuarios", 1)
-                if (!Array.isArray(usuarios)) {
-                    setMensaje("No se pudieron cargar los usuarios")
-                    return
-                }
-
-                const usuario = usuarios.find(u => String(u.id) === String(tokenUsuario))
+                const usuario = usuarios?.find(u => String(u.id) === String(tokenUsuario))
                 if (!usuario) {
                     setMensaje("Usuario no encontrado")
                     return
                 }
 
                 const pois = await obtenerElementos("POIs", 3)
-                if (!Array.isArray(pois)) {
-                    setMensaje("No se pudieron cargar los POIs")
-                    return
-                }
-
-                let listaFavoritos = []
-                if (Array.isArray(usuario.favoritos)) {
-                    listaFavoritos = pois.filter(poi => usuario.favoritos.includes(poi.id))
-                }
+                const listaFavoritos = Array.isArray(usuario.favoritos)
+                    ? pois.filter(poi => usuario.favoritos.includes(poi.id))
+                    : []
 
                 setFavoritos(listaFavoritos)
-                if (listaFavoritos.length === 0) {
-                    setMensaje("No tienes favoritos guardados")
-                } else {
-                    setMensaje("")
-                }
+                setMensaje(listaFavoritos.length === 0 ? "No tienes favoritos guardados" : "")
             } catch (error) {
                 console.error("Error al cargar favoritos:", error)
                 setMensaje("Error al cargar favoritos")
@@ -54,12 +40,7 @@ function MisFavoritos() {
         cargarFavoritos()
     }, [])
 
-    const normalizarAEstrellas = (valor) => {
-        if (valor > 5) {
-            return valor / 20
-        }
-        return valor
-    }
+    const normalizarAEstrellas = (valor) => valor > 5 ? valor / 20 : valor
 
     const manejarCambioCalificacion = async (poi, valorCrudo) => {
         const token = localStorage.getItem("token") || "usuario-sin-token"
@@ -68,13 +49,9 @@ function MisFavoritos() {
 
         const todosPOIs = await obtenerElementos("POIs", 3)
         const poiActual = todosPOIs.find(p => p.id === idPOI)
-        if (!poiActual) {
-            return
-        }
+        if (!poiActual) return
 
-        if (!Array.isArray(poiActual.valoracion)) {
-            poiActual.valoracion = []
-        }
+        poiActual.valoracion = Array.isArray(poiActual.valoracion) ? poiActual.valoracion : []
 
         const indiceExistente = poiActual.valoracion.findIndex(v => v.usuarioId === token)
         if (indiceExistente >= 0) {
@@ -83,20 +60,14 @@ function MisFavoritos() {
             poiActual.valoracion.push({ usuarioId: token, valor: valorNormalizado })
         }
 
-        let suma = 0
-        for (let k = 0; k < poiActual.valoracion.length; k++) {
-            suma += poiActual.valoracion[k].valor
-        }
+        const suma = poiActual.valoracion.reduce((acc, v) => acc + v.valor, 0)
         const promedio = suma / poiActual.valoracion.length
 
-        const datosActualizados = {
+        await actualizarElemento("POIs", idPOI, {
             valoracion: poiActual.valoracion,
             valoracionPonderada: promedio
-        }
+        }, 3)
 
-        await actualizarElemento("POIs", idPOI, datosActualizados, 3)
-
-        // Actualizar en el estado local
         setFavoritos(prev =>
             prev.map(f =>
                 f.id === idPOI
@@ -107,35 +78,23 @@ function MisFavoritos() {
     }
 
     return (
-        <div style={{ maxWidth: 600 }}>
-            <h2>Mis Favoritos</h2>
-            {mensaje && <p>{mensaje}</p>}
+        <div className="divMisFavoritos">
+            <h2 className="tituloMisFavoritos">Mis Favoritos</h2>
+            {mensaje && <p className="mensajeMisFavoritos">{mensaje}</p>}
 
             {favoritos.length > 0 && (
-                <ul>
+                <ul className="listaFavoritos">
                     {favoritos.map((poi, i) => {
-                        let valorUsuario = 0
                         const token = localStorage.getItem("token") || "usuario-sin-token"
-                        if (Array.isArray(poi.valoracion)) {
-                            const existente = poi.valoracion.find(v => v.usuarioId === token)
-                            if (existente) {
-                                valorUsuario = existente.valor
-                            }
-                        } else if (typeof poi.rating === "number") {
-                            valorUsuario = poi.rating
-                        }
-
-                        let promedio = 0
-                        if (typeof poi.valoracionPonderada === "number") {
-                            promedio = poi.valoracionPonderada
-                        }
+                        const valorUsuario = poi.valoracion?.find(v => v.usuarioId === token)?.valor || 0
+                        const promedio = typeof poi.valoracionPonderada === "number" ? poi.valoracionPonderada : 0
 
                         return (
-                            <li key={`fav-${i}`} style={{ marginBottom: 20 }}>
-                                <strong>{poi.nombre}</strong>
-                                <p>{poi.descripcion}</p>
+                            <li key={`fav-${i}`} className="itemFavorito">
+                                <strong className="nombreFavorito">{poi.nombre}</strong>
+                                <p className="descripcionFavorito">{poi.descripcion}</p>
 
-                                <div style={{ margin: "6px 0" }}>
+                                <div className="ratingFavorito">
                                     <Rating
                                         initialValue={valorUsuario}
                                         size={20}
@@ -146,12 +105,18 @@ function MisFavoritos() {
                                     />
                                 </div>
 
-                                <p style={{ margin: "6px 0" }}>
-                                    Valoración promedio: <strong>{promedio.toFixed(2)}</strong> 
+                                <p className="promedioFavorito">
+                                    Valoración promedio: <strong>{promedio.toFixed(2)}</strong>
                                 </p>
 
+                                {Array.isArray(poi.lineaTiempo) && poi.lineaTiempo.length > 0 && (
+                                    <div className="timelineFavorito">
+                                        <TimelineSwitcher eventos={poi.lineaTiempo} />
+                                    </div>
+                                )}
+
                                 {Array.isArray(poi.categorias) && poi.categorias.length > 0 && (
-                                    <div>
+                                    <div className="categoriasFavorito">
                                         <span>Categorías:</span>
                                         <ul>
                                             {poi.categorias.map((cat, j) => (
@@ -162,26 +127,16 @@ function MisFavoritos() {
                                 )}
 
                                 {Array.isArray(poi.redes) && poi.redes.length > 0 && (
-                                    <div>
+                                    <div className="redesFavorito">
                                         <span>Redes:</span>
                                         <ul>
                                             {poi.redes.map((red, r) => {
-                                                let contenido = "—"
-                                                if (red && red.link) {
-                                                    contenido = (
-                                                        <a
-                                                            href={red.link}
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                        >
-                                                            {red.link}
-                                                        </a>
-                                                    )
-                                                }
-                                                let tipo = "Link"
-                                                if (red && red.tipo) {
-                                                    tipo = red.tipo
-                                                }
+                                                const contenido = red?.link ? (
+                                                    <a href={red.link} target="_blank" rel="noreferrer">
+                                                        {red.link}
+                                                    </a>
+                                                ) : "—"
+                                                const tipo = red?.tipo || "Link"
                                                 return (
                                                     <li key={`red-${i}-${r}`}>
                                                         {tipo}: {contenido}

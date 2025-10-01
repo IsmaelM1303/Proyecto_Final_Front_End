@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { obtenerElementos, crearElemento } from "../../api/Crud"
 import BtnVolver from "../general/BtnVolver"
+import "../../styles/Register.css"
 
 function Alerta({ mostrar, onOcultar, mensaje }) {
     const [visible, setVisible] = useState(false)
@@ -21,7 +22,7 @@ function Alerta({ mostrar, onOcultar, mensaje }) {
 
     if (!visible) return null
 
-    return <div>{mensaje}</div>
+    return <div className="alertaRegister">{mensaje}</div>
 }
 
 function Register() {
@@ -39,7 +40,6 @@ function Register() {
     async function manejoSubmit(e) {
         e.preventDefault()
 
-        // Validar longitud mínima de contraseña
         if (contrasena.length < 8) {
             setMensajeAlerta("La contraseña debe tener al menos 8 caracteres")
             setMostrarAlerta(true)
@@ -68,7 +68,6 @@ function Register() {
             return
         }
 
-        // Ahora el objeto incluye tipoCuenta: "turista"
         const nuevoUsuario = {
             nombre,
             correo,
@@ -84,69 +83,61 @@ function Register() {
             return
         }
 
-        // Guardar token con el id del usuario recién creado
         localStorage.setItem("token", usuarioCreado.id)
-
         navigate("/Main")
     }
 
-    const inputNombre = (
-        <input
-            type="text"
-            placeholder="Nombre de usuario"
-            value={nombre}
-            onChange={e => setNombre(e.target.value)}
-        />
-    )
-
-    const inputCorreo = (
-        <input
-            type="email"
-            placeholder="Correo"
-            value={correo}
-            onChange={e => setCorreo(e.target.value)}
-        />
-    )
-
-    const inputContrasena = (
-        <div>
-            <input
-                type={verContrasena ? "text" : "password"}
-                placeholder="Contraseña"
-                value={contrasena}
-                onChange={e => setContrasena(e.target.value)}
-            />
-            <button type="button" onClick={() => setVerContrasena(!verContrasena)}>
-                {verContrasena ? "O" : "-"}
-            </button>
-        </div>
-    )
-
-    const inputConfirmarContrasena = (
-        <div>
-            <input
-                type={verConfirmar ? "text" : "password"}
-                placeholder="Confirmar contraseña"
-                value={confirmarContrasena}
-                onChange={e => setConfirmarContrasena(e.target.value)}
-            />
-            <button type="button" onClick={() => setVerConfirmar(!verConfirmar)}>
-                {verConfirmar ? "O" : "-"}
-            </button>
-        </div>
-    )
-
-    const botonRegistrar = <button type="submit">Registrar</button>
-
     return (
-        <div>
-            <h2>Registrarse</h2>
-            <form onSubmit={manejoSubmit}>
-                {inputNombre}
-                {inputCorreo}
-                {inputContrasena}
-                {inputConfirmarContrasena}
-                {botonRegistrar}
+        <div className="divRegister">
+            <h2 className="tituloRegister">Registrarse</h2>
+            <form className="formRegister" onSubmit={manejoSubmit}>
+                <input
+                    className="inputRegister"
+                    type="text"
+                    placeholder="Nombre de usuario"
+                    value={nombre}
+                    onChange={e => setNombre(e.target.value)}
+                />
+                <input
+                    className="inputRegister"
+                    type="email"
+                    placeholder="Correo"
+                    value={correo}
+                    onChange={e => setCorreo(e.target.value)}
+                />
+                <div className="campoContrasena">
+                    <input
+                        className="inputRegister"
+                        type={verContrasena ? "text" : "password"}
+                        placeholder="Contraseña"
+                        value={contrasena}
+                        onChange={e => setContrasena(e.target.value)}
+                    />
+                    <button
+                        className="btnToggle"
+                        type="button"
+                        onClick={() => setVerContrasena(!verContrasena)}
+                    >
+                        {verContrasena ? "O" : "-"}
+                    </button>
+                </div>
+                <div className="campoContrasena">
+                    <input
+                        className="inputRegister"
+                        type={verConfirmar ? "text" : "password"}
+                        placeholder="Confirmar contraseña"
+                        value={confirmarContrasena}
+                        onChange={e => setConfirmarContrasena(e.target.value)}
+                    />
+                    <button
+                        className="btnToggle"
+                        type="button"
+                        onClick={() => setVerConfirmar(!verConfirmar)}
+                    >
+                        {verConfirmar ? "O" : "-"}
+                    </button>
+                </div>
+                <button className="btnSubmitRegister" type="submit">Registrar</button>
             </form>
             <Alerta
                 mostrar={mostrarAlerta}

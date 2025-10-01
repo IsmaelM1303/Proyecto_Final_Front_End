@@ -45,7 +45,7 @@ function Nosotros() {
                         <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" />
 
                         <label htmlFor="mensaje">Mensaje:</label>
-                        <textarea id="mensaje" name="mensaje" placeholder="Escribe tu mensaje aquí..." />
+                        <textarea id="mensaje" className="textareaNosotros" name="mensaje" placeholder="Escribe tu mensaje aquí..." />
 
                         <button type="submit" disabled>Enviar</button>
                     </form>

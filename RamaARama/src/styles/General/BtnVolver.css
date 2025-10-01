@@ -1,0 +1,21 @@
+.btnVolver {
+    position: fixed;
+    top: 110px;
+    left: 20px;
+    background-color: #4e770d;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 6px 2px 0px rgba(0.2, 0, 0, 0);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 1000;
+}
+
+.btnVolver:hover {
+    transform: translateY(2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    background-color: #89a644;
+}

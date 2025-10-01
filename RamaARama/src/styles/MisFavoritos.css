@@ -1,0 +1,113 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.divMisFavoritos {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1); /* blanco translúcido */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== TÍTULO ===== */
+.tituloMisFavoritos {
+    color: #89a644;
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    text-align: center;
+}
+
+/* ===== MENSAJE ===== */
+.mensajeMisFavoritos {
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* ===== LISTA DE FAVORITOS ===== */
+.listaFavoritos {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+/* ===== ITEM FAVORITO ===== */
+.itemFavorito {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== NOMBRE Y DESCRIPCIÓN ===== */
+.nombreFavorito {
+    color: #4e770d;
+    font-size: 1.2rem;
+}
+
+.descripcionFavorito {
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+/* ===== RATING ===== */
+.ratingFavorito {
+    margin: 0.5rem 0;
+}
+
+/* ===== PROMEDIO ===== */
+.promedioFavorito {
+    margin: 0.5rem 0;
+    font-weight: bold;
+    color: #4e770d;
+}
+
+/* ===== CATEGORÍAS Y REDES ===== */
+.categoriasFavorito span,
+.redesFavorito span {
+    font-weight: bold;
+    color: #89a644;
+}
+
+.categoriasFavorito ul,
+.redesFavorito ul {
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.categoriasFavorito li,
+.redesFavorito li {
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.redesFavorito a {
+    color: #4e770d;
+    text-decoration: underline;
+}
+
+.redesFavorito a:hover {
+    color: #3a5c0a;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .divMisFavoritos {
+        padding: 1rem;
+    }
+
+    .itemFavorito {
+        padding: 1rem;
+    }
+}

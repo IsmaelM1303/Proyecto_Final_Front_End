@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react"
 import emailjs from "@emailjs/browser"
 import { obtenerElementos, actualizarElemento } from "../../api/Crud"
+import "../../styles/Recover.css"
 
 function Recover() {
     const [correo, setCorreo] = useState("")
@@ -59,7 +60,7 @@ function Recover() {
                 "Tu código de verificación es: " + numeroRandom
 
             const parametros = {
-                to_email: correo,  
+                to_email: correo,
                 mensaje: textoMensaje
             }
 
@@ -106,29 +107,27 @@ function Recover() {
         }
     }
 
-    let textoBoton = "Enviar correo de recuperación"
-    if (enviando) {
-        textoBoton = "Enviando..."
-    }
+    let textoBoton = enviando ? "Enviando..." : "Enviar correo de recuperación"
 
     return (
-        <div className="recuperar-cuenta-form">
-            <h2>Recuperar cuenta</h2>
+        <div className="divRecuperarCuenta">
+            <h2 className="tituloRecuperar">Recuperar cuenta</h2>
 
             {!correoValidado && (
-                <form onSubmit={manejarEnvioCorreo}>
-                    <div className="form-row">
+                <form className="formRecCorreo" onSubmit={manejarEnvioCorreo}>
+                    <div className="campoRecCorreo">
                         <label>Correo electrónico</label>
                         <input
                             type="email"
                             value={correo}
                             onChange={(e) => setCorreo(e.target.value)}
                             placeholder="Ingresa tu correo"
+                            className="inputRecCorreo"
                         />
                     </div>
 
-                    <div className="actions">
-                        <button type="submit" disabled={enviando}>
+                    <div className="accionesRecCorreo">
+                        <button type="submit" disabled={enviando} className="btnRecCorreo">
                             {textoBoton}
                         </button>
                     </div>
@@ -136,16 +135,17 @@ function Recover() {
             )}
 
             {correoValidado && !codigoValidado && (
-                <div className="form-row">
+                <div className="divRecCodigo">
                     <label>Ingresa el código recibido</label>
                     <input
                         type="text"
                         value={codigoIngresado}
                         onChange={(e) => setCodigoIngresado(e.target.value)}
                         placeholder="Código de verificación"
+                        className="inputRecCodigo"
                     />
-                    <div className="actions">
-                        <button type="button" onClick={manejarValidacionCodigo}>
+                    <div className="accionesRecCodigo">
+                        <button type="button" onClick={manejarValidacionCodigo} className="btnRecCodigo">
                             Validar código
                         </button>
                     </div>
@@ -153,18 +153,20 @@ function Recover() {
             )}
 
             {codigoValidado && (
-                <div className="form-row">
+                <div className="divRecContrasena">
                     <label>Nueva contraseña</label>
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <div className="campoRecContrasena">
                         <input
                             type={verContrasena ? "text" : "password"}
                             value={nuevaContrasena}
                             onChange={(e) => setNuevaContrasena(e.target.value)}
                             placeholder="Nueva contraseña"
+                            className="inputRecContrasena"
                         />
                         <button
                             type="button"
                             onClick={() => setVerContrasena(!verContrasena)}
+                            className="btnToggleRecContrasena"
                         >
                             {verContrasena ? "O" : "-"}
                         </button>
@@ -176,17 +178,18 @@ function Recover() {
                         value={confirmarContrasena}
                         onChange={(e) => setConfirmarContrasena(e.target.value)}
                         placeholder="Confirmar contraseña"
+                        className="inputRecContrasena"
                     />
 
-                    <div className="actions" style={{ marginTop: "10px" }}>
-                        <button type="button" onClick={manejarCambioContrasena}>
+                    <div className="accionesRecContrasena">
+                        <button type="button" onClick={manejarCambioContrasena} className="btnRecContrasena">
                             Cambiar contraseña
                         </button>
                     </div>
                 </div>
             )}
 
-            {mensaje && <p className="mensaje">{mensaje}</p>}
+            {mensaje && <p className="mensajeRecuperar">{mensaje}</p>}
         </div>
     )
 }

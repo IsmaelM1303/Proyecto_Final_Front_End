@@ -1,0 +1,147 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.divRecuperarCuenta {
+    max-width: 800px;
+    margin: 10% auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1); /* blanco translúcido */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== TÍTULO ===== */
+.tituloRecuperar {
+    color: #89a644;
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+}
+
+/* ===== FORMULARIO CORREO ===== */
+.formRecCorreo {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.campoRecCorreo label {
+    color: #89a644;
+    font-weight: bold;
+}
+
+.inputRecCorreo {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.accionesRecCorreo {
+    display: flex;
+    justify-content: center;
+}
+
+.btnRecCorreo {
+    background-color: #89a644;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* ===== FORMULARIO CÓDIGO ===== */
+.divRecCodigo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.inputRecCodigo {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.accionesRecCodigo {
+    display: flex;
+    justify-content: center;
+}
+
+.btnRecCodigo {
+    background-color: #89a644;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* ===== FORMULARIO CONTRASEÑA ===== */
+.divRecContrasena {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.campoRecContrasena {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.inputRecContrasena {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btnToggleRecContrasena {
+    background-color: #89a644;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+}
+
+.accionesRecContrasena {
+    display: flex;
+    justify-content: center;
+}
+
+.btnRecContrasena {
+    background-color: #89a644;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* ===== MENSAJE ===== */
+.mensajeRecuperar {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background: #f8d7da;
+    color: #721c24;
+    font-size: 0.9rem;
+    text-align: center;
+}
