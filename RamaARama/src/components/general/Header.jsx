@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate, useLocation }     from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import logo from "../../assets/Imgs/LogoBlanco.png"
 import { obtenerElementos } from "../../api/Crud"
+import "../../styles/Header.css"
 
 function Header() {
     const navigate = useNavigate()
     const location = useLocation()
     const token = localStorage.getItem("token")
     const [usuario, setUsuario] = useState(null)
+    const [menuAbierto, setMenuAbierto] = useState(false)
 
     useEffect(() => {
         async function fetchUsuario() {
@@ -39,14 +41,13 @@ function Header() {
 
     function renderBotones() {
         if (!usuario) return null
-
         const tipo = usuario.tipoCuenta?.toLowerCase().trim()
 
         return (
             <>
-                {/* Si es admin, mostrar botón Admin */}
                 {tipo.includes("admin") && (
                     <button
+                        className="headerBtnAdmin"
                         onClick={() => {
                             if (!location.pathname.includes("/Request")) {
                                 handleBotonClick("admin")
@@ -58,13 +59,9 @@ function Header() {
                     </button>
                 )}
 
-                {/* Texto para aplicar como gestor solo si NO es gestor */}
                 {!tipo.includes("gestor") && (
                     <span
-                        style={{
-                            cursor: location.pathname.includes("/SolicitudGestor") ? "not-allowed" : "pointer",
-                            opacity: location.pathname.includes("/SolicitudGestor") ? 0.5 : 1
-                        }}
+                        className={`headerTextoSolicitudGestor ${location.pathname.includes("/SolicitudGestor") ? "disabled" : ""}`}
                         onClick={() => {
                             if (!location.pathname.includes("/SolicitudGestor")) {
                                 navigate("/SolicitudGestor")
@@ -75,13 +72,9 @@ function Header() {
                     </span>
                 )}
 
-                {/* Texto para aplicar como admin solo si NO es admin */}
                 {!tipo.includes("admin") && (
                     <span
-                        style={{
-                            cursor: location.pathname.includes("/SolicitudAdmin") ? "not-allowed" : "pointer",
-                            opacity: location.pathname.includes("/SolicitudAdmin") ? 0.5 : 1
-                        }}
+                        className={`headerTextoSolicitudAdmin ${location.pathname.includes("/SolicitudAdmin") ? "disabled" : ""}`}
                         onClick={() => {
                             if (!location.pathname.includes("/SolicitudAdmin")) {
                                 navigate("/SolicitudAdmin")
@@ -97,22 +90,29 @@ function Header() {
 
     return (
         <header className="header">
-            <div className="divLogo">
-                <img src={logo} alt="Logo" width="100" height="100" />
-            </div >
+            <div className="headerLogo">
+                <img src={logo} alt="Logo" className="headerLogoImg" />
+            </div>
+
             <h1 className="headerNombre">Rama a Rama</h1>
-            <div className="headerBotones">
+
+            {/* Botones alineados en la misma fila */}
+            <div className={`headerBotones ${menuAbierto ? "abierto" : ""}`}>
                 {token && renderBotones()}
+
                 {token && (
                     <button
+                        className="headerBtnLogout"
                         onClick={handleLogout}
                         disabled={location.pathname === "/"}
                     >
                         Cerrar sesión
                     </button>
                 )}
+
                 {token && (
                     <button
+                        className="headerBtnPerfil"
                         onClick={() => {
                             if (!location.pathname.includes("/Perfil")) {
                                 handleBotonClick("gestor")
@@ -123,8 +123,10 @@ function Header() {
                         Perfil
                     </button>
                 )}
+
                 {token && (
                     <button
+                        className="headerBtnInicio"
                         onClick={() => {
                             if (!location.pathname.includes("/Main")) {
                                 navigate("/Main")
@@ -137,6 +139,7 @@ function Header() {
                 )}
 
                 <button
+                    className="headerBtnNosotros"
                     onClick={() => {
                         if (!location.pathname.includes("/Nosotros")) {
                             navigate("/Nosotros")
@@ -147,6 +150,14 @@ function Header() {
                     Nosotros
                 </button>
             </div>
+
+            {/* Botón menú solo visible en móvil */}
+            <button
+                className="headerBtnMenu"
+                onClick={() => setMenuAbierto(!menuAbierto)}
+            >
+                ☰
+            </button>
         </header>
     )
 }
