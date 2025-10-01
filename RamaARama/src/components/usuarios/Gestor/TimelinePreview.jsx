@@ -1,13 +1,12 @@
-// TimelinePreview.jsx
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import "../../../styles/Timeline/TimelinePreview.css"
 
 function ensureTimelineCss() {
-    var href = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"
-    var links = document.getElementsByTagName("link")
-    var exists = false
-    for (var i = 0; i < links.length; i++) {
-        var l = links[i]
+    const href = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"
+    const links = document.getElementsByTagName("link")
+    let exists = false
+    for (let i = 0; i < links.length; i++) {
+        const l = links[i]
         if (l.getAttribute("href") === href) {
             exists = true
             break
@@ -17,7 +16,7 @@ function ensureTimelineCss() {
         return Promise.resolve()
     }
     return new Promise(function (resolve) {
-        var link = document.createElement("link")
+        const link = document.createElement("link")
         link.setAttribute("rel", "stylesheet")
         link.setAttribute("href", href)
         link.onload = function () {
@@ -28,14 +27,14 @@ function ensureTimelineCss() {
 }
 
 function ensureTimelineScript() {
-    var src = "https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"
+    const src = "https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"
     if (window.TL && window.TL.Timeline) {
         return Promise.resolve()
     }
-    var scripts = document.getElementsByTagName("script")
-    var exists = false
-    for (var i = 0; i < scripts.length; i++) {
-        var s = scripts[i]
+    const scripts = document.getElementsByTagName("script")
+    let exists = false
+    for (let i = 0; i < scripts.length; i++) {
+        const s = scripts[i]
         if (s.getAttribute("src") === src) {
             exists = true
             break
@@ -43,7 +42,7 @@ function ensureTimelineScript() {
     }
     if (exists) {
         return new Promise(function (resolve) {
-            var wait = function () {
+            const wait = function () {
                 if (window.TL && window.TL.Timeline) {
                     resolve()
                 } else {
@@ -54,7 +53,7 @@ function ensureTimelineScript() {
         })
     }
     return new Promise(function (resolve) {
-        var script = document.createElement("script")
+        const script = document.createElement("script")
         script.setAttribute("src", src)
         script.async = true
         script.onload = function () {
@@ -64,8 +63,18 @@ function ensureTimelineScript() {
     })
 }
 
+// Normaliza la URL y la pasa por proxy para evitar problemas con espacios
+function normalizeUrl(url) {
+    if (!url) {
+        return ""
+    }
+    const clean = url.replace(/^https?:\/\//, "")
+    const safe = "https://images.weserv.nl/?url=" + encodeURIComponent(clean)
+    return safe
+}
+
 function sanitizeEventos(eventos) {
-    var out = []
+    const out = []
     if (!eventos) {
         return out
     }
@@ -73,37 +82,36 @@ function sanitizeEventos(eventos) {
         return out
     }
 
-    for (var i = 0; i < eventos.length; i++) {
-        var ev = eventos[i]
+    for (let i = 0; i < eventos.length; i++) {
+        const ev = eventos[i]
         if (!ev) {
             continue
         }
 
-        var start = {}
+        const start = {}
         if (ev.start_date && ev.start_date.year) {
-            var y = Number(ev.start_date.year)
+            const y = Number(ev.start_date.year)
             if (Number.isFinite(y)) {
                 start.year = y
             }
         }
         if (ev.start_date && ev.start_date.month) {
-            var m = Number(ev.start_date.month)
+            const m = Number(ev.start_date.month)
             if (Number.isFinite(m)) {
                 start.month = m
             }
         }
         if (ev.start_date && ev.start_date.day) {
-            var d = Number(ev.start_date.day)
+            const d = Number(ev.start_date.day)
             if (Number.isFinite(d)) {
                 start.day = d
             }
         }
-
         if (!start.year) {
             continue
         }
 
-        var text = {}
+        const text = {}
         if (ev.text && ev.text.headline) {
             text.headline = String(ev.text.headline)
         } else {
@@ -115,10 +123,10 @@ function sanitizeEventos(eventos) {
             text.text = ""
         }
 
-        var media = null
+        let media = null
         if (ev.media && ev.media.url) {
             media = {}
-            media.url = String(ev.media.url)
+            media.url = normalizeUrl(ev.media.url)
             if (ev.media.caption) {
                 media.caption = String(ev.media.caption)
             } else {
@@ -131,23 +139,23 @@ function sanitizeEventos(eventos) {
             }
         }
 
-        var end = null
+        let end = null
         if (ev.end_date) {
             end = {}
             if (ev.end_date.year) {
-                var ey = Number(ev.end_date.year)
+                const ey = Number(ev.end_date.year)
                 if (Number.isFinite(ey)) {
                     end.year = ey
                 }
             }
             if (ev.end_date.month) {
-                var em = Number(ev.end_date.month)
+                const em = Number(ev.end_date.month)
                 if (Number.isFinite(em)) {
                     end.month = em
                 }
             }
             if (ev.end_date.day) {
-                var ed = Number(ev.end_date.day)
+                const ed = Number(ev.end_date.day)
                 if (Number.isFinite(ed)) {
                     end.day = ed
                 }
@@ -157,7 +165,7 @@ function sanitizeEventos(eventos) {
             }
         }
 
-        var evento = {}
+        const evento = {}
         evento.start_date = start
         evento.text = text
         if (media) {
@@ -173,12 +181,13 @@ function sanitizeEventos(eventos) {
     return out
 }
 
-export default function TimelinePreview({ eventos }) {
-    var contenedorRef = useRef(null)
-    var timelineRef = useRef(null)
+function TimelinePreview({ eventos }) {
+    const contenedorRef = useRef(null)
+    const [showFull, setShowFull] = useState(false)
 
+    // Preview
     useEffect(function () {
-        var container = contenedorRef.current
+        const container = contenedorRef.current
         if (!container) {
             return
         }
@@ -187,41 +196,44 @@ export default function TimelinePreview({ eventos }) {
             return
         }
 
-        var sane = sanitizeEventos(eventos)
+        const sane = sanitizeEventos(eventos)
         if (sane.length === 0) {
             container.innerHTML = ""
-            var empty = document.createElement("div")
+            const empty = document.createElement("div")
             empty.textContent = "No hay eventos válidos"
             empty.style.padding = "8px"
             container.appendChild(empty)
             return
         }
 
-        var data = {}
-        var title = {}
-        title.text = {}
-        title.text.headline = "Línea de tiempo"
-        title.text.text = ""
-        data.title = title
-        data.events = sane
+        const data = {
+            title: { text: { headline: "Línea de tiempo", text: "" } },
+            events: sane
+        }
 
-        var init = function () {
+        const init = function () {
             container.innerHTML = ""
             if (window.TL && window.TL.Timeline) {
-                timelineRef.current = new window.TL.Timeline(
-                    container,
-                    data,
-                    {
-                        timenav_position: "bottom",
-                        timenav_height_percentage: 15,
-                        initial_zoom: 2,
-                        scale_factor: 1,
-                        locale: "es",
-                        hash_bookmark: false
+                new window.TL.Timeline(container, data, {
+                    timenav_position: "bottom",
+                    timenav_height_percentage: 15,
+                    initial_zoom: 2,
+                    scale_factor: 1,
+                    locale: "es",
+                    hash_bookmark: false
+                })
+                setTimeout(function () {
+                    const imgs = container.querySelectorAll(".tl-media img")
+                    for (let i = 0; i < imgs.length; i++) {
+                        const img = imgs[i]
+                        img.style.cursor = "zoom-in"
+                        img.addEventListener("click", function () {
+                            setShowFull(true)
+                        })
                     }
-                )
+                }, 500)
             } else {
-                var msg = document.createElement("div")
+                const msg = document.createElement("div")
                 msg.textContent = "TimelineJS no cargó"
                 msg.style.padding = "8px"
                 container.appendChild(msg)
@@ -237,16 +249,71 @@ export default function TimelinePreview({ eventos }) {
             })
 
         return function cleanup() {
-            timelineRef.current = null
             if (contenedorRef.current) {
                 contenedorRef.current.innerHTML = ""
             }
         }
     }, [eventos])
 
+    // Fullscreen
+    useEffect(function () {
+        if (!showFull) {
+            return
+        }
+        if (!eventos || !Array.isArray(eventos) || eventos.length === 0) {
+            return
+        }
+
+        const sane = sanitizeEventos(eventos)
+        if (sane.length === 0) {
+            return
+        }
+
+        const data = {
+            title: { text: { headline: "Línea de tiempo completa", text: "" } },
+            events: sane
+        }
+
+        const initFull = function () {
+            const container = document.getElementById("timeline-full")
+            if (!container) {
+                return
+            }
+            container.innerHTML = ""
+            if (window.TL && window.TL.Timeline) {
+                new window.TL.Timeline(container, data, {
+                    timenav_position: "bottom",
+                    timenav_height_percentage: 25,
+                    initial_zoom: 3,
+                    scale_factor: 1,
+                    locale: "es",
+                    hash_bookmark: false
+                })
+            }
+        }
+
+        ensureTimelineCss()
+            .then(function () {
+                return ensureTimelineScript()
+            })
+            .then(function () {
+                initFull()
+            })
+    }, [showFull, eventos])
+
     return (
         <div className="contenedor-linea-tiempo">
             <div ref={contenedorRef} className="caja-linea-tiempo"></div>
+
+            {showFull && (
+                <div className="timeline-modal" onClick={function () { setShowFull(false) }}>
+                    <div className="timeline-modal-content" onClick={function (e) { e.stopPropagation() }}>
+                        <div id="timeline-full" style={{ width: "100%", height: "100%" }}></div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
+
+export default TimelinePreview

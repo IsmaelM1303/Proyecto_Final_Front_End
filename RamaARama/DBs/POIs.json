@@ -125,7 +125,23 @@
             "text": "Se aprueba el centro cívico"
           },
           "media": {
-            "url": "https://www.mjp.go.cr/IMG/CCP/CCP_Desampa%201.jpg",
+            "url": "https://images.weserv.nl/?url=www.mjp.go.cr/IMG/CCP/CCP_Desampa%201.jpg",
+            "caption": "",
+            "credit": ""
+          }
+        },
+        {
+          "start_date": {
+            "year": "2025",
+            "month": "07",
+            "day": "01"
+          },
+          "text": {
+            "headline": "Forward",
+            "text": "Inician clases de Forward en el Centro Cívico"
+          },
+          "media": {
+            "url": "https://static.wixstatic.com/media/aaad85_0e3cbfaf66104f0ca5c6959ed8b5a95c~mv2.png",
             "caption": "",
             "credit": ""
           }

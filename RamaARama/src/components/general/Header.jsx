@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import logo from "../../assets/Imgs/Logo.png"
+import { useNavigate, useLocation }     from "react-router-dom"
+import logo from "../../assets/Imgs/LogoBlanco.png"
 import { obtenerElementos } from "../../api/Crud"
 
 function Header() {
@@ -96,12 +96,12 @@ function Header() {
     }
 
     return (
-        <header>
-            <div>
+        <header className="header">
+            <div className="divLogo">
                 <img src={logo} alt="Logo" width="100" height="100" />
-            </div>
-            <h1>Rama a Rama</h1>
-            <div>
+            </div >
+            <h1 className="headerNombre">Rama a Rama</h1>
+            <div className="headerBotones">
                 {token && renderBotones()}
                 {token && (
                     <button

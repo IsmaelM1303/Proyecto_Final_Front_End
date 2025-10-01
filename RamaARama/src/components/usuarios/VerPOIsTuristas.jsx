@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Rating } from "react-simple-star-rating"
 import { actualizarElemento, obtenerElementos } from "../../api/Crud"
-import TimelinePreview from "./Gestor/TimelinePreview"
+import TimelineSwitcher from "./Gestor/TimelineSwitcher"
 
 function VerPOIsTurista() {
     const [poi, setPoi] = useState(null)
@@ -178,7 +178,7 @@ function VerPOIsTurista() {
             {Array.isArray(poi.lineaTiempo) && poi.lineaTiempo.length > 0 && (
                 <div style={{ marginTop: 16 }}>
                     <h4>Línea de tiempo</h4>
-                    <TimelinePreview eventos={poi.lineaTiempo} />
+                    <TimelineSwitcher eventos={poi.lineaTiempo} />
                 </div>
             )}
         </div>

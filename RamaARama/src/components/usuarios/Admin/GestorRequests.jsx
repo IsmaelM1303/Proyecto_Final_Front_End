@@ -5,7 +5,7 @@ import {
     eliminarElemento
 } from "../../../api/Crud"
 import emailjs from "@emailjs/browser"
-import TimelinePreview from "../Gestor/TimelinePreview"
+import TimelineSwitcher from "../Gestor/TimelineSwitcher"
 
 function GestorRequests() {
     const [filtro, setFiltro] = useState("")
@@ -457,7 +457,7 @@ function GestorRequests() {
                     timelineRender = (
                         <div style={{ marginTop: 12 }}>
                             <strong>Línea de tiempo:</strong>
-                            <TimelinePreview eventos={item.lineaTiempo} />
+                            <TimelineSwitcher eventos={item.lineaTiempo} />
                         </div>
                     )
                 }
