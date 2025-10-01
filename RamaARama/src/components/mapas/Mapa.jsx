@@ -14,6 +14,8 @@ import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import MapaPOIs from "./MapaPOIs"
 import MapaFiltros from "./MapaFiltros"
 
+import "../../styles/Mapas/Mapa.css"
+
 // Configuración segura de íconos Leaflet
 if (L && L.Icon && L.Icon.Default) {
     L.Icon.Default.mergeOptions({
@@ -91,13 +93,13 @@ function Mapa() {
     const [errorPOIs, setErrorPOIs] = useState("")
 
     const provincias = [
-        { codigo: "1", nombre: "San José", cantones: ["101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120"] },
-        { codigo: "2", nombre: "Alajuela", cantones: ["201","202","203","204","205","206","207","208","209","210","211","212","213","214","215"] },
-        { codigo: "3", nombre: "Cartago", cantones: ["301","302","303","304","305","306","307","308"] },
-        { codigo: "4", nombre: "Heredia", cantones: ["401","402","403","404","405","406","407","408","409","410"] },
-        { codigo: "5", nombre: "Guanacaste", cantones: ["501","502","503","504","505","506","507","508","509","510","511"] },
-        { codigo: "6", nombre: "Puntarenas", cantones: ["601","602","603","604","605","606","607","608","609","610","611"] },
-        { codigo: "7", nombre: "Limón", cantones: ["701","702","703","704","705","706"] }
+        { codigo: "1", nombre: "San José", cantones: ["101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"] },
+        { codigo: "2", nombre: "Alajuela", cantones: ["201", "202", "203", "204", "205", "206", "207", "208", "209", "210", "211", "212", "213", "214", "215"] },
+        { codigo: "3", nombre: "Cartago", cantones: ["301", "302", "303", "304", "305", "306", "307", "308"] },
+        { codigo: "4", nombre: "Heredia", cantones: ["401", "402", "403", "404", "405", "406", "407", "408", "409", "410"] },
+        { codigo: "5", nombre: "Guanacaste", cantones: ["501", "502", "503", "504", "505", "506", "507", "508", "509", "510", "511"] },
+        { codigo: "6", nombre: "Puntarenas", cantones: ["601", "602", "603", "604", "605", "606", "607", "608", "609", "610", "611"] },
+        { codigo: "7", nombre: "Limón", cantones: ["701", "702", "703", "704", "705", "706"] }
     ]
 
     const estiloDivision = { color: "#4e770dff", weight: 2, opacity: 0.65 }
@@ -266,7 +268,8 @@ function Mapa() {
     }
 
     return (
-        <div>
+        <div className="divMapa">
+            {/* Filtros flotantes sobre el mapa */}
             <div className="filtros-mapa">
                 <MapaFiltros
                     mostrarProvincias={mostrarProvincias}
@@ -282,6 +285,7 @@ function Mapa() {
                 />
             </div>
 
+            {/* Contenedor del mapa */}
             <MapContainer
                 center={[9.9, -84.1]}
                 zoom={8}
@@ -312,11 +316,13 @@ function Mapa() {
                 </MarkerClusterGroup>
             </MapContainer>
 
+            {/* Estado de POIs flotante */}
             <div className="estado-pois">
                 {componenteEstadoPOIs}
             </div>
         </div>
     )
+
 }
 
 export default Mapa

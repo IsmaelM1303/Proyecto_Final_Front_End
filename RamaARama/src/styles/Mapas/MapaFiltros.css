@@ -1,0 +1,175 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.panel-filtros-wrapper {
+    position: fixed;
+    top: 110px;
+    left: 3.5rem;
+    z-index: 9000;
+}
+
+.menu-container {
+    position: relative;
+    width: 50px;
+    height: 50px;
+}
+
+/* ===== BOTÓN HAMBURGUESA ===== */
+.filtro-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    background-color: #89a644; /* verde claro */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 6px;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    z-index: 2;
+}
+
+.filtro-icon span {
+    display: block;
+    width: 28px;
+    height: 4px;
+    background-color: #4e770d; /* verde oscuro */
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.filtro-icon.visible {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+    transition-delay: 0.5s;
+}
+
+.filtro-icon.oculto {
+    transform: rotate(180deg) scale(0);
+    opacity: 0;
+    transition-delay: 0s;
+}
+
+/* ===== PANEL FILTROS ===== */
+.panel-filtros {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 200px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    background-color: #4e770d;
+    transform: scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    transition: transform 0.5s ease, opacity 0s linear;
+}
+
+.panel-filtros.abierto {
+    transform: scaleX(1);
+    transform-origin: left center;
+    opacity: 1;
+    padding: 0 1rem;
+    pointer-events: auto;
+    z-index: 3;
+    transition: transform 0.5s ease, opacity 0s linear 0s;
+}
+
+.panel-filtros.cerrado {
+    transform: scaleX(0);
+    transform-origin: right center;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.5s ease, opacity 0s linear 0.5s;
+}
+
+/* ===== CONTROLES ===== */
+.panel-filtros-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.panel-filtros-controls button {
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    background-color: #89a644;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.panel-filtros-controls button:hover {
+    background-color: #6f8f34;
+}
+
+.panel-filtros-controls select {
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: none;
+    background-color: rgba(137, 166, 68, 0.8);
+    color: white;
+    cursor: pointer;
+}
+
+.cargando-texto {
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablets: permitir scroll horizontal si se desborda */
+@media (max-width: 1024px) {
+    .panel-filtros {
+        min-width: auto;
+        max-width: 90vw;
+    }
+    .panel-filtros-controls {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+}
+
+/* Móviles: panel ocupa todo el ancho y botones en columna */
+@media (max-width: 600px) {
+    .panel-filtros-wrapper {
+        top: 100px;
+        left: 0.3rem;
+        right: 1rem;
+    }
+    .menu-container {
+        width: 100%;
+    }
+    .panel-filtros {
+        width: 100%;
+        height: auto;
+        transform-origin: bottom center;
+    }
+    .panel-filtros.abierto {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    .panel-filtros-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    .panel-filtros-controls button,
+    .panel-filtros-controls select {
+        width: 100%;
+    }
+}

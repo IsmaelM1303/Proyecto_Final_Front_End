@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { obtenerElementos } from "../../api/Crud"
+import "../../styles/Login.css"
 
 function Alerta({ mostrar, onOcultar, mensaje }) {
     const [visible, setVisible] = useState(false)
@@ -10,9 +11,7 @@ function Alerta({ mostrar, onOcultar, mensaje }) {
             setVisible(true)
             const temporizador = setTimeout(() => {
                 setVisible(false)
-                if (onOcultar) {
-                    onOcultar()
-                }
+                if (onOcultar) onOcultar()
             }, 3000)
             return () => clearTimeout(temporizador)
         }
@@ -20,7 +19,7 @@ function Alerta({ mostrar, onOcultar, mensaje }) {
 
     if (!visible) return null
 
-    return <div>{mensaje}</div>
+    return <div className="login-alerta">{mensaje}</div>
 }
 
 function Login() {
@@ -33,7 +32,6 @@ function Login() {
 
     async function manejoSubmit(e) {
         e.preventDefault()
-
         const usuarios = await obtenerElementos("usuarios")
 
         if (!usuarios) {
@@ -62,59 +60,62 @@ function Login() {
         setContrasena("")
     }
 
-    const inputCorreo = (
-        <input
-            type="email"
-            placeholder="Correo"
-            value={correo}
-            onChange={e => setCorreo(e.target.value)}
-        />
-    )
-
-    const inputContrasena = (
-        <div>
-            <input
-                type={verContrasena ? "text" : "password"}
-                placeholder="Contraseña"
-                value={contrasena}
-                onChange={e => setContrasena(e.target.value)}
-            />
-            <button type="button" onClick={() => setVerContrasena(!verContrasena)}>
-                {verContrasena ? "O" : "-"}
-            </button>
-        </div>
-    )
-
-    const botonLogin = <button type="submit">Iniciar sesión</button>
-
     return (
-        <div>
-            <h2>Iniciar sesión</h2>
-            <form onSubmit={manejoSubmit}>
-                {inputCorreo}
-                {inputContrasena}
-                {botonLogin}
-            </form>
+        <div className="login-wrapper">
+            <div className="login-card">
+                <h2 className="login-title">Iniciar sesión</h2>
 
-            <p
-                style={{ color: "blue", cursor: "pointer", marginTop: "10px" }}
-                onClick={() => navigate("/Register")}
-            >
-                ¿No tienes cuenta? Regístrate aquí
-            </p>
+                <form className="login-form" onSubmit={manejoSubmit}>
+                    <input
+                        className="login-input"
+                        type="email"
+                        placeholder="Correo"
+                        value={correo}
+                        onChange={e => setCorreo(e.target.value)}
+                    />
 
-            <p
-                style={{ color: "blue", cursor: "pointer", marginTop: "6px" }}
-                onClick={() => navigate("/RecuperarContrasena")}
-            >
-                Olvidé mi contraseña
-            </p>
+                    <div className="login-password">
+                        <input
+                            className="login-input"
+                            type={verContrasena ? "text" : "password"}
+                            placeholder="Contraseña"
+                            value={contrasena}
+                            onChange={e => setContrasena(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            className="login-toggle-password"
+                            onClick={() => setVerContrasena(!verContrasena)}
+                        >
+                            {verContrasena ? "Ocultar" : "Ver"}
+                        </button>
+                    </div>
 
-            <Alerta
-                mostrar={mostrarAlerta}
-                onOcultar={() => setMostrarAlerta(false)}
-                mensaje={mensajeAlerta}
-            />
+                    <button type="submit" className="login-button">
+                        Iniciar sesión
+                    </button>
+                </form>
+
+                <p
+                    className="login-link"
+                    onClick={() => navigate("/Register")}
+                >
+                    ¿No tienes cuenta? Regístrate aquí
+                </p>
+
+                <p
+                    className="login-link"
+                    onClick={() => navigate("/RecuperarContrasena")}
+                >
+                    Olvidé mi contraseña
+                </p>
+
+                <Alerta
+                    mostrar={mostrarAlerta}
+                    onOcultar={() => setMostrarAlerta(false)}
+                    mensaje={mensajeAlerta}
+                />
+            </div>
         </div>
     )
 }

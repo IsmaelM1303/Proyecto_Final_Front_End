@@ -1,0 +1,57 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+/* Contenedor principal: ocupa toda la ventana */
+.divMapa {
+    position: relative;
+    width: 100vw;
+    height: calc(100vh - 100px);
+    /* alto total menos 100px */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* El mapa ocupa todo el contenedor */
+.mapa-container {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Filtros flotantes arriba a la izquierda */
+.filtros-mapa {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 5000;
+    /* por encima del mapa */
+}
+
+/* Estado de POIs flotante abajo a la derecha */
+.estado-pois {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 5000;
+    background: rgba(78, 119, 13, 0.9);
+    /* verde oscuro translúcido */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 0.9rem;
+}
+
+/* Asegurar que el body no tenga scroll extra */
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}

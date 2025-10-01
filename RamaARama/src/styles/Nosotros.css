@@ -1,0 +1,57 @@
+.nosotrosContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1); /* blanco translúcido */
+    backdrop-filter: blur(10px); /* efecto de desenfoque */
+    -webkit-backdrop-filter: blur(10px); /* soporte para Safari */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    align-items: center;
+}
+
+.infoNegocio h1,
+.infoNegocio h2,
+.formularioContacto h2,
+.infoContacto h2 {
+    color: #89a644;
+    margin-bottom: 0.5rem;
+}
+
+.infoNegocio ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.formularioContacto form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 500px;
+}
+
+.formularioContacto input,
+.formularioContacto textarea {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.formularioContacto button {
+    background-color: #89a644;
+    color: white;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: not-allowed;
+}
+
+.pageWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: transparent;
+}

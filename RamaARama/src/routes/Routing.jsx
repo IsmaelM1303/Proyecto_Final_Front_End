@@ -14,6 +14,7 @@ import RecContrasena from "../pages/RecContrasena"
 import EditarPOI from "../pages/EditarPOI"
 import VerPOI from "../pages/VerPOI"
 import PageMisFavs from "../pages/PageMisFavs"
+import NosotrosPage from "../pages/NosotrosPage"
 
 function Routing() {
     return (
@@ -21,6 +22,7 @@ function Routing() {
             <Routes>
                 <Route path="/Register" element={<Registro/>}/>
                 <Route path="/" element={<InicioSesion/>}/>
+                <Route path="/Nosotros" element={<NosotrosPage/>}/>
                 <Route path="/Main" element={<PrivateRoute><Main/></PrivateRoute>}/>
                 <Route path="/SolicitudGestor" element={<PrivateRoute><AplicaGestor/></PrivateRoute>}/>
                 <Route path="/SolicitudAdmin" element={<PrivateRoute><AplicaAdmin/></PrivateRoute>}/>
