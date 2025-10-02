@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { obtenerElementos, actualizarElemento } from "../../api/Crud"
+import "../../styles/Perfil.css"
 
 function Perfil() {
     const [correo, setCorreo] = useState("")
@@ -62,59 +63,79 @@ function Perfil() {
         }
     }
 
-    if (cargando) return <p>Cargando perfil...</p>
+    if (cargando) return <p className="perfil__loading">Cargando perfil...</p>
 
     return (
-        <div>
-            <h2>Mi Perfil</h2>
-            <div>
-                <label>Correo:</label>
+        <div className="perfil">
+            <h2 className="perfil__title">Mi Perfil</h2>
+
+            <div className="perfil__field">
+                <label className="perfil__label">Correo:</label>
                 <input
+                    className="perfil__input"
                     type="email"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
                 />
             </div>
 
-            <div>
-                <label>Nueva contraseña:</label>
-                <div>
+            <div className="perfil__field">
+                <label className="perfil__label">Nueva contraseña:</label>
+                <div className="perfil__password">
                     <input
+                        className="perfil__input"
                         type={verNuevaPass ? "text" : "password"}
                         value={nuevaPass}
                         onChange={(e) => setNuevaPass(e.target.value)}
                     />
-                    <button type="button" onClick={() => setVerNuevaPass(!verNuevaPass)}>
+                    <button
+                        type="button"
+                        className="perfil__toggle-password"
+                        onClick={() => setVerNuevaPass(!verNuevaPass)}
+                    >
                         {verNuevaPass ? "O" : "-"}
                     </button>
                 </div>
             </div>
 
-            <div>
-                <label>Confirmar nueva contraseña:</label>
-                <div>
+            <div className="perfil__field">
+                <label className="perfil__label">Confirmar nueva contraseña:</label>
+                <div className="perfil__password">
                     <input
+                        className="perfil__input"
                         type={verConfirmPass ? "text" : "password"}
                         value={confirmPass}
                         onChange={(e) => setConfirmPass(e.target.value)}
                     />
-                    <button type="button" onClick={() => setVerConfirmPass(!verConfirmPass)}>
+                    <button
+                        type="button"
+                        className="perfil__toggle-password"
+                        onClick={() => setVerConfirmPass(!verConfirmPass)}
+                    >
                         {verConfirmPass ? "O" : "-"}
                     </button>
                 </div>
             </div>
 
-            <button onClick={handleGuardar}>Confirmar cambios</button>
+            <button className="perfil__button" onClick={handleGuardar}>
+                Confirmar cambios
+            </button>
 
             {/* Botones condicionales */}
-            <div style={{ marginTop: "20px" }}>
+            <div className="perfil__extra-actions" style={{ marginTop: "20px" }}>
                 {tipoCuenta.includes("gestor") && (
-                    <button onClick={() => navigate("/VerPOIs")}>
+                    <button
+                        className="perfil__button perfil__button--secondary"
+                        onClick={() => navigate("/VerPOIs")}
+                    >
                         Mis puntos de interés
                     </button>
                 )}
                 {tipoCuenta.includes("admin") && (
-                    <button onClick={() => navigate("/AdministrarPerfiles")}>
+                    <button
+                        className="perfil__button perfil__button--secondary"
+                        onClick={() => navigate("/AdministrarPerfiles")}
+                    >
                         Ver perfiles
                     </button>
                 )}

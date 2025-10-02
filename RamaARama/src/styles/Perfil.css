@@ -1,0 +1,133 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.perfil {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* ===== TÍTULO ===== */
+.perfil__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    color: #89a644;
+    text-align: center;
+}
+
+/* ===== ESTADO DE CARGA ===== */
+.perfil__loading {
+    text-align: center;
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+/* ===== CAMPOS ===== */
+.perfil__field {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.perfil__label {
+    font-weight: bold;
+    color: #4e770d;
+    font-size: 0.95rem;
+}
+
+.perfil__input {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    background-color: #d9dbf1;
+    color: #333;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.perfil__input:focus {
+    outline: none;
+    border-color: #4e770d;
+}
+
+/* ===== CONTRASEÑA CON TOGGLE ===== */
+.perfil__password {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.perfil__toggle-password {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: #89a644;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.perfil__toggle-password:hover {
+    background: #6f8f34;
+}
+
+/* ===== BOTONES ===== */
+.perfil__button {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background: #4e770d;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.perfil__button:hover {
+    background: #3a5c0a;
+    transform: translateY(-1px);
+}
+
+.perfil__button--secondary {
+    background: #89a644;
+    margin-top: 0.5rem;
+}
+
+.perfil__button--secondary:hover {
+    background: #6f8f34;
+}
+
+/* ===== ACCIONES EXTRA ===== */
+.perfil__extra-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .perfil {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: none;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .perfil__button {
+        width: 100%;
+    }
+}

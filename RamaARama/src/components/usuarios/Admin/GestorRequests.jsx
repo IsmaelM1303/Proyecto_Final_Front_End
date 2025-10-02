@@ -2,10 +2,12 @@ import { useState, useEffect } from "react"
 import {
     obtenerElementos,
     actualizarElemento,
-    eliminarElemento
+    eliminarElemento,
+    crearElemento
 } from "../../../api/Crud"
 import emailjs from "@emailjs/browser"
 import TimelineSwitcher from "../Gestor/TimelineSwitcher"
+import "../../../styles/GestorRequests.css"
 
 function GestorRequests() {
     const [filtro, setFiltro] = useState("")
@@ -227,7 +229,6 @@ function GestorRequests() {
         alert("Solicitud de " + tipoSolicitud + " negada para usuario " + item.id)
     }
 
-    // Normalización mínima para TimelineJS (sin optional chaining)
     function normalizarLineaTiempo(linea) {
         if (!Array.isArray(linea)) {
             return []
@@ -310,33 +311,19 @@ function GestorRequests() {
         return salida
     }
 
-    // Aceptar POI: PATCH parcial y explícito al POI usando el id de la solicitud, luego eliminar la solicitud
     async function aceptarSolicitudPOI(item) {
         try {
-            const lineaTiempoNormalizada = normalizarLineaTiempo(item && Array.isArray(item.lineaTiempo) ? item.lineaTiempo : [])
-
-            const idSolicitud = item && item.id ? item.id : null
-            if (!idSolicitud) {
-                alert("No se encontró id de la solicitud de POI.")
-                return
+            const nuevoPOI = {
+                nombre: item.nombre,
+                descripcion: item.descripcion,
+                ubicacion: item.ubicacion,
+                categorias: Array.isArray(item.categorias) ? item.categorias : [],
+                redes: Array.isArray(item.redes) ? item.redes : [],
+                lineaTiempo: normalizarLineaTiempo(Array.isArray(item.lineaTiempo) ? item.lineaTiempo : []),
+                token: item.token ? item.token : null
             }
 
-            // Datos que se actualizan en el POI (patch), tomando como base la solicitud
-            const patchPOI = {
-                nombre: item && typeof item.nombre === "string" ? item.nombre : "",
-                descripcion: item && typeof item.descripcion === "string" ? item.descripcion : "",
-                ubicacion: item && item.ubicacion ? item.ubicacion : null,
-                categorias: item && Array.isArray(item.categorias) ? item.categorias : [],
-                redes: item && Array.isArray(item.redes) ? item.redes : [],
-                lineaTiempo: lineaTiempoNormalizada,
-                token: item && item.token ? item.token : null
-            }
-
-            const actualizado = await actualizarElemento("POIs", idSolicitud, patchPOI, 3)
-            if (!actualizado) {
-                alert("No se pudo actualizar el POI con el id de la solicitud.")
-                return
-            }
+            await crearElemento("POIs", nuevoPOI, 3)
 
             let correoUsuario = null
             if (item && item.token) {
@@ -348,15 +335,15 @@ function GestorRequests() {
 
             await enviarCorreoSolicitud({
                 toEmail: correoUsuario,
-                nombreDestinatario: item && item.nombre ? item.nombre : "",
+                nombreDestinatario: item.nombre,
                 tipo: "Punto de Interés",
                 estado: "aprobada",
-                item: item
+                item
             })
 
-            await eliminarElemento("solicitudPOIs", idSolicitud, 3)
-            setDatos(function (prev) { return prev.filter(function (req) { return req.id !== idSolicitud }) })
-            alert("Solicitud de POI aprobada y POI actualizado: " + (item && item.nombre ? item.nombre : "POI"))
+            await eliminarElemento("solicitudPOIs", item.id, 3)
+            setDatos(function (prev) { return prev.filter(function (req) { return req.id !== item.id }) })
+            alert("Solicitud de POI aceptada: " + (item.nombre || "POI"))
         } catch (err) {
             console.error("Error aceptando solicitud de POI:", err)
             alert("Error al aceptar la solicitud de POI")
@@ -374,25 +361,23 @@ function GestorRequests() {
 
         await enviarCorreoSolicitud({
             toEmail: correoUsuario,
-            nombreDestinatario: item && item.nombre ? item.nombre : "",
+            nombreDestinatario: item.nombre,
             tipo: "Punto de Interés",
             estado: "rechazada",
-            item: item
+            item
         })
 
-        const idSolicitud = item && item.id ? item.id : null
-        if (!idSolicitud) {
-            alert("No se encontró id de la solicitud de POI para eliminar.")
-            return
-        }
-
-        await eliminarElemento("solicitudPOIs", idSolicitud, 3)
-        setDatos(function (prev) { return prev.filter(function (req) { return req.id !== idSolicitud }) })
-        alert("Solicitud de POI negada: " + (item && item.nombre ? item.nombre : "POI"))
+        await eliminarElemento("solicitudPOIs", item.id, 3)
+        setDatos(function (prev) { return prev.filter(function (req) { return req.id !== item.id }) })
+        alert("Solicitud de POI negada: " + (item.nombre || "POI"))
     }
 
     async function aceptarSolicitud(item) {
-        if (filtro === "admin" || filtro === "gestor") {
+        if (filtro === "admin") {
+            await aceptarSolicitudCuenta(item)
+            return
+        }
+        if (filtro === "gestor") {
             await aceptarSolicitudCuenta(item)
             return
         }
@@ -403,7 +388,11 @@ function GestorRequests() {
     }
 
     async function negarSolicitud(item) {
-        if (filtro === "admin" || filtro === "gestor") {
+        if (filtro === "admin") {
+            await negarSolicitudCuenta(item)
+            return
+        }
+        if (filtro === "gestor") {
             await negarSolicitudCuenta(item)
             return
         }
@@ -429,108 +418,109 @@ function GestorRequests() {
 
             if (filtro === "poi") {
                 let categoriasRender = null
-                if (item && item.categorias && Array.isArray(item.categorias) && item.categorias.length > 0) {
+                if (item.categorias && Array.isArray(item.categorias) && item.categorias.length > 0) {
                     categoriasRender = (
-                        <div>
+                        <div className="gestor-requests__categories">
                             <strong>Categorías:</strong>
-                            <ul>
-                                {item.categorias.map(function (c, i) { return <li key={i}>{c}</li> })}
+                            <ul className="gestor-requests__categories-list">
+                                {item.categorias.map(function (c, i) { return <li className="gestor-requests__categories-item" key={i}>{c}</li> })}
                             </ul>
                         </div>
                     )
                 }
 
                 let redesRender = null
-                if (item && item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
+                if (item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
                     redesRender = (
-                        <div>
+                        <div className="gestor-requests__socials">
                             <strong>Redes:</strong>
-                            <ul>
-                                {item.redes.map(function (r, i) { return <li key={i}>{r.tipo}: {r.link}</li> })}
+                            <ul className="gestor-requests__socials-list">
+                                {item.redes.map(function (r, i) { return <li className="gestor-requests__socials-item" key={i}>{r.tipo}: {r.link}</li> })}
                             </ul>
                         </div>
                     )
                 }
 
                 let timelineRender = null
-                if (item && item.lineaTiempo && Array.isArray(item.lineaTiempo) && item.lineaTiempo.length > 0) {
+                if (item.lineaTiempo && Array.isArray(item.lineaTiempo) && item.lineaTiempo.length > 0) {
+                    const eventosNormalizados = normalizarLineaTiempo(item.lineaTiempo)
                     timelineRender = (
-                        <div style={{ marginTop: 12 }}>
+                        <div className="gestor-requests__timeline" style={{ marginTop: 12 }}>
                             <strong>Línea de tiempo:</strong>
-                            <TimelineSwitcher eventos={item.lineaTiempo} />
+                            <TimelineSwitcher eventos={eventosNormalizados} />
                         </div>
                     )
                 }
 
                 contenido = (
-                    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                        <p><strong>ID Solicitud:</strong> {item && item.id ? item.id : ""}</p>
-                        <p><strong>Nombre POI:</strong> {item && item.nombre ? item.nombre : ""}</p>
-                        <p><strong>Descripción:</strong> {item && item.descripcion ? item.descripcion : ""}</p>
-                        {item && item.ubicacion && item.ubicacion.lat && item.ubicacion.lng && (
-                            <p><strong>Ubicación:</strong> {item.ubicacion.lat}, {item.ubicacion.lng}</p>
+                    <div className="gestor-requests__card" style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                        <p className="gestor-requests__field"><strong>ID Solicitud:</strong> {item.id}</p>
+                        <p className="gestor-requests__field"><strong>Nombre POI:</strong> {item.nombre}</p>
+                        <p className="gestor-requests__field"><strong>Descripción:</strong> {item.descripcion}</p>
+                        {item.ubicacion && item.ubicacion.lat && item.ubicacion.lng && (
+                            <p className="gestor-requests__field"><strong>Ubicación:</strong> {item.ubicacion.lat}, {item.ubicacion.lng}</p>
                         )}
                         {categoriasRender}
                         {redesRender}
                         {timelineRender}
-                        {item && item.token && <p><strong>ID Usuario (token):</strong> {item.token}</p>}
+                        {item.token && <p className="gestor-requests__field"><strong>ID Usuario (token):</strong> {item.token}</p>}
 
-                        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                            <button onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
-                            <button onClick={function () { negarSolicitud(item) }}>Negar</button>
+                        <div className="gestor-requests__actions" style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                            <button className="gestor-requests__btn gestor-requests__btn--accept" onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
+                            <button className="gestor-requests__btn gestor-requests__btn--deny" onClick={function () { negarSolicitud(item) }}>Negar</button>
                         </div>
                     </div>
                 )
             } else {
                 let redesRenderCuenta = null
-                if (item && item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
+                if (item.redes && Array.isArray(item.redes) && item.redes.length > 0) {
                     redesRenderCuenta = (
-                        <div>
+                        <div className="gestor-requests__socials">
                             <strong>Redes:</strong>
-                            <ul>
-                                {item.redes.map(function (r, i) { return <li key={i}>{r.tipo}: {r.link}</li> })}
+                            <ul className="gestor-requests__socials-list">
+                                {item.redes.map(function (r, i) { return <li className="gestor-requests__socials-item" key={i}>{r.tipo}: {r.link}</li> })}
                             </ul>
                         </div>
                     )
                 }
 
                 contenido = (
-                    <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                        <p><strong>ID Usuario:</strong> {item && item.id ? item.id : ""}</p>
-                        <p><strong>Nombre:</strong> {item && item.nombre ? item.nombre : ""}</p>
-                        <p><strong>Provincia:</strong> {item && item.provinciaResidencia ? item.provinciaResidencia : ""}</p>
-                        {item && item.identificacion && <p><strong>Identificación:</strong> {item.identificacion}</p>}
-                        {item && item.correoSecundario && <p><strong>Correo alterno:</strong> {item.correoSecundario}</p>}
-                        {item && item.telefono && <p><strong>Teléfono:</strong> {item.telefono}</p>}
+                    <div className="gestor-requests__card" style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                        <p className="gestor-requests__field"><strong>ID Usuario:</strong> {item.id}</p>
+                        <p className="gestor-requests__field"><strong>Nombre:</strong> {item.nombre}</p>
+                        <p className="gestor-requests__field"><strong>Provincia:</strong> {item.provinciaResidencia}</p>
+                        {item.identificacion && <p className="gestor-requests__field"><strong>Identificación:</strong> {item.identificacion}</p>}
+                        {item.correoSecundario && <p className="gestor-requests__field"><strong>Correo alterno:</strong> {item.correoSecundario}</p>}
+                        {item.telefono && <p className="gestor-requests__field"><strong>Teléfono:</strong> {item.telefono}</p>}
                         {redesRenderCuenta}
 
-                        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                            <button onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
-                            <button onClick={function () { negarSolicitud(item) }}>Negar</button>
+                        <div className="gestor-requests__actions" style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                            <button className="gestor-requests__btn gestor-requests__btn--accept" onClick={function () { aceptarSolicitud(item) }}>Aceptar</button>
+                            <button className="gestor-requests__btn gestor-requests__btn--deny" onClick={function () { negarSolicitud(item) }}>Negar</button>
                         </div>
                     </div>
                 )
             }
 
-            return <div key={index}>{contenido}</div>
+            return <div className="gestor-requests__item" key={index}>{contenido}</div>
         })
 
-        listadoSolicitudes = <div>{itemsRenderizados}</div>
+        listadoSolicitudes = <div className="gestor-requests__list">{itemsRenderizados}</div>
     }
 
     return (
-        <div>
-            <h2>Solicitudes</h2>
+        <div className="gestor-requests">
+            <h2 className="gestor-requests__title">Solicitudes</h2>
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-                <button onClick={function () { setFiltro("admin") }}>Ver solicitudes de Administrador</button>
-                <button onClick={function () { setFiltro("gestor") }}>Ver solicitudes de Gestor</button>
-                <button onClick={function () { setFiltro("poi") }}>Ver solicitudes de POIs</button>
+            <div className="gestor-requests__filters" style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                <button className="gestor-requests__filter-btn" onClick={function () { setFiltro("admin") }}>Ver solicitudes de Administrador</button>
+                <button className="gestor-requests__filter-btn" onClick={function () { setFiltro("gestor") }}>Ver solicitudes de Gestor</button>
+                <button className="gestor-requests__filter-btn" onClick={function () { setFiltro("poi") }}>Ver solicitudes de POIs</button>
             </div>
 
-            {loading && <p>Cargando solicitudes…</p>}
-            {error && <p style={{ color: "crimson" }}>{error}</p>}
-            {!loading && mensaje && <p>{mensaje}</p>}
+            {loading && <p className="gestor-requests__loading">Cargando solicitudes…</p>}
+            {error && <p className="gestor-requests__error" style={{ color: "crimson" }}>{error}</p>}
+            {!loading && mensaje && <p className="gestor-requests__message">{mensaje}</p>}
 
             {listadoSolicitudes}
         </div>

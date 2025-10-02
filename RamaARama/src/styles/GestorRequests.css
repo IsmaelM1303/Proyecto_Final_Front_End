@@ -1,0 +1,245 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.gestor-requests {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1); /* blanco translúcido */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* ===== TÍTULO ===== */
+.gestor-requests__title,
+.gestor-requests__titulo {
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    color: #89a644;
+    text-align: center;
+}
+
+/* ===== FILTROS ===== */
+.gestor-requests__filters,
+.gestor-requests__filtros {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.gestor-requests__filter-btn,
+.gestor-requests__btn-filtro {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: #89a644;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.gestor-requests__filter-btn:hover,
+.gestor-requests__btn-filtro:hover {
+    background: #6f8f34;
+}
+
+.gestor-requests__filter-btn:focus-visible,
+.gestor-requests__btn-filtro:focus-visible {
+    outline: 2px solid #4e770d;
+    outline-offset: 2px;
+}
+
+/* ===== ESTADOS ===== */
+.gestor-requests__loading {
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0.5rem 0 1rem;
+}
+
+.gestor-requests__error {
+    /* color inline crimson se respeta, aquí estilo base */
+    background-color: #f8d7da;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0.75rem 0 1rem;
+}
+
+.gestor-requests__message,
+.gestor-requests__mensaje {
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0.75rem 0 1rem;
+}
+
+/* ===== LISTA E ITEMS ===== */
+.gestor-requests__list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.gestor-requests__item {
+    width: 100%;
+}
+
+/* ===== TARJETA ===== */
+.gestor-requests__card {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem; /* respeta inline extra si existe */
+    margin-bottom: 1.5rem; /* respeta inline extra si existe */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== CAMPOS ===== */
+.gestor-requests__field,
+.gestor-requests__campo {
+    margin: 0.25rem 0;
+    color: #333;
+}
+
+.gestor-requests__field strong,
+.gestor-requests__campo strong {
+    color: #4e770d;
+}
+
+/* ===== CATEGORÍAS ===== */
+.gestor-requests__categories {
+    margin-top: 0.5rem;
+}
+
+.gestor-requests__categories strong {
+    font-weight: bold;
+    color: #89a644;
+}
+
+.gestor-requests__categories-list {
+    padding-left: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.gestor-requests__categories-item {
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+/* ===== REDES ===== */
+.gestor-requests__socials {
+    margin-top: 0.5rem;
+}
+
+.gestor-requests__socials strong {
+    font-weight: bold;
+    color: #89a644;
+}
+
+.gestor-requests__socials-list {
+    padding-left: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.gestor-requests__socials-item {
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+/* ===== TIMELINE ===== */
+.gestor-requests__timeline {
+    margin-top: 0.75rem; /* se suma al inline si existe */
+}
+
+/* ===== ACCIONES ===== */
+.gestor-requests__actions,
+.gestor-requests__acciones {
+    display: flex; /* respeta inline si existe */
+    gap: 0.5rem;   /* respeta inline si existe */
+    margin-top: 0.5rem; /* respeta inline si existe */
+    justify-content: flex-end;
+}
+
+/* ===== BOTONES ===== */
+.gestor-requests__btn {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease;
+    color: white;
+    min-width: 96px;
+    text-align: center;
+    background: #4e770d; /* base por si se usa sin modificador */
+}
+
+.gestor-requests__btn--accept {
+    background: #4e770d;
+}
+
+.gestor-requests__btn--accept:hover {
+    background: #3a5c0a;
+    transform: translateY(-1px);
+}
+
+.gestor-requests__btn--deny {
+    background: #b73a3a;
+}
+
+.gestor-requests__btn--deny:hover {
+    background: #942d2d;
+    transform: translateY(-1px);
+}
+
+.gestor-requests__btn:focus-visible {
+    outline: 2px solid #89a644;
+    outline-offset: 2px;
+}
+
+/* ===== ACTIVE RESET ===== */
+.gestor-requests__filter-btn:active,
+.gestor-requests__btn-filtro:active,
+.gestor-requests__btn:active {
+    transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .gestor-requests {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: none;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .gestor-requests__filters,
+    .gestor-requests__filtros {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .gestor-requests__card {
+        padding: 1rem; /* consistente con MisFavoritos mobile */
+    }
+
+    .gestor-requests__btn,
+    .gestor-requests__filter-btn,
+    .gestor-requests__btn-filtro {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .gestor-requests__actions,
+    .gestor-requests__acciones {
+        justify-content: stretch;
+    }
+}

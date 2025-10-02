@@ -40,7 +40,7 @@
       "id": "dd6b",
       "nombre": "Eduardo Marín",
       "correo": "ismael.emarinm@gmail.com",
-      "contrasena": "20031303",
+      "contrasena": "13032003",
       "tipoCuenta": "turista gestor",
       "provinciaResidencia": "1",
       "identificacion": "118680276",
@@ -145,6 +145,13 @@
       "favoritos": [
         "9e10"
       ]
+    },
+    {
+      "id": "c572",
+      "nombre": "gladys marin",
+      "correo": "gladysmm@gmail.com",
+      "contrasena": "12345678",
+      "tipoCuenta": "turista"
     }
   ],
   "requestGestores": [],

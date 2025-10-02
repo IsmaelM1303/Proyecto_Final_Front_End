@@ -193,10 +193,57 @@
         {
           "usuarioId": "d2cb",
           "valor": 4
+        },
+        {
+          "usuarioId": "dd6b",
+          "valor": 5
         }
       ],
-      "valoracionPonderada": 4
+      "valoracionPonderada": 4.5
+    },
+    {
+      "id": "c926",
+      "nombre": "La cartonera",
+      "descripcion": "",
+      "ubicacion": {
+        "lat": 9.886482185863388,
+        "lng": -84.06348824501039
+      },
+      "categorias": [],
+      "redes": [],
+      "lineaTiempo": [],
+      "token": "d2cb"
+    },
+    {
+      "id": "71b2",
+      "nombre": "Parque La Libertad",
+      "descripcion": "",
+      "ubicacion": {
+        "lat": 9.888574942451868,
+        "lng": -84.03450965881349
+      },
+      "categorias": [
+        "Parque Nacional"
+      ],
+      "redes": [],
+      "lineaTiempo": [],
+      "token": "d2cb"
     }
   ],
-  "solicitudPOIs": []
+  "solicitudPOIs": [
+    {
+      "id": "acd6",
+      "token": "d2cb",
+      "nombre": "Parque La Libertad",
+      "descripcion": "",
+      "ubicacion": {
+        "lat": 9.888574942451868,
+        "lng": -84.03450965881349
+      },
+      "categorias": [
+        "Parque Nacional"
+      ],
+      "redes": []
+    }
+  ]
 }
