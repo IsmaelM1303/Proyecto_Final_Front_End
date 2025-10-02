@@ -1,0 +1,119 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.aplicar-admin {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* ===== FORMULARIO ===== */
+.aplicar-admin__form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== CAMPOS ===== */
+.aplicar-admin__field {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.aplicar-admin__label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #333;
+}
+
+.aplicar-admin__input,
+.aplicar-admin__select,
+.aplicar-admin__file {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border 0.2s ease;
+}
+
+.aplicar-admin__input:focus,
+.aplicar-admin__select:focus,
+.aplicar-admin__file:focus {
+    outline: none;
+    border-color: #89a644;
+}
+
+/* ===== CHECKBOX TÉRMINOS ===== */
+.aplicar-admin__field--terms {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.aplicar-admin__terms-text {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.aplicar-admin__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.aplicar-admin__checkbox-input {
+    width: 16px;
+    height: 16px;
+}
+
+.aplicar-admin__checkbox-label {
+    font-size: 0.9rem;
+}
+
+/* ===== BOTÓN SUBMIT ===== */
+.aplicar-admin__btn {
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease;
+    color: white;
+    font-weight: 600;
+}
+
+.aplicar-admin__btn--submit {
+    background: #89a644;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.aplicar-admin__btn--submit:hover:enabled {
+    background: #6f8f34;
+    transform: translateY(-1px);
+}
+
+.aplicar-admin__btn--submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .aplicar-admin {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+
+    .aplicar-admin__btn--submit {
+        font-size: 1rem;
+    }
+}

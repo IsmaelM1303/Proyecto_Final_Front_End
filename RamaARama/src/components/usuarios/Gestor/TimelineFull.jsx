@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react"
 import "../../../styles/Timeline/TimelinePreview.css"
 
+/**
+ * Carga el CSS de TimelineJS si no está presente en el documento.
+ * Devuelve una promesa que se resuelve cuando el CSS está cargado.
+ */
 function ensureTimelineCss() {
     const href = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"
     if ([...document.getElementsByTagName("link")].some(l => l.href === href)) {
@@ -15,6 +19,10 @@ function ensureTimelineCss() {
     })
 }
 
+/**
+ * Carga el script de TimelineJS si no está presente en el documento.
+ * Devuelve una promesa que se resuelve cuando la librería está lista.
+ */
 function ensureTimelineScript() {
     const src = "https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"
     if (window.TL && window.TL.Timeline) return Promise.resolve()
@@ -36,12 +44,19 @@ function ensureTimelineScript() {
     })
 }
 
+/**
+ * Normaliza una URL de imagen para pasarla por proxy y evitar problemas de carga.
+ */
 function normalizeUrl(url) {
     if (!url) return ""
     const clean = url.replace(/^https?:\/\//, "")
     return "https://images.weserv.nl/?url=" + encodeURIComponent(clean)
 }
 
+/**
+ * Sanitiza y normaliza los eventos para TimelineJS.
+ * Convierte fechas, textos y media a formato compatible.
+ */
 function sanitizeEventos(eventos) {
     const out = []
     if (!Array.isArray(eventos)) return out
@@ -81,6 +96,11 @@ function sanitizeEventos(eventos) {
     return out
 }
 
+/**
+ * Componente TimelineFull
+ * Renderiza la línea de tiempo completa usando TimelineJS en pantalla completa.
+ * Carga dinámicamente los recursos y normaliza los datos.
+ */
 function TimelineFull({ eventos }) {
     const contenedorRef = useRef(null)
 
@@ -100,6 +120,7 @@ function TimelineFull({ eventos }) {
             title: { text: { headline: "Línea de tiempo completa", text: "" } },
             events: sane
         }
+        // Inicializa TimelineJS cuando los recursos están listos
         const init = () => {
             container.innerHTML = ""
             if (window.TL && window.TL.Timeline) {
@@ -116,6 +137,7 @@ function TimelineFull({ eventos }) {
         ensureTimelineCss().then(ensureTimelineScript).then(init)
     }, [eventos])
 
+    // Contenedor para la línea de tiempo
     return <div ref={contenedorRef} style={{ width: "100%", height: "100vh" }} />
 }
 

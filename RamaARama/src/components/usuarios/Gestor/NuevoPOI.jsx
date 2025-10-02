@@ -5,11 +5,11 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import '../../../styles/NuevoPOI.css'
 
-// Configurar íconos de Leaflet (evita ícono roto en producción y HMR)
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 
+// Configuración global de iconos para Leaflet
 if (L?.Icon?.Default) {
     L.Icon.Default.mergeOptions({
         iconRetinaUrl,
@@ -18,6 +18,7 @@ if (L?.Icon?.Default) {
     })
 }
 
+// Icono personalizado para el marcador principal
 const iconoVerde = new L.Icon({
     iconRetinaUrl: iconRetinaUrl,
     iconUrl: iconUrl,
@@ -29,17 +30,26 @@ const iconoVerde = new L.Icon({
     className: 'leaflet-icono-verde'
 })
 
+/**
+ * Componente NuevoPOI
+ * Permite al usuario solicitar la creación de un nuevo Punto de Interés (POI).
+ * Incluye formulario para nombre, descripción, ubicación (detectada y editable en mapa), categorías turísticas y redes sociales.
+ * Verifica si el usuario ya tiene una solicitud pendiente y bloquea el formulario si es así.
+ * Las categorías se cargan dinámicamente desde la base simulada.
+ * Las redes sociales se agregan como pares tipo/link y pueden eliminarse.
+ * Al enviar, valida los datos y guarda la solicitud en la base simulada.
+ */
 function NuevoPOI() {
-    // Campos principales
+    // Campos principales del formulario
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
 
-    // Ubicación del usuario
+    // Ubicación del usuario (detectada por geolocalización)
     const [ubicacion, setUbicacion] = useState({ lat: null, lng: null })
     const [cargandoUbicacion, setCargandoUbicacion] = useState(true)
     const [errorUbicacion, setErrorUbicacion] = useState('')
 
-    // Categorías (dinámicas desde API: array de {grupo, items: []})
+    // Categorías turísticas
     const [categoriasData, setCategoriasData] = useState([])
     const [categoriasLoading, setCategoriasLoading] = useState(true)
     const [categoriasError, setCategoriasError] = useState('')
@@ -64,7 +74,7 @@ function NuevoPOI() {
     const [verificandoSolicitud, setVerificandoSolicitud] = useState(true)
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
-    // Verificar si el token ya tiene una solicitud previa
+    // Verifica si el usuario ya tiene una solicitud pendiente
     useEffect(() => {
         async function verificarSolicitud() {
             try {
@@ -73,7 +83,6 @@ function NuevoPOI() {
                     return
                 }
                 const solicitudes = await obtenerElementos('solicitudPOIs', 3)
-                // Soporta array de solicitudes [{token, ...}]
                 if (Array.isArray(solicitudes)) {
                     const existe = solicitudes.some((s) => String(s.token) === String(token))
                     setYaSolicito(existe)
@@ -90,7 +99,7 @@ function NuevoPOI() {
         verificarSolicitud()
     }, [token])
 
-    // Obtener ubicación real del usuario
+    // Obtiene la ubicación real del usuario usando geolocalización
     useEffect(() => {
         setCargandoUbicacion(true)
         setErrorUbicacion('')
@@ -118,14 +127,13 @@ function NuevoPOI() {
         )
     }, [])
 
-    // Cargar categorías desde API: obtenerElementos('categoriasTuristicas', 3)
+    // Carga las categorías turísticas desde la base simulada
     useEffect(() => {
         async function cargarCategorias() {
             setCategoriasLoading(true)
             setCategoriasError('')
             try {
                 const data = await obtenerElementos('categoriasTuristicas', 3)
-                // Tu API devuelve directamente el array de grupos
                 if (Array.isArray(data)) {
                     setCategoriasData(data)
                 } else if (data && Array.isArray(data.categoriasTuristicas)) {
@@ -143,7 +151,7 @@ function NuevoPOI() {
         cargarCategorias()
     }, [])
 
-    // Categorías: agregar y eliminar
+    // Agrega una categoría seleccionada al POI
     const agregarCategoria = () => {
         const cat = (categoriaSeleccionada || '').trim()
         if (!cat) return
@@ -153,11 +161,12 @@ function NuevoPOI() {
         setMostrarSelectCategoria(false)
     }
 
+    // Elimina una categoría del POI
     const eliminarCategoria = (index) => {
         setCategorias((prev) => prev.filter((_, i) => i !== index))
     }
 
-    // Redes sociales: agregar y eliminar
+    // Agrega una red social al POI
     const agregarRed = () => {
         const tipo = (redSocialSeleccionada || '').trim()
         const link = (linkRed || '').trim()
@@ -167,11 +176,12 @@ function NuevoPOI() {
         setLinkRed('')
     }
 
+    // Elimina una red social del POI
     const eliminarRed = (index) => {
         setRedes((prev) => prev.filter((_, i) => i !== index))
     }
 
-    // Envío: crearElemento('solicitudPOIs', datos, 3)
+    // Maneja el envío del formulario para crear la solicitud de POI
     const manejarEnvio = async (e) => {
         e.preventDefault()
 
@@ -185,7 +195,7 @@ function NuevoPOI() {
         }
 
         const datos = {
-            token: token || null, // se guarda el token si existe
+            token: token || null,
             nombre: nombre.trim(),
             descripcion: descripcion.trim(),
             ubicacion: { lat: ubicacion.lat, lng: ubicacion.lng },
@@ -195,8 +205,6 @@ function NuevoPOI() {
 
         try {
             await crearElemento('solicitudPOIs', datos, 3)
-            console.log('Solicitud de POI enviada:', datos)
-            // Limpiar y bloquear formulario
             setNombre('')
             setDescripcion('')
             setCategorias([])
@@ -209,21 +217,21 @@ function NuevoPOI() {
         }
     }
 
-    // Estados de verificación: mostrar mensajes adecuados
+    // Estados de verificación: muestra mensajes adecuados
     if (verificandoSolicitud) {
         return (
-            <div className="nuevo-poi-form">
-                <h2>Verificando tu solicitud...</h2>
-                <p>Por favor, espera un momento.</p>
+            <div className="nuevo-poi-form nuevo-poi-form--status nuevo-poi-form--checking">
+                <h2 className="status-title">Verificando tu solicitud...</h2>
+                <p className="status-message">Por favor, espera un momento.</p>
             </div>
         )
     }
 
     if (yaSolicito) {
         return (
-            <div className="nuevo-poi-form">
-                <h2>Solicitud ya enviada</h2>
-                <p>
+            <div className="nuevo-poi-form nuevo-poi-form--status nuevo-poi-form--duplicate">
+                <h2 className="status-title">Solicitud ya enviada</h2>
+                <p className="status-message">
                     Ya has enviado una solicitud de POI con tu cuenta. Debes esperar a que sea revisada antes de
                     enviar otra.
                 </p>
@@ -231,10 +239,12 @@ function NuevoPOI() {
         )
     }
 
+    // Render principal del formulario de creación de POI
     return (
         <form onSubmit={manejarEnvio} className="nuevo-poi-form">
             <h2>Crear Punto de Interés (POI)</h2>
 
+            {/* Campo para el nombre del POI */}
             <div className="form-row">
                 <label>Nombre del POI</label>
                 <input
@@ -245,6 +255,7 @@ function NuevoPOI() {
                 />
             </div>
 
+            {/* Campo para la descripción */}
             <div className="form-row">
                 <label>Descripción</label>
                 <textarea
@@ -255,6 +266,7 @@ function NuevoPOI() {
                 />
             </div>
 
+            {/* Muestra la ubicación detectada */}
             <div className="form-row">
                 <label>Ubicación detectada</label>
                 {cargandoUbicacion && <p>Obteniendo ubicación...</p>}
@@ -264,6 +276,7 @@ function NuevoPOI() {
                 )}
             </div>
 
+            {/* Mapa interactivo para ajustar la ubicación */}
             {ubicacion.lat && ubicacion.lng && (
                 <MapContainer
                     center={[ubicacion.lat, ubicacion.lng]}
@@ -292,12 +305,11 @@ function NuevoPOI() {
                 </MapContainer>
             )}
 
+            {/* Sección de categorías turísticas */}
             <div className="form-row">
                 <label>Categorías turísticas</label>
-
                 {categoriasLoading && <p>Cargando categorías…</p>}
                 {!categoriasLoading && categoriasError && <p className="error">{categoriasError}</p>}
-
                 {!categoriasLoading && !categoriasError && (
                     <>
                         <div className="inline">
@@ -305,7 +317,6 @@ function NuevoPOI() {
                                 Agregar categoría
                             </button>
                         </div>
-
                         {mostrarSelectCategoria && (
                             <div className="inline gap">
                                 <select
@@ -331,7 +342,6 @@ function NuevoPOI() {
                                 </button>
                             </div>
                         )}
-
                         {categorias.length > 0 && (
                             <ul className="pill-list">
                                 {categorias.map((c, index) => (
@@ -352,6 +362,7 @@ function NuevoPOI() {
                 )}
             </div>
 
+            {/* Sección de redes sociales */}
             <div className="form-row">
                 <label>Redes sociales</label>
                 <div className="inline gap">
@@ -372,7 +383,6 @@ function NuevoPOI() {
                     />
                     <button type="button" onClick={agregarRed}>Agregar</button>
                 </div>
-
                 {redes.length > 0 && (
                     <ul className="pill-list">
                         {redes.map((r, index) => (
@@ -391,6 +401,7 @@ function NuevoPOI() {
                 )}
             </div>
 
+            {/* Botón para enviar la solicitud */}
             <div className="actions">
                 <button type="submit" disabled={cargandoUbicacion}>
                     Enviar solicitud de POI

@@ -1,0 +1,187 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.aplicar-gestor {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* ===== TÍTULO ===== */
+.aplicar-gestor__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    color: #89a644;
+    text-align: center;
+}
+
+/* ===== CAMPOS ===== */
+.aplicar-gestor__field {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.aplicar-gestor__label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #333;
+}
+
+.aplicar-gestor__input,
+.aplicar-gestor__select {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border 0.2s ease;
+}
+
+.aplicar-gestor__input:focus,
+.aplicar-gestor__select:focus {
+    outline: none;
+    border-color: #89a644;
+}
+
+/* ===== HINTS / VALIDACIÓN ===== */
+.aplicar-gestor__hint {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+.aplicar-gestor__hint.is-valid {
+    color: #2e7d32;
+}
+.aplicar-gestor__hint.is-invalid {
+    color: #b73a3a;
+}
+
+/* ===== REDES SOCIALES ===== */
+.aplicar-gestor__field--redes {
+    margin-top: 1.5rem;
+}
+
+.aplicar-gestor__redes-inputs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.aplicar-gestor__redes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.aplicar-gestor__redes-item {
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.aplicar-gestor__redes-label {
+    font-weight: 600;
+    margin-right: 0.25rem;
+}
+
+.aplicar-gestor__redes-link {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* ===== CHECKBOX TÉRMINOS ===== */
+.aplicar-gestor__field--terms {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.aplicar-gestor__terms-text {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.aplicar-gestor__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.aplicar-gestor__checkbox-input {
+    width: 16px;
+    height: 16px;
+}
+
+.aplicar-gestor__checkbox-label {
+    font-size: 0.9rem;
+}
+
+/* ===== BOTONES ===== */
+.aplicar-gestor__btn {
+    padding: 0.5rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease;
+    color: white;
+}
+
+.aplicar-gestor__btn--add {
+    background: #4e770d;
+}
+.aplicar-gestor__btn--add:hover {
+    background: #3a5c0a;
+    transform: translateY(-1px);
+}
+
+.aplicar-gestor__btn--remove {
+    background: #b73a3a;
+}
+.aplicar-gestor__btn--remove:hover {
+    background: #922d2d;
+    transform: translateY(-1px);
+}
+
+.aplicar-gestor__btn--submit {
+    background: #89a644;
+    width: 100%;
+    margin-top: 1.5rem;
+    font-weight: 600;
+}
+.aplicar-gestor__btn--submit:hover:enabled {
+    background: #6f8f34;
+    transform: translateY(-1px);
+}
+.aplicar-gestor__btn--submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .aplicar-gestor {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+
+    .aplicar-gestor__redes-inputs {
+        flex-direction: column;
+    }
+
+    .aplicar-gestor__btn--submit {
+        font-size: 1rem;
+    }
+}

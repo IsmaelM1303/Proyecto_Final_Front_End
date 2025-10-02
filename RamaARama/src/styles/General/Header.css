@@ -104,7 +104,7 @@
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
+@media (max-width: 815px) {
     .header {
         grid-template-columns: 1fr 2fr 1fr;
         height: 80px;
@@ -147,7 +147,7 @@
     /* mismo alto del header en desktop */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 815px) {
     .mainContent {
         padding-top: 80px;
         /* mismo alto del header en móvil */

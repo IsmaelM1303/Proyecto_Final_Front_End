@@ -1,4 +1,3 @@
-// src/components/Mapa.jsx
 import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -16,7 +15,7 @@ import MapaFiltros from "./MapaFiltros"
 
 import "../../styles/Mapas/Mapa.css"
 
-// Configuración segura de íconos Leaflet
+// Configuración de iconos para los marcadores de Leaflet
 if (L && L.Icon && L.Icon.Default) {
     L.Icon.Default.mergeOptions({
         iconRetinaUrl,
@@ -25,6 +24,7 @@ if (L && L.Icon && L.Icon.Default) {
     })
 }
 
+// Icono personalizado para marcadores verdes
 const iconoVerde = new L.Icon({
     iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
     shadowUrl: shadowUrl,
@@ -34,6 +34,7 @@ const iconoVerde = new L.Icon({
     shadowSize: [41, 41]
 })
 
+// Componente para ajustar los límites del mapa a Costa Rica
 function AjustarLimitesCostaRica({ alCentrar }) {
     const mapa = useMap()
     useEffect(() => {
@@ -50,6 +51,7 @@ function AjustarLimitesCostaRica({ alCentrar }) {
     return null
 }
 
+// Función para obtener geometrías GeoJSON por código de división administrativa
 async function obtenerGeometriasPorCodigo(codigo) {
     const url = `https://raw.githubusercontent.com/schweini/CR_distritos_geojson/master/geojson/${codigo}.geojson`
     try {
@@ -75,23 +77,32 @@ async function obtenerGeometriasPorCodigo(codigo) {
     }
 }
 
+// Componente principal del mapa
 function Mapa() {
+    // Estados para la división administrativa seleccionada y filtros
     const [division, setDivision] = useState("")
     const [provinciaSeleccionada, setProvinciaSeleccionada] = useState("")
     const [mostrarSelectCantones, setMostrarSelectCantones] = useState(false)
     const [mostrarFiltros, setMostrarFiltros] = useState(false)
 
+    // Referencia para almacenar datos geográficos precargados
     const datosPorCodigoRef = useRef({})
+    // Estado para los datos geográficos a mostrar en el mapa
     const [datosGeograficos, setDatosGeograficos] = useState(null)
+    // Llave para forzar el renderizado de GeoJSON
     const [llaveGeo, setLlaveGeo] = useState(0)
+    // Estado para indicar si se están cargando las divisiones
     const [cargandoDivisiones, setCargandoDivisiones] = useState(true)
 
+    // Estado para mostrar el marcador inicial en San José
     const [mostrarMarcadorInicial, setMostrarMarcadorInicial] = useState(true)
 
+    // Estados para la lista de POIs y su carga
     const [listaPOIs, setListaPOIs] = useState([])
     const [cargandoPOIs, setCargandoPOIs] = useState(true)
     const [errorPOIs, setErrorPOIs] = useState("")
 
+    // Lista de provincias y sus cantones
     const provincias = [
         { codigo: "1", nombre: "San José", cantones: ["101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"] },
         { codigo: "2", nombre: "Alajuela", cantones: ["201", "202", "203", "204", "205", "206", "207", "208", "209", "210", "211", "212", "213", "214", "215"] },
@@ -102,8 +113,10 @@ function Mapa() {
         { codigo: "7", nombre: "Limón", cantones: ["701", "702", "703", "704", "705", "706"] }
     ]
 
+    // Estilo para las divisiones administrativas en el mapa
     const estiloDivision = { color: "#4e770dff", weight: 2, opacity: 0.65 }
 
+    // Precarga las geometrías de las provincias al montar el componente
     useEffect(() => {
         async function precargarProvincias() {
             try {
@@ -128,6 +141,7 @@ function Mapa() {
         precargarProvincias()
     }, [])
 
+    // Carga la lista de POIs al montar el componente
     useEffect(() => {
         async function cargarPOIs() {
             setCargandoPOIs(true)
@@ -150,6 +164,7 @@ function Mapa() {
         cargarPOIs()
     }, [])
 
+    // Muestra todas las provincias en el mapa
     function mostrarProvincias() {
         setDivision("provincia")
         setMostrarSelectCantones(false)
@@ -171,6 +186,7 @@ function Mapa() {
         setDatosGeograficos({ type: "FeatureCollection", features: listaFeatures })
     }
 
+    // Activa el filtro de cantones
     function activarCantones() {
         setDivision("canton")
         setMostrarSelectCantones(true)
@@ -178,6 +194,7 @@ function Mapa() {
         setDatosGeograficos(null)
     }
 
+    // Muestra los cantones de una provincia seleccionada
     async function mostrarCantonesProvincia(codigoProvincia) {
         setProvinciaSeleccionada(codigoProvincia)
         setDatosGeograficos(null)
@@ -213,6 +230,7 @@ function Mapa() {
         setDatosGeograficos({ type: "FeatureCollection", features: listaFeaturesCantones })
     }
 
+    // Limpia los filtros y divisiones seleccionadas
     function limpiar() {
         setDivision("")
         setProvinciaSeleccionada("")
@@ -220,13 +238,14 @@ function Mapa() {
         setDatosGeograficos(null)
     }
 
-    // Elementos condicionales del mapa (sin ternarios)
+    // Renderiza el componente para ajustar límites si no hay división seleccionada
     let componenteLimites = null
     const noHayDivision = division === ""
     if (noHayDivision) {
         componenteLimites = <AjustarLimitesCostaRica alCentrar={function () { setMostrarMarcadorInicial(false) }} />
     }
 
+    // Renderiza el marcador inicial en San José si corresponde
     let componenteMarcadorInicial = null
     const debeMostrarMarcadorInicial = mostrarMarcadorInicial === true
     if (debeMostrarMarcadorInicial) {
@@ -239,6 +258,7 @@ function Mapa() {
         )
     }
 
+    // Renderiza las divisiones administrativas en formato GeoJSON
     let componenteGeoJson = null
     const hayDatosGeo = Boolean(datosGeograficos)
     if (hayDatosGeo) {
@@ -251,7 +271,7 @@ function Mapa() {
         )
     }
 
-    // Estado de POIs (sin ternarios)
+    // Renderiza el estado de carga de los POIs
     let componenteEstadoPOIs = null
     const estaCargandoPOIs = cargandoPOIs === true
     if (estaCargandoPOIs) {
@@ -267,6 +287,7 @@ function Mapa() {
         }
     }
 
+    // Render principal del componente Mapa
     return (
         <div className="divMapa">
             {/* Filtros flotantes sobre el mapa */}
@@ -285,13 +306,14 @@ function Mapa() {
                 />
             </div>
 
-            {/* Contenedor del mapa */}
+            {/* Contenedor del mapa principal */}
             <MapContainer
                 center={[9.9, -84.1]}
                 zoom={8}
                 scrollWheelZoom={true}
                 className="mapa-container"
             >
+                {/* Capa base de OpenStreetMap */}
                 <TileLayer
                     attribution="&copy; OpenStreetMap contributors"
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -301,6 +323,7 @@ function Mapa() {
                 {componenteMarcadorInicial}
                 {componenteGeoJson}
 
+                {/* Agrupación de marcadores de POIs */}
                 <MarkerClusterGroup
                     chunkedLoading={true}
                     iconCreateFunction={function (cluster) {

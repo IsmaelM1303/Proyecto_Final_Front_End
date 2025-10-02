@@ -3,10 +3,11 @@ import POIs from '../components/usuarios/Gestor/POIs'
 import BtnVolver from "../components/general/BtnVolver"
 import Header from '../components/general/Header'
 import "../styles/General/EspacioHeader.css"
+import "../styles/StylesPages/BotonesPerfil.css"
 
 function VisorPOIs() {
     return (
-        <div>
+        <div className='divBotonesPerfil'>
             <Header/>
             <div className='mainContent'>
             <BtnVolver/>

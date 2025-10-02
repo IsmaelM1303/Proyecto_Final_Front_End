@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { obtenerElementos } from "../../api/Crud"
 import "../../styles/Login.css"
 
+/**
+ * Componente Alerta
+ * Muestra un mensaje temporal en pantalla.
+ * Se oculta automáticamente después de 3 segundos.
+ */
 function Alerta({ mostrar, onOcultar, mensaje }) {
     const [visible, setVisible] = useState(false)
 
@@ -22,6 +27,12 @@ function Alerta({ mostrar, onOcultar, mensaje }) {
     return <div className="login-alerta">{mensaje}</div>
 }
 
+/**
+ * Componente Login
+ * Permite al usuario iniciar sesión con correo y contraseña.
+ * Valida credenciales contra la base simulada y guarda el token en localStorage.
+ * Muestra alertas de éxito o error y permite alternar la visibilidad de la contraseña.
+ */
 function Login() {
     const [correo, setCorreo] = useState("")
     const [contrasena, setContrasena] = useState("")
@@ -30,6 +41,7 @@ function Login() {
     const [verContrasena, setVerContrasena] = useState(false)
     const navigate = useNavigate()
 
+    // Maneja el envío del formulario de login
     async function manejoSubmit(e) {
         e.preventDefault()
         const usuarios = await obtenerElementos("usuarios")
@@ -40,6 +52,7 @@ function Login() {
             return
         }
 
+        // Busca usuario por correo y contraseña
         const usuarioEncontrado = usuarios.find(
             usuario => usuario.correo === correo && usuario.contrasena === contrasena
         )
@@ -60,6 +73,7 @@ function Login() {
         setContrasena("")
     }
 
+    // Render principal del login
     return (
         <div className="login-wrapper">
             <div className="login-card">
@@ -96,6 +110,7 @@ function Login() {
                     </button>
                 </form>
 
+                {/* Enlaces para registro y recuperación */}
                 <p
                     className="login-link"
                     onClick={() => navigate("/Register")}
@@ -110,6 +125,7 @@ function Login() {
                     Olvidé mi contraseña
                 </p>
 
+                {/* Alerta de estado */}
                 <Alerta
                     mostrar={mostrarAlerta}
                     onOcultar={() => setMostrarAlerta(false)}

@@ -1,7 +1,15 @@
 import { useState } from "react"
 import TimelinePreview from "./TimelinePreview"
 
+/**
+ * Componente TimelineEditor
+ * Permite agregar, editar y eliminar eventos para la línea de tiempo de un POI.
+ * Cada evento incluye año, mes, día, título, descripción y una imagen opcional.
+ * Los eventos se muestran en una lista y se pueden eliminar individualmente.
+ * Incluye una previsualización de la línea de tiempo usando TimelinePreview.
+ */
 function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
+    // Estado para el evento nuevo a agregar
     const [nuevoEvento, setNuevoEvento] = useState({
         anio: "",
         mes: "",
@@ -11,6 +19,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
         imagen: ""
     })
 
+    // Lista de meses para el selector
     const meses = [
         { valor: "01", nombre: "Enero" },
         { valor: "02", nombre: "Febrero" },
@@ -26,6 +35,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
         { valor: "12", nombre: "Diciembre" }
     ]
 
+    // Maneja el cambio en los campos del evento nuevo
     function manejarCambio(evento) {
         const nombreCampo = evento.target.name
         const valorCampo = evento.target.value
@@ -43,6 +53,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
         setNuevoEvento(copiaEvento)
     }
 
+    // Agrega el evento nuevo a la línea de tiempo
     function agregarEvento() {
         if (nuevoEvento.anio === "" || nuevoEvento.titulo === "") {
             return
@@ -78,6 +89,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
         })
     }
 
+    // Elimina un evento de la línea de tiempo por índice
     function eliminarEvento(indice) {
         const copiaEventos = lineaTiempo.filter(function (_, i) {
             return i !== indice
@@ -85,6 +97,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
         setLineaTiempo(copiaEventos)
     }
 
+    // Render principal del editor de línea de tiempo
     return (
         <div style={{ display: "flex", gap: "2rem" }}>
             <div>
@@ -137,6 +150,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
                     Añadir
                 </button>
 
+                {/* Lista de eventos agregados */}
                 <ul>
                     {lineaTiempo.map(function (evento, indice) {
                         return (
@@ -152,6 +166,7 @@ function TimelineEditor({ lineaTiempo, setLineaTiempo }) {
                 </ul>
             </div>
 
+            {/* Previsualización de la línea de tiempo */}
             <div style={{ flex: 1 }}>
                 <TimelinePreview eventos={lineaTiempo} />
             </div>

@@ -3,6 +3,11 @@ import emailjs from "@emailjs/browser"
 import { obtenerElementos, actualizarElemento } from "../../api/Crud"
 import "../../styles/Recover.css"
 
+/**
+ * Componente Recover
+ * Permite al usuario recuperar su contraseña por correo electrónico.
+ * Envía un código de verificación al correo, valida el código y permite cambiar la contraseña.
+ */
 function Recover() {
     const [correo, setCorreo] = useState("")
     const [mensaje, setMensaje] = useState("")
@@ -17,6 +22,7 @@ function Recover() {
     const codigoReferencia = useRef(null)
     const idUsuario = useRef(null)
 
+    // Envía el correo de recuperación con código
     async function manejarEnvioCorreo(e) {
         e.preventDefault()
 
@@ -76,6 +82,7 @@ function Recover() {
         }
     }
 
+    // Valida el código ingresado por el usuario
     function manejarValidacionCodigo() {
         if (String(codigoIngresado).trim() === String(codigoReferencia.current)) {
             setCodigoValidado(true)
@@ -85,6 +92,7 @@ function Recover() {
         }
     }
 
+    // Cambia la contraseña del usuario
     async function manejarCambioContrasena() {
         if (!nuevaContrasena.trim() || !confirmarContrasena.trim()) {
             setMensaje("Debes completar ambos campos de contraseña")
@@ -109,10 +117,12 @@ function Recover() {
 
     let textoBoton = enviando ? "Enviando..." : "Enviar correo de recuperación"
 
+    // Render principal del formulario de recuperación
     return (
         <div className="divRecuperarCuenta">
             <h2 className="tituloRecuperar">Recuperar cuenta</h2>
 
+            {/* Paso 1: Ingreso de correo */}
             {!correoValidado && (
                 <form className="formRecCorreo" onSubmit={manejarEnvioCorreo}>
                     <div className="campoRecCorreo">
@@ -134,6 +144,7 @@ function Recover() {
                 </form>
             )}
 
+            {/* Paso 2: Validación de código */}
             {correoValidado && !codigoValidado && (
                 <div className="divRecCodigo">
                     <label>Ingresa el código recibido</label>
@@ -152,6 +163,7 @@ function Recover() {
                 </div>
             )}
 
+            {/* Paso 3: Cambio de contraseña */}
             {codigoValidado && (
                 <div className="divRecContrasena">
                     <label>Nueva contraseña</label>
@@ -189,6 +201,7 @@ function Recover() {
                 </div>
             )}
 
+            {/* Mensaje de estado */}
             {mensaje && <p className="mensajeRecuperar">{mensaje}</p>}
         </div>
     )

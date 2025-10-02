@@ -3,6 +3,12 @@ import { Rating } from "react-simple-star-rating"
 import { actualizarElemento, obtenerElementos } from "../../api/Crud"
 import TimelineSwitcher from "./Gestor/TimelineSwitcher"
 
+/**
+ * Componente VerPOIsTurista
+ * Muestra la información detallada de un POI seleccionado para el usuario turista.
+ * Permite calificar el POI, agregarlo o removerlo de favoritos, y visualizar categorías, redes y línea de tiempo.
+ * Sincroniza los datos con la base simulada y el usuario autenticado.
+ */
 function VerPOIsTurista() {
     const [poi, setPoi] = useState(null)
     const [mensaje, setMensaje] = useState("")
@@ -10,6 +16,7 @@ function VerPOIsTurista() {
     const [valoracionPromedio, setValoracionPromedio] = useState(0)
     const [valorUsuario, setValorUsuario] = useState(0)
 
+    // Carga el POI seleccionado desde localStorage y su valoración
     useEffect(() => {
         const stored = localStorage.getItem("selectedPOI")
         if (stored) {
@@ -32,6 +39,7 @@ function VerPOIsTurista() {
         }
     }, [])
 
+    // Verifica si el POI está en favoritos del usuario
     useEffect(() => {
         async function verificarFavorito() {
             if (!poi) return
@@ -49,8 +57,10 @@ function VerPOIsTurista() {
         return <p>No hay POI seleccionado</p>
     }
 
+    // Normaliza la calificación a estrellas (1-5)
     const normalizarAEstrellas = (valor) => (valor > 5 ? valor / 20 : valor)
 
+    // Maneja el cambio de calificación del usuario
     const manejarCambioCalificacion = async (valorCrudo) => {
         const token = localStorage.getItem("token") || "usuario-sin-token"
         const idPOI = poi.id
@@ -85,6 +95,7 @@ function VerPOIsTurista() {
         setValoracionPromedio(promedio)
     }
 
+    // Agrega o remueve el POI de favoritos del usuario
     const handleToggleFavorito = async () => {
         try {
             const tokenUsuario = localStorage.getItem("token")
@@ -118,11 +129,13 @@ function VerPOIsTurista() {
         }
     }
 
+    // Render principal del POI para turista
     return (
         <div style={{ maxWidth: 500 }}>
             <h2>{poi.nombre}</h2>
             <p>{poi.descripcion}</p>
 
+            {/* Calificación por estrellas */}
             <div style={{ margin: "6px 0" }}>
                 <Rating
                     initialValue={valorUsuario}
@@ -138,6 +151,7 @@ function VerPOIsTurista() {
                 Valoración promedio: <strong>{valoracionPromedio.toFixed(2)}</strong>
             </p>
 
+            {/* Categorías del POI */}
             {Array.isArray(poi.categorias) && poi.categorias.length > 0 && (
                 <div>
                     <h4>Categorías:</h4>
@@ -149,6 +163,7 @@ function VerPOIsTurista() {
                 </div>
             )}
 
+            {/* Redes sociales del POI */}
             {Array.isArray(poi.redes) && poi.redes.length > 0 && (
                 <div>
                     <h4>Redes:</h4>
@@ -169,12 +184,14 @@ function VerPOIsTurista() {
                 </div>
             )}
 
+            {/* Botón para favoritos */}
             <button onClick={handleToggleFavorito} style={{ marginTop: 12 }}>
                 {esFavorito ? "Remover de favoritos" : "Añadir a favoritos"}
             </button>
 
             {mensaje && <p>{mensaje}</p>}
 
+            {/* Línea de tiempo del POI */}
             {Array.isArray(poi.lineaTiempo) && poi.lineaTiempo.length > 0 && (
                 <div style={{ marginTop: 16 }}>
                     <h4>Línea de tiempo</h4>

@@ -1,0 +1,9 @@
+.divAplicaAdmin {
+    background-image: url("../../assets/Imgs/Backgrounds/AplicaAdmin.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

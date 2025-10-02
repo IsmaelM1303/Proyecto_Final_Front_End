@@ -4,10 +4,17 @@ import { obtenerElementos, actualizarElemento } from "../../api/Crud"
 import TimelineSwitcher from "./Gestor/TimelineSwitcher"
 import "../../styles/MisFavoritos.css"
 
+/**
+ * Componente MisFavoritos
+ * Muestra la lista de POIs favoritos del usuario autenticado.
+ * Permite calificar cada POI y muestra la valoración promedio.
+ * Incluye detalles de categorías, redes y línea de tiempo de cada favorito.
+ */
 function MisFavoritos() {
     const [favoritos, setFavoritos] = useState([])
     const [mensaje, setMensaje] = useState("")
 
+    // Carga los favoritos del usuario al montar el componente
     useEffect(() => {
         async function cargarFavoritos() {
             try {
@@ -40,8 +47,10 @@ function MisFavoritos() {
         cargarFavoritos()
     }, [])
 
+    // Normaliza la calificación a estrellas (1-5)
     const normalizarAEstrellas = (valor) => valor > 5 ? valor / 20 : valor
 
+    // Maneja el cambio de calificación de un POI
     const manejarCambioCalificacion = async (poi, valorCrudo) => {
         const token = localStorage.getItem("token") || "usuario-sin-token"
         const idPOI = poi.id
@@ -77,6 +86,7 @@ function MisFavoritos() {
         )
     }
 
+    // Render principal de favoritos
     return (
         <div className="divMisFavoritos">
             <h2 className="tituloMisFavoritos">Mis Favoritos</h2>
@@ -94,6 +104,7 @@ function MisFavoritos() {
                                 <strong className="nombreFavorito">{poi.nombre}</strong>
                                 <p className="descripcionFavorito">{poi.descripcion}</p>
 
+                                {/* Calificación por estrellas */}
                                 <div className="ratingFavorito">
                                     <Rating
                                         initialValue={valorUsuario}
@@ -109,12 +120,14 @@ function MisFavoritos() {
                                     Valoración promedio: <strong>{promedio.toFixed(2)}</strong>
                                 </p>
 
+                                {/* Línea de tiempo del POI */}
                                 {Array.isArray(poi.lineaTiempo) && poi.lineaTiempo.length > 0 && (
                                     <div className="timelineFavorito">
                                         <TimelineSwitcher eventos={poi.lineaTiempo} />
                                     </div>
                                 )}
 
+                                {/* Categorías del POI */}
                                 {Array.isArray(poi.categorias) && poi.categorias.length > 0 && (
                                     <div className="categoriasFavorito">
                                         <span>Categorías:</span>
@@ -126,6 +139,7 @@ function MisFavoritos() {
                                     </div>
                                 )}
 
+                                {/* Redes sociales del POI */}
                                 {Array.isArray(poi.redes) && poi.redes.length > 0 && (
                                     <div className="redesFavorito">
                                         <span>Redes:</span>

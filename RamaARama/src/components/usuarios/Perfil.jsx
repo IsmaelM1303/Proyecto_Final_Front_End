@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom"
 import { obtenerElementos, actualizarElemento } from "../../api/Crud"
 import "../../styles/Perfil.css"
 
+/**
+ * Componente Perfil
+ * Permite al usuario ver y editar su correo y contraseña.
+ * Muestra botones extra según el tipo de cuenta (gestor/admin).
+ * Carga los datos del usuario autenticado y permite guardar cambios.
+ */
 function Perfil() {
     const [correo, setCorreo] = useState("")
     const [nuevaPass, setNuevaPass] = useState("")
@@ -14,6 +20,7 @@ function Perfil() {
     const [cargando, setCargando] = useState(true)
     const navigate = useNavigate()
 
+    // Carga los datos del usuario al montar el componente
     useEffect(() => {
         async function cargarUsuario() {
             const token = localStorage.getItem("token")
@@ -37,6 +44,7 @@ function Perfil() {
         cargarUsuario()
     }, [])
 
+    // Maneja el guardado de cambios en el perfil
     async function handleGuardar() {
         if (!usuarioId) {
             alert("No se encontró el usuario")
@@ -65,6 +73,7 @@ function Perfil() {
 
     if (cargando) return <p className="perfil__loading">Cargando perfil...</p>
 
+    // Render principal del perfil
     return (
         <div className="perfil">
             <h2 className="perfil__title">Mi Perfil</h2>
@@ -121,7 +130,7 @@ function Perfil() {
                 Confirmar cambios
             </button>
 
-            {/* Botones condicionales */}
+            {/* Botones condicionales según tipo de cuenta */}
             <div className="perfil__extra-actions" style={{ marginTop: "20px" }}>
                 {tipoCuenta.includes("gestor") && (
                     <button

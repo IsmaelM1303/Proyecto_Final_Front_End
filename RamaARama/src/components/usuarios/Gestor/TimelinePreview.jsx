@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import "../../../styles/Timeline/TimelinePreview.css"
 
+/**
+ * Carga el CSS de TimelineJS si no está presente en el documento.
+ * Devuelve una promesa que se resuelve cuando el CSS está cargado.
+ */
 function ensureTimelineCss() {
     const href = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"
     const links = document.getElementsByTagName("link")
@@ -26,6 +30,10 @@ function ensureTimelineCss() {
     })
 }
 
+/**
+ * Carga el script de TimelineJS si no está presente en el documento.
+ * Devuelve una promesa que se resuelve cuando la librería está lista.
+ */
 function ensureTimelineScript() {
     const src = "https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"
     if (window.TL && window.TL.Timeline) {
@@ -63,7 +71,9 @@ function ensureTimelineScript() {
     })
 }
 
-// Normaliza la URL y la pasa por proxy para evitar problemas con espacios
+/**
+ * Normaliza la URL y la pasa por proxy para evitar problemas con espacios.
+ */
 function normalizeUrl(url) {
     if (!url) {
         return ""
@@ -73,6 +83,10 @@ function normalizeUrl(url) {
     return safe
 }
 
+/**
+ * Sanitiza y normaliza los eventos para TimelineJS.
+ * Convierte fechas, textos y media a formato compatible.
+ */
 function sanitizeEventos(eventos) {
     const out = []
     if (!eventos) {
@@ -181,11 +195,16 @@ function sanitizeEventos(eventos) {
     return out
 }
 
+/**
+ * Componente TimelinePreview
+ * Renderiza una previsualización de la línea de tiempo usando TimelineJS.
+ * Permite abrir la línea de tiempo en pantalla completa al hacer clic en una imagen.
+ */
 function TimelinePreview({ eventos }) {
     const contenedorRef = useRef(null)
     const [showFull, setShowFull] = useState(false)
 
-    // Preview
+    // Renderiza la previsualización de la línea de tiempo
     useEffect(function () {
         const container = contenedorRef.current
         if (!container) {
@@ -255,7 +274,7 @@ function TimelinePreview({ eventos }) {
         }
     }, [eventos])
 
-    // Fullscreen
+    // Renderiza la línea de tiempo en pantalla completa si se activa
     useEffect(function () {
         if (!showFull) {
             return
@@ -301,10 +320,12 @@ function TimelinePreview({ eventos }) {
             })
     }, [showFull, eventos])
 
+    // Render principal del componente
     return (
         <div className="contenedor-linea-tiempo">
             <div ref={contenedorRef} className="caja-linea-tiempo"></div>
 
+            {/* Modal para pantalla completa */}
             {showFull && (
                 <div className="timeline-modal" onClick={function () { setShowFull(false) }}>
                     <div className="timeline-modal-content" onClick={function (e) { e.stopPropagation() }}>

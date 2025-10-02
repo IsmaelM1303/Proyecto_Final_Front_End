@@ -5,13 +5,12 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import "../../../styles/NuevoPOI.css"
-
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png"
 import iconUrl from "leaflet/dist/images/marker-icon.png"
 import shadowUrl from "leaflet/dist/images/marker-shadow.png"
-
 import TimeLineEditor from "./TimelineEditor"
 
+// Configuración global de iconos para Leaflet
 if (L && L.Icon && L.Icon.Default) {
     L.Icon.Default.mergeOptions({
         iconRetinaUrl: iconRetinaUrl,
@@ -20,6 +19,7 @@ if (L && L.Icon && L.Icon.Default) {
     })
 }
 
+// Icono personalizado para el marcador principal
 const iconoVerde = new L.Icon({
     iconRetinaUrl: iconRetinaUrl,
     iconUrl: iconUrl,
@@ -31,14 +31,27 @@ const iconoVerde = new L.Icon({
     className: "leaflet-icono-verde"
 })
 
+/**
+ * Componente EditPOI
+ * Permite editar un Punto de Interés (POI) existente.
+ * Inicializa los datos del POI desde localStorage y los muestra en el formulario.
+ * Permite modificar nombre, descripción, ubicación (con marcador draggable en el mapa), categorías turísticas, redes sociales y línea de tiempo.
+ * Las categorías se cargan desde la base simulada y pueden agregarse/eliminarse dinámicamente.
+ * Las redes sociales se agregan como pares tipo/link y pueden eliminarse.
+ * La línea de tiempo se edita mediante el componente TimeLineEditor.
+ * Al guardar, valida los datos y envía la solicitud de edición a la base simulada.
+ * Si ya existe una solicitud pendiente para el usuario, muestra un aviso y bloquea la edición.
+ */
 function EditPOI() {
     const navegar = useNavigate()
 
+    // Estados para los datos del POI
     const [idPOI, setIdPOI] = useState("")
     const [nombre, setNombre] = useState("")
     const [descripcion, setDescripcion] = useState("")
     const [ubicacion, setUbicacion] = useState({ lat: null, lng: null })
 
+    // Estados para categorías turísticas
     const [categorias, setCategorias] = useState([])
     const [categoriasData, setCategoriasData] = useState([])
     const [categoriasCargando, setCategoriasCargando] = useState(true)
@@ -46,15 +59,19 @@ function EditPOI() {
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
     const [mostrarSelectCategoria, setMostrarSelectCategoria] = useState(false)
 
+    // Estados para redes sociales
     const [redes, setRedes] = useState([])
     const [redSocialSeleccionada, setRedSocialSeleccionada] = useState("")
     const [linkRed, setLinkRed] = useState("")
 
+    // Estados para mensajes de error y aviso
     const [mensajeError, setMensajeError] = useState("")
     const [mensajeAviso, setMensajeAviso] = useState("")
 
+    // Estado para la línea de tiempo
     const [lineaTiempo, setLineaTiempo] = useState([])
 
+    // Opciones de redes sociales disponibles
     const opcionesRedes = [
         { id: "facebook", nombre: "Facebook" },
         { id: "tiktok", nombre: "TikTok" },
@@ -63,62 +80,36 @@ function EditPOI() {
         { id: "whatsapp", nombre: "WhatsApp" }
     ]
 
+    // Token de usuario autenticado
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
 
+    // Efecto para inicializar el formulario con los datos del POI a editar
     useEffect(() => {
         async function inicializar() {
             try {
+                // Obtiene el POI a editar desde localStorage
                 const referencia = localStorage.getItem("poiEditar")
                 if (referencia) {
                     const objetoPOI = JSON.parse(referencia)
 
-                    if (objetoPOI && objetoPOI.id) {
-                        setIdPOI(objetoPOI.id)
-                    } else {
-                        setIdPOI("")
-                    }
+                    setIdPOI(objetoPOI?.id || "")
+                    setNombre(objetoPOI?.nombre || "")
+                    setDescripcion(objetoPOI?.descripcion || "")
+                    setUbicacion(
+                        objetoPOI?.ubicacion &&
+                        typeof objetoPOI.ubicacion.lat === "number" &&
+                        typeof objetoPOI.ubicacion.lng === "number"
+                            ? { lat: objetoPOI.ubicacion.lat, lng: objetoPOI.ubicacion.lng }
+                            : { lat: null, lng: null }
+                    )
+                    setCategorias(Array.isArray(objetoPOI?.categorias) ? objetoPOI.categorias : [])
+                    setRedes(Array.isArray(objetoPOI?.redes) ? objetoPOI.redes : [])
+                    setLineaTiempo(Array.isArray(objetoPOI?.lineaTiempo) ? objetoPOI.lineaTiempo : [])
 
-                    if (objetoPOI && objetoPOI.nombre) {
-                        setNombre(objetoPOI.nombre)
-                    } else {
-                        setNombre("")
-                    }
-
-                    if (objetoPOI && objetoPOI.descripcion) {
-                        setDescripcion(objetoPOI.descripcion)
-                    } else {
-                        setDescripcion("")
-                    }
-
-                    if (objetoPOI && objetoPOI.ubicacion && typeof objetoPOI.ubicacion.lat === "number" && typeof objetoPOI.ubicacion.lng === "number") {
-                        setUbicacion({ lat: objetoPOI.ubicacion.lat, lng: objetoPOI.ubicacion.lng })
-                    } else {
-                        setUbicacion({ lat: null, lng: null })
-                    }
-
-                    if (objetoPOI && Array.isArray(objetoPOI.categorias)) {
-                        setCategorias(objetoPOI.categorias)
-                    } else {
-                        setCategorias([])
-                    }
-
-                    if (objetoPOI && Array.isArray(objetoPOI.redes)) {
-                        setRedes(objetoPOI.redes)
-                    } else {
-                        setRedes([])
-                    }
-
-                    if (objetoPOI && Array.isArray(objetoPOI.lineaTiempo)) {
-                        setLineaTiempo(objetoPOI.lineaTiempo)
-                    } else {
-                        setLineaTiempo([])
-                    }
-
+                    // Verifica si ya existe una solicitud pendiente para este usuario
                     const solicitudes = await obtenerElementos("solicitudPOIs", 3)
                     if (Array.isArray(solicitudes)) {
-                        const existePorToken = solicitudes.some(function (s) {
-                            return String(s.token) === String(token)
-                        })
+                        const existePorToken = solicitudes.some(s => String(s.token) === String(token))
                         if (existePorToken) {
                             setMensajeAviso("Ya se está editando un elemento con tu cuenta, por favor espera aprobación")
                             return
@@ -135,6 +126,7 @@ function EditPOI() {
         inicializar()
     }, [token])
 
+    // Efecto para cargar las categorías turísticas disponibles
     useEffect(() => {
         async function cargarCategorias() {
             setCategoriasCargando(true)
@@ -143,12 +135,10 @@ function EditPOI() {
                 const data = await obtenerElementos("categoriasTuristicas", 3)
                 if (Array.isArray(data)) {
                     setCategoriasData(data)
+                } else if (data && Array.isArray(data.categoriasTuristicas)) {
+                    setCategoriasData(data.categoriasTuristicas)
                 } else {
-                    if (data && Array.isArray(data.categoriasTuristicas)) {
-                        setCategoriasData(data.categoriasTuristicas)
-                    } else {
-                        setCategoriasError("No se pudo interpretar la lista de categorías.")
-                    }
+                    setCategoriasError("No se pudo interpretar la lista de categorías.")
                 }
             } catch (err) {
                 console.error("Error cargando categorías:", err)
@@ -160,47 +150,44 @@ function EditPOI() {
         cargarCategorias()
     }, [])
 
+    // Agrega una categoría seleccionada al POI
     function agregarCategoria() {
         const categoria = (categoriaSeleccionada || "").trim()
-        if (categoria === "") {
+        if (categoria === "" || categorias.includes(categoria)) {
             return
         }
-        if (categorias.indexOf(categoria) !== -1) {
-            return
-        }
-        const copia = categorias.slice()
-        copia.push(categoria)
-        setCategorias(copia)
+        setCategorias([...categorias, categoria])
         setCategoriaSeleccionada("")
         setMostrarSelectCategoria(false)
     }
 
+    // Elimina una categoría del POI
     function eliminarCategoria(indice) {
-        const copia = categorias.filter(function (_, i) { return i !== indice })
-        setCategorias(copia)
+        setCategorias(categorias.filter((_, i) => i !== indice))
     }
 
+    // Agrega una red social al POI
     function agregarRed() {
         const tipo = (redSocialSeleccionada || "").trim()
         const link = (linkRed || "").trim()
         if (tipo === "" || link === "") {
             return
         }
-        const copia = redes.slice()
-        copia.push({ tipo: tipo, link: link })
-        setRedes(copia)
+        setRedes([...redes, { tipo, link }])
         setRedSocialSeleccionada("")
         setLinkRed("")
     }
 
+    // Elimina una red social del POI
     function eliminarRed(indice) {
-        const copia = redes.filter(function (_, i) { return i !== indice })
-        setRedes(copia)
+        setRedes(redes.filter((_, i) => i !== indice))
     }
 
+    // Maneja el guardado de la edición del POI
     async function manejarGuardar(evento) {
         evento.preventDefault()
 
+        // Validaciones básicas
         if (!nombre.trim()) {
             alert("El nombre es obligatorio")
             return
@@ -211,28 +198,29 @@ function EditPOI() {
         }
 
         try {
+            // Verifica si ya existe una solicitud pendiente para este usuario
             const solicitudes = await obtenerElementos("solicitudPOIs", 3)
             if (Array.isArray(solicitudes)) {
-                const existePorToken = solicitudes.some(function (s) {
-                    return String(s.token) === String(token)
-                })
+                const existePorToken = solicitudes.some(s => String(s.token) === String(token))
                 if (existePorToken) {
                     setMensajeAviso("Ya se está editando un elemento con tu cuenta, por favor espera aprobación")
                     return
                 }
             }
 
+            // Construye el objeto de datos editados
             const datosEditados = {
                 id: idPOI,
                 nombre: nombre.trim(),
                 descripcion: descripcion.trim(),
                 ubicacion: { lat: ubicacion.lat, lng: ubicacion.lng },
-                categorias: categorias,
-                redes: redes,
-                lineaTiempo: lineaTiempo,
-                token: token
+                categorias,
+                redes,
+                lineaTiempo,
+                token
             }
 
+            // Envía la solicitud de edición a la base simulada
             await crearElemento("solicitudPOIs", datosEditados, 3)
             alert("Solicitud de edición enviada correctamente")
             navegar("/Perfil")
@@ -242,6 +230,7 @@ function EditPOI() {
         }
     }
 
+    // Renderiza mensajes de error o aviso si corresponden
     if (mensajeError) {
         return (
             <div className="nuevo-poi-form">
@@ -253,37 +242,41 @@ function EditPOI() {
 
     if (mensajeAviso) {
         return (
-            <div className="nuevo-poi-form">
-                <h2>Aviso</h2>
-                <p>{mensajeAviso}</p>
+            <div className="nuevo-poi-form nuevo-poi-form--status nuevo-poi-form--notice">
+                <h2 className="status-title">Aviso</h2>
+                <p className="status-message">{mensajeAviso}</p>
             </div>
         )
     }
 
+    // Render principal del formulario de edición
     return (
         <form onSubmit={manejarGuardar} className="nuevo-poi-form">
             <h2>Editar Punto de Interés (POI)</h2>
 
+            {/* Campo para el nombre del POI */}
             <div className="form-row">
                 <label>Nombre del POI</label>
                 <input
                     type="text"
                     value={nombre}
-                    onChange={function (e) { setNombre(e.target.value) }}
+                    onChange={e => setNombre(e.target.value)}
                     placeholder="Ej. Centro Cívico por la Paz"
                 />
             </div>
 
+            {/* Campo para la descripción */}
             <div className="form-row">
                 <label>Descripción</label>
                 <textarea
                     value={descripcion}
-                    onChange={function (e) { setDescripcion(e.target.value) }}
+                    onChange={e => setDescripcion(e.target.value)}
                     placeholder="Describe brevemente el lugar..."
                     rows={4}
                 />
             </div>
 
+            {/* Muestra la ubicación actual */}
             <div className="form-row">
                 <label>Ubicación actual</label>
                 {ubicacion.lat && ubicacion.lng && (
@@ -291,6 +284,7 @@ function EditPOI() {
                 )}
             </div>
 
+            {/* Mapa interactivo para ajustar la ubicación */}
             {ubicacion.lat && ubicacion.lng && (
                 <MapContainer
                     center={[ubicacion.lat, ubicacion.lng]}
@@ -319,44 +313,38 @@ function EditPOI() {
                 </MapContainer>
             )}
 
+            {/* Sección de categorías turísticas */}
             <div className="form-row">
                 <label>Categorías turísticas</label>
-
                 {categoriasCargando && <p>Cargando categorías…</p>}
                 {!categoriasCargando && categoriasError && <p className="error">{categoriasError}</p>}
-
                 {!categoriasCargando && !categoriasError && (
                     <div>
                         <div className="inline">
-                            <button type="button" onClick={function () { setMostrarSelectCategoria(true) }}>
+                            <button type="button" onClick={() => setMostrarSelectCategoria(true)}>
                                 Agregar categoría
                             </button>
                         </div>
-
                         {mostrarSelectCategoria && (
                             <div className="inline gap">
                                 <select
                                     value={categoriaSeleccionada}
-                                    onChange={function (e) { setCategoriaSeleccionada(e.target.value) }}
+                                    onChange={e => setCategoriaSeleccionada(e.target.value)}
                                 >
                                     <option value="">Seleccione categoría</option>
-                                    {categoriasData.map(function (grupo) {
-                                        return (
-                                            <optgroup key={grupo.grupo} label={grupo.grupo}>
-                                                {grupo.items.map(function (item) {
-                                                    return (
-                                                        <option key={grupo.grupo + "-" + item} value={item}>{item}</option>
-                                                    )
-                                                })}
-                                            </optgroup>
-                                        )
-                                    })}
+                                    {categoriasData.map(grupo => (
+                                        <optgroup key={grupo.grupo} label={grupo.grupo}>
+                                            {grupo.items.map(item => (
+                                                <option key={grupo.grupo + "-" + item} value={item}>{item}</option>
+                                            ))}
+                                        </optgroup>
+                                    ))}
                                 </select>
                                 <button type="button" onClick={agregarCategoria}>Agregar</button>
                                 <button
                                     type="button"
                                     className="secondary"
-                                    onClick={function () {
+                                    onClick={() => {
                                         setCategoriaSeleccionada("")
                                         setMostrarSelectCategoria(false)
                                     }}
@@ -365,77 +353,72 @@ function EditPOI() {
                                 </button>
                             </div>
                         )}
-
                         {categorias.length > 0 && (
                             <ul className="pill-list">
-                                {categorias.map(function (c, index) {
-                                    return (
-                                        <li key={c + "-" + index} className="pill">
-                                            {c}
-                                            <button
-                                                type="button"
-                                                className="pill-remove"
-                                                onClick={function () { eliminarCategoria(index) }}
-                                            >
-                                                ×
-                                            </button>
-                                        </li>
-                                    )
-                                })}
+                                {categorias.map((c, index) => (
+                                    <li key={c + "-" + index} className="pill">
+                                        {c}
+                                        <button
+                                            type="button"
+                                            className="pill-remove"
+                                            onClick={() => eliminarCategoria(index)}
+                                        >
+                                            ×
+                                        </button>
+                                    </li>
+                                ))}
                             </ul>
                         )}
                     </div>
                 )}
             </div>
 
+            {/* Sección de redes sociales */}
             <div className="form-row">
                 <label>Redes sociales</label>
                 <div className="inline gap">
                     <select
                         value={redSocialSeleccionada}
-                        onChange={function (e) { setRedSocialSeleccionada(e.target.value) }}
+                        onChange={e => setRedSocialSeleccionada(e.target.value)}
                     >
                         <option value="">Seleccione red social</option>
-                        {opcionesRedes.map(function (red) {
-                            return (
-                                <option key={red.id} value={red.nombre}>{red.nombre}</option>
-                            )
-                        })}
+                        {opcionesRedes.map(red => (
+                            <option key={red.id} value={red.nombre}>{red.nombre}</option>
+                        ))}
                     </select>
                     <input
                         type="url"
                         placeholder="Link de la red social"
                         value={linkRed}
-                        onChange={function (e) { setLinkRed(e.target.value) }}
+                        onChange={e => setLinkRed(e.target.value)}
                     />
                     <button type="button" onClick={agregarRed}>Agregar</button>
                 </div>
-
                 {redes.length > 0 && (
                     <ul className="pill-list">
-                        {redes.map(function (r, index) {
-                            return (
-                                <li key={r.tipo + "-" + index} className="pill">
-                                    {r.tipo}: {r.link}
-                                    <button
-                                        type="button"
-                                        className="pill-remove"
-                                        onClick={function () { eliminarRed(index) }}
-                                    >
-                                        ×
-                                    </button>
-                                </li>
-                            )
-                        })}
+                        {redes.map((r, index) => (
+                            <li key={r.tipo + "-" + index} className="pill">
+                                {r.tipo}: {r.link}
+                                <button
+                                    type="button"
+                                    className="pill-remove"
+                                    onClick={() => eliminarRed(index)}
+                                >
+                                    ×
+                                </button>
+                            </li>
+                        ))}
                     </ul>
                 )}
             </div>
 
+            {/* Sección para editar la línea de tiempo */}
             <div className="form-row">
                 <label>Línea de tiempo</label>
                 <TimeLineEditor lineaTiempo={lineaTiempo} setLineaTiempo={setLineaTiempo} />
             </div>
 
+            {/* Botón para guardar cambios */}
             <div className="actions">
                 <button type="submit">
                     Guardar cambios del POI

@@ -1,0 +1,167 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.perfiles {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* ===== TÍTULO ===== */
+.perfiles__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    color: #89a644;
+    text-align: center;
+}
+
+/* ===== BÚSQUEDA ===== */
+.perfiles__search {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border 0.2s ease;
+}
+.perfiles__search:focus {
+    outline: none;
+    border-color: #89a644;
+}
+
+/* ===== FILTROS ===== */
+.perfiles__filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Desktop: mostrar botones normales, ocultar dropdown */
+.perfiles__filters-desktop {
+    display: flex;
+    gap: 0.5rem;
+}
+.perfiles__filters-mobile {
+    display: none;
+}
+
+/* Botones */
+.perfiles__filter-btn {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: #89a644;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+.perfiles__filter-btn:hover {
+    background: #6f8f34;
+    transform: translateY(-1px);
+}
+.perfiles__filter-btn.is-active {
+    background: #4e770d;
+}
+
+/* Dropdown */
+.perfiles__filters-mobile {
+    position: relative;
+}
+.perfiles__filter-btn--group {
+    background: #4e770d;
+}
+.perfiles__dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 6px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+.perfiles__dropdown .perfiles__filter-btn {
+    background: #89a644;
+    width: 100%;
+}
+
+/* ===== ESTADOS ===== */
+.perfiles__loading {
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0.5rem 0 1rem;
+}
+.perfiles__empty {
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0.75rem 0 1rem;
+}
+
+/* ===== LISTA ===== */
+.perfiles__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.perfiles__item {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.perfiles__name {
+    font-weight: bold;
+    font-size: 1.05rem;
+    color: #4e770d;
+}
+.perfiles__role {
+    font-size: 0.95rem;
+    color: #333;
+}
+.perfiles__email {
+    display: block;
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.25rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .perfiles {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: none;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* En móvil: ocultar botones normales, mostrar dropdown */
+    .perfiles__filters-desktop {
+        display: none;
+    }
+    .perfiles__filters-mobile {
+        display: block;
+        flex: 1;
+    }
+
+    .perfiles__filter-btn,
+    .perfiles__filter-btn--group {
+        width: 100%;
+    }
+}

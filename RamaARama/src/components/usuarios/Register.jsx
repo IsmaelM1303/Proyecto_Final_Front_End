@@ -4,6 +4,11 @@ import { obtenerElementos, crearElemento } from "../../api/Crud"
 import BtnVolver from "../general/BtnVolver"
 import "../../styles/Register.css"
 
+/**
+ * Componente Alerta
+ * Muestra un mensaje temporal en pantalla.
+ * Se oculta automáticamente después de 3 segundos.
+ */
 function Alerta({ mostrar, onOcultar, mensaje }) {
     const [visible, setVisible] = useState(false)
 
@@ -25,6 +30,12 @@ function Alerta({ mostrar, onOcultar, mensaje }) {
     return <div className="alertaRegister">{mensaje}</div>
 }
 
+/**
+ * Componente Register
+ * Permite al usuario crear una nueva cuenta.
+ * Valida la contraseña y el correo, y guarda el usuario en la base simulada.
+ * Muestra alertas de error y permite alternar la visibilidad de las contraseñas.
+ */
 function Register() {
     const [nombre, setNombre] = useState("")
     const [correo, setCorreo] = useState("")
@@ -37,6 +48,7 @@ function Register() {
 
     const navigate = useNavigate()
 
+    // Maneja el envío del formulario de registro
     async function manejoSubmit(e) {
         e.preventDefault()
 
@@ -87,6 +99,7 @@ function Register() {
         navigate("/Main")
     }
 
+    // Render principal del registro
     return (
         <div className="divRegister">
             <h2 className="tituloRegister">Registrarse</h2>

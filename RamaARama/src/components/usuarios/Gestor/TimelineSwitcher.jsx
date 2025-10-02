@@ -2,11 +2,18 @@ import { useState } from "react"
 import TimelinePreview from "./TimelinePreview"
 import TimelineFull from "./TimelineFull"
 
+/**
+ * Componente TimelineSwitcher
+ * Permite alternar entre la vista previa y la vista completa de la línea de tiempo.
+ * Usa un botón para cambiar el modo y renderiza el componente correspondiente.
+ */
 function TimelineSwitcher({ eventos }) {
+    // Estado para controlar si se muestra la vista completa
     const [full, setFull] = useState(false)
 
     return (
         <div style={{ width: "100%", height: "100%" }}>
+            {/* Botón para alternar entre preview y pantalla completa */}
             <div style={{ marginBottom: "10px" }}>
                 <button
                     onClick={function () { setFull(!full) }}
@@ -23,6 +30,7 @@ function TimelineSwitcher({ eventos }) {
                 </button>
             </div>
 
+            {/* Renderiza la vista seleccionada */}
             <div style={{ width: "100%", height: full ? "100vh" : "400px" }}>
                 {full ? (
                     <TimelineFull eventos={eventos} />

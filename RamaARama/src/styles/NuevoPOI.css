@@ -1,3 +1,4 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
 .nuevo-poi-form {
     max-width: 800px;
     margin: 0 auto;
@@ -10,8 +11,80 @@
 .nuevo-poi-form h2 {
     margin: 0 0 16px 0;
     font-size: 1.4rem;
+    color: #30490a;
 }
 
+.nuevo-poi-form p {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ===== ESTADOS DE MENSAJE ===== */
+.nuevo-poi-form--status {
+    background: #f9faf6;
+    border: 1px solid #e3edd1;
+    padding: 16px 20px;
+    border-radius: 8px;
+}
+
+.nuevo-poi-form--checking {
+    border-left: 4px solid #89a644;
+}
+
+.nuevo-poi-form--duplicate {
+    border-left: 4px solid #b73a3a;
+}
+
+.nuevo-poi-form--notice {
+    border-left: 4px solid #d1a644;
+}
+
+.status-title {
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.status-message {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #444;
+}
+
+/* Colores específicos por estado */
+.nuevo-poi-form--checking .status-title {
+    color: #4e770d;
+}
+
+.nuevo-poi-form--duplicate .status-title {
+    color: #922d2d;
+}
+
+.nuevo-poi-form--notice .status-title {
+    color: #8a6d1d;
+}
+
+/* Spinner para el estado de verificación */
+.nuevo-poi-form--checking .status-title::after {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: 8px;
+    border: 2px solid #4e770d;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: poi-spin 0.8s linear infinite;
+}
+
+@keyframes poi-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== FILAS DE FORMULARIO ===== */
 .form-row {
     margin-bottom: 16px;
 }
@@ -20,6 +93,7 @@
     display: block;
     font-weight: 600;
     margin-bottom: 6px;
+    color: #30490a;
 }
 
 .form-row input[type="text"],
@@ -32,6 +106,8 @@
     border-radius: 6px;
     font-size: 0.95rem;
     outline: none;
+    background: #fff;
+    color: #222;
 }
 
 .form-row input:focus,
@@ -41,19 +117,25 @@
     box-shadow: 0 0 0 2px rgba(78, 119, 13, 0.15);
 }
 
+/* ===== ERRORES ===== */
 .error {
     color: crimson;
     margin: 4px 0 0 0;
+    font-size: 0.9rem;
 }
 
+/* ===== COORDENADAS ===== */
 .coords {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     background: #f7f7f7;
     padding: 6px 8px;
     border-radius: 6px;
     display: inline-block;
+    border: 1px solid #e6e6e6;
+    color: #333;
 }
 
+/* ===== MAPA ===== */
 .mapa-poi {
     height: 360px;
     width: 100%;
@@ -63,7 +145,7 @@
     margin-bottom: 16px;
 }
 
-/* Utilidades de layout */
+/* ===== UTILIDADES DE LAYOUT ===== */
 .inline {
     display: flex;
     align-items: center;
@@ -73,7 +155,7 @@
     gap: 10px;
 }
 
-/* Botones */
+/* ===== BOTONES ===== */
 button {
     padding: 8px 12px;
     border-radius: 6px;
@@ -82,6 +164,12 @@ button {
     color: #fff;
     cursor: pointer;
     font-weight: 600;
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+
+button:hover {
+    background: #3a5c0a;
+    transform: translateY(-1px);
 }
 
 button.secondary {
@@ -90,18 +178,24 @@ button.secondary {
     border-color: #4e770d;
 }
 
+button.secondary:hover {
+    background: #f4f8ee;
+}
+
 button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
 }
 
 .actions {
     margin-top: 12px;
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
 }
 
-/* Lista tipo "pill" para categorías y redes */
+/* ===== LISTA TIPO "PILL" ===== */
 .pill-list {
     list-style: none;
     padding: 0;
@@ -131,7 +225,25 @@ button:disabled {
     line-height: 1;
 }
 
-/* Icono verde de Leaflet */
+/* ===== ICONO VERDE DE LEAFLET ===== */
 .leaflet-icono-verde {
     filter: hue-rotate(250deg) saturate(100%);
 }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .nuevo-poi-form {
+        padding: 14px 16px;
+        border-radius: 6px;
+    }
+
+    .actions {
+        justify-content: stretch;
+    }
+
+    button,
+    button.secondary {
+        width: 100%;
+    }
+}
+    

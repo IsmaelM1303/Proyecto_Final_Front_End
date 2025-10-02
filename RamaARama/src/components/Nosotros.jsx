@@ -1,5 +1,10 @@
 import "../styles/Nosotros.css";
 
+/**
+ * Componente Nosotros
+ * Muestra la información institucional del proyecto Rama a Rama, incluyendo misión, visión, valores y contacto.
+ * Incluye un formulario de contacto (no funcional) y datos de contacto de la organización.
+ */
 function Nosotros() {
     return (
         <div className="pageWrapper">
@@ -59,7 +64,6 @@ function Nosotros() {
                 </section>
             </div>
         </div>
-
     );
 }
 

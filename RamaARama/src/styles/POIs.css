@@ -1,0 +1,171 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.pois {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* ===== TÍTULOS ===== */
+.pois__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    color: #89a644;
+    text-align: center;
+}
+
+.pois__subtitle {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    color: #4e770d;
+}
+
+/* ===== ESTADOS ===== */
+.pois__loading {
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0.5rem 0 1rem;
+}
+
+.pois__error {
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0.75rem 0 1rem;
+}
+
+.pois__message {
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0.75rem 0 1rem;
+}
+
+/* ===== CONTENEDOR DE SECCIONES ===== */
+.pois__container {
+    margin-top: 1rem;
+}
+
+/* ===== LISTAS ===== */
+.pois__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pois__item {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pois__item--pending {
+    border-left: 4px solid #b73a3a;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== CAMPOS ===== */
+.pois__name {
+    display: block;
+    font-weight: bold;
+    font-size: 1.05rem;
+    color: #4e770d;
+    margin-bottom: 0.25rem;
+}
+
+.pois__description {
+    margin: 0.25rem 0;
+    color: #333;
+}
+
+.pois__location {
+    display: block;
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 0.25rem;
+}
+
+.pois__status {
+    display: block;
+    font-size: 0.85rem;
+    color: #b73a3a;
+    margin-top: 0.25rem;
+}
+
+/* ===== ACCIONES ===== */
+.pois__actions {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ===== BOTONES ===== */
+.pois__btn {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease;
+    color: white;
+    min-width: 120px;
+    text-align: center;
+}
+
+.pois__btn--edit {
+    background: #4e770d;
+}
+
+.pois__btn--edit:hover {
+    background: #3a5c0a;
+    transform: translateY(-1px);
+}
+
+.pois__btn--new {
+    background: #89a644;
+    display: block;
+    margin: 1.5rem auto 0;
+}
+
+.pois__btn--new:hover {
+    background: #6f8f34;
+    transform: translateY(-1px);
+}
+
+.pois__btn:active {
+    transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .pois {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: none;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .pois__btn,
+    .pois__btn--new {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .pois__actions {
+        flex-direction: column;
+    }
+}

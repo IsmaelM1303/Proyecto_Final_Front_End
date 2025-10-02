@@ -9,20 +9,31 @@ import emailjs from "@emailjs/browser"
 import TimelineSwitcher from "../Gestor/TimelineSwitcher"
 import "../../../styles/GestorRequests.css"
 
+/**
+ * Componente GestorRequests
+ * Permite al administrador revisar, aceptar o rechazar solicitudes de roles (admin/gestor) y de puntos turísticos (POIs).
+ * Incluye envío de correos de notificación y renderizado de detalles de cada solicitud.
+ */
 function GestorRequests() {
+    // Estado para el filtro de tipo de solicitud
     const [filtro, setFiltro] = useState("")
+    // Estado para la lista de solicitudes cargadas
     const [datos, setDatos] = useState([])
+    // Estado de carga y error
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
+    // Configuración de EmailJS
     const serviceId = "RamaARama"
     const templateId = "template_9ymo2cf"
     const publicKey = "Mlos1g8OYYwn0hzqv"
 
+    // Efecto para cargar datos según filtro
     useEffect(function () {
         cargarDatos()
     }, [filtro])
 
+    // Carga las solicitudes según el filtro seleccionado
     async function cargarDatos() {
         setError("")
         setDatos([])
@@ -60,6 +71,7 @@ function GestorRequests() {
         }
     }
 
+    // Obtiene la lista de usuarios
     async function obtenerUsuarios() {
         try {
             const usuarios = await obtenerElementos("usuarios", 1)
@@ -72,6 +84,7 @@ function GestorRequests() {
         }
     }
 
+    // Busca un usuario por su ID
     async function obtenerUsuarioPorId(id) {
         const usuarios = await obtenerUsuarios()
         for (let i = 0; i < usuarios.length; i++) {
@@ -83,6 +96,7 @@ function GestorRequests() {
         return null
     }
 
+    // Obtiene el correo de un usuario por su ID
     async function obtenerCorreoUsuario(idUsuario) {
         const usuario = await obtenerUsuarioPorId(idUsuario)
         if (usuario && usuario.correo) {
@@ -91,6 +105,7 @@ function GestorRequests() {
         return null
     }
 
+    // Obtiene el nombre del usuario actual (admin que realiza la acción)
     async function obtenerNombreUsuarioActual() {
         const token = localStorage.getItem("token")
         if (!token) {
@@ -103,6 +118,7 @@ function GestorRequests() {
         return null
     }
 
+    // Envía correo de notificación de solicitud
     async function enviarCorreoSolicitud({ toEmail, nombreDestinatario, tipo, estado, item }) {
         if (!toEmail) {
             return
@@ -162,6 +178,7 @@ function GestorRequests() {
         }
     }
 
+    // Acepta una solicitud de cuenta (admin/gestor)
     async function aceptarSolicitudCuenta(item) {
         const nuevosDatos = Object.assign({}, item)
         if (filtro === "admin") {
@@ -203,6 +220,7 @@ function GestorRequests() {
         alert("Solicitud de " + tipoSolicitud + " aceptada para usuario " + item.id)
     }
 
+    // Rechaza una solicitud de cuenta (admin/gestor)
     async function negarSolicitudCuenta(item) {
         const correoUsuario = await obtenerCorreoUsuario(item.id)
 
@@ -229,6 +247,7 @@ function GestorRequests() {
         alert("Solicitud de " + tipoSolicitud + " negada para usuario " + item.id)
     }
 
+    // Normaliza la línea de tiempo de un POI para TimelineJS
     function normalizarLineaTiempo(linea) {
         if (!Array.isArray(linea)) {
             return []
@@ -311,6 +330,7 @@ function GestorRequests() {
         return salida
     }
 
+    // Acepta una solicitud de POI y lo agrega a la base
     async function aceptarSolicitudPOI(item) {
         try {
             const nuevoPOI = {
@@ -350,6 +370,7 @@ function GestorRequests() {
         }
     }
 
+    // Rechaza una solicitud de POI
     async function negarSolicitudPOI(item) {
         let correoUsuario = null
         if (item && item.token) {
@@ -372,6 +393,7 @@ function GestorRequests() {
         alert("Solicitud de POI negada: " + (item.nombre || "POI"))
     }
 
+    // Decide qué función de aceptación usar según filtro
     async function aceptarSolicitud(item) {
         if (filtro === "admin") {
             await aceptarSolicitudCuenta(item)
@@ -387,6 +409,7 @@ function GestorRequests() {
         }
     }
 
+    // Decide qué función de rechazo usar según filtro
     async function negarSolicitud(item) {
         if (filtro === "admin") {
             await negarSolicitudCuenta(item)
@@ -402,6 +425,7 @@ function GestorRequests() {
         }
     }
 
+    // Mensaje de estado según filtro y carga
     let mensaje = ""
     if (!filtro) {
         mensaje = "Selecciona un filtro para ver solicitudes"
@@ -411,6 +435,7 @@ function GestorRequests() {
         }
     }
 
+    // Renderiza la lista de solicitudes según filtro
     let listadoSolicitudes = null
     if (datos.length > 0) {
         const itemsRenderizados = datos.map(function (item, index) {
@@ -512,12 +537,14 @@ function GestorRequests() {
         <div className="gestor-requests">
             <h2 className="gestor-requests__title">Solicitudes</h2>
 
+            {/* Filtros para tipo de solicitud */}
             <div className="gestor-requests__filters" style={{ display: "flex", gap: 8, marginBottom: 12 }}>
                 <button className="gestor-requests__filter-btn" onClick={function () { setFiltro("admin") }}>Ver solicitudes de Administrador</button>
                 <button className="gestor-requests__filter-btn" onClick={function () { setFiltro("gestor") }}>Ver solicitudes de Gestor</button>
                 <button className="gestor-requests__filter-btn" onClick={function () { setFiltro("poi") }}>Ver solicitudes de POIs</button>
             </div>
 
+            {/* Mensajes de estado y lista de solicitudes */}
             {loading && <p className="gestor-requests__loading">Cargando solicitudes…</p>}
             {error && <p className="gestor-requests__error" style={{ color: "crimson" }}>{error}</p>}
             {!loading && mensaje && <p className="gestor-requests__message">{mensaje}</p>}
